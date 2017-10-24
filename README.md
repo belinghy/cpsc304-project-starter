@@ -8,13 +8,13 @@
 
 ### Setup Instructions for Mac
     
-    Identical to the instructions for Windows, with a few exception:
+    Identical to the instructions for Windows, with a few exceptions:
     0. [Optional] Install `homebrew`
         - Homebrew is a package manager for MacOS
     1. When installing postgres via GUI installer
         - The bin/ folder is not added to PATH automatically
-        - The bin path should be /Library/PostgresSQL/<version>/bin
-        - Alternatively you can try installing with `brew install postgresql`, but there's some problem with XCode
+        - The bin path should be /Library/PostgreSQL/<version>/bin
+        - Alternatively you can try `brew install postgresql`, but there are problems with XCode
     2. When installing node
         - Simply run `brew install node`
         - Or download the pkg installer for Mac
