@@ -5,7 +5,7 @@
       User
     </h1>
     <h2 class="info">
-      {{ user.name }}
+      {{ `${user.username}  (${user.password})` }}
     </h2>
     <nuxt-link class="button" to="/">
       Users
@@ -17,9 +17,9 @@
 import axios from '~/plugins/axios'
 
 export default {
-  name: 'id',
+  name: 'username',
   asyncData ({ params, error }) {
-    return axios.get('/api/users/' + params.id)
+    return axios.get('/api/users/' + params.username)
       .then((res) => {
         return { user: res.data }
       })
