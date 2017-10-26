@@ -1,5 +1,7 @@
 # CPSC304
 
+![alt text](demo.gif "Demo")
+
 ### Setup Instructions for Linux
 
     Identical to the instructions for Windows, with one exception:
