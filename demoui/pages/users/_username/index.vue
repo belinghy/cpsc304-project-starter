@@ -4,7 +4,7 @@
       <div class="subsection">
         <span class="user-username" style="padding: 10px 0 10px 10px; margin: 10px 0 10px 0;">{{ user.username }}</span>
         <span class="user-password" style="padding: 10px 10px; margin: 10px 0 10px 0;">{{ `(${user.password})` }}</span>
-        <nuxt-link :to="{ path: `/update/users/${user.username}`, params: { username: user.username }}">Update</nuxt-link>
+        <nuxt-link :to="{ path: `/users/${user.username}/update`, params: { username: user.username }}">Update</nuxt-link>
       </div>
     </div>
   </section>
