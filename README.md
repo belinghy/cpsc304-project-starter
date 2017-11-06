@@ -1,6 +1,11 @@
 # CPSC304
 
+### Demo
 ![alt text](demo.gif "Demo")
+
+### Be Warned!
+
+This starter kit uses `Sequelize` to perform ORM between JavaScript and Postgres.  `Sequelize` provides convenient shortcuts for simple insert, update, and lookup (i.e. without you having to write INSERT, UPDATE, and SELECT SQL queries).  For the purpose of the course project, you are responsible for meeting the minimal requirements of the project.  This means that you should explicitly write out the raw SQL queries, at the minimum, as specified in your project formal specification.
 
 ### Setup Instructions for Linux
 
