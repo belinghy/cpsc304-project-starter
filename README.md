@@ -60,3 +60,11 @@ This starter kit uses `Sequelize` to perform ORM between JavaScript and Postgres
         - This will start the server
         - You should be able to see the webapp at http://localhost:3000
         - You should see the two fake users displayed on the main screen
+
+### Deploy to Heroku
+
+First, look up how to use Heroku at https://devcenter.heroku.com/articles/getting-started-with-nodejs#introduction.  
+ 
+Heroku requires the root folder to contain `package.json` for Node projects, so you'll likely need to change folder structure of this starter kit a bit.  In order to make `nuxt` work with Heroku, follow this guide https://github.com/nuxt/docs/blob/master/en/faq/heroku-deployment.md.
+
+Finally, you'll need to modify `server/configs/sequelize.js` to change the Postgres database connection settings, in particular the username, password, database name, and database host.  You can find these information on your project's Heroku dashboard.  On the same page, you'll also find a command which allows you to launch psql, you can use it to initialize your database.
