@@ -1,7 +1,7 @@
 # CPSC304
 
 ## Demo
-
+*Live Demo*: https://304demoproject-ejhdpgkdmg.now.sh/
 ![alt text](demo.gif "Demo")
 
 ## Be Warned!
