@@ -1,14 +1,16 @@
 # CPSC304
 
-### Demo
+## Demo
 
 ![alt text](demo.gif "Demo")
 
-### Be Warned!
+## Be Warned!
 
 This starter kit uses `Sequelize` to perform ORM between JavaScript and Postgres. `Sequelize` provides convenient shortcuts for simple insert, update, and lookup (i.e. without you having to write INSERT, UPDATE, and SELECT SQL queries). For the purpose of the course project, you are responsible for meeting the minimal requirements of the project. This means that you should explicitly write out the raw SQL queries, at the minimum, as specified in your project formal specification.
 
-## Setting Up Dev Environment (Postgres + Node) on Local Machine
+## Setting Up Dev Environment (Postgres + Node.js) on Local Machine
+
+Before you install Postgres DBMS on your machine, you might want to consider running the database server remotely with ElephantSQL (see near end of this page). Reason being that running a full DBMS like Postgres on your local machine just for one project seems to be wasteful. Of course, if you are going to use RDBMS regularly for other projects, or if you want to be able to work without internet connection, then you should set up on local machine.
 
 ### Linux
 
@@ -20,8 +22,9 @@ This starter kit uses `Sequelize` to perform ORM between JavaScript and Postgres
 
     Identical to the instructions for Windows, with a few exceptions:
     0. [Optional] Install `homebrew`
-        - Homebrew is a package manager for MacOS
+        - Homebrew is a package manager for MacOS, continue to 2.
     1. When installing postgres via GUI installer
+        - *SKIP* If you are going to use ElephantSQL
         - The bin/ folder is not added to PATH automatically
         - The bin path should be /Library/PostgreSQL/<version>/bin
         - Alternatively you can try `brew install postgresql`, but there are problems with XCode
@@ -32,6 +35,7 @@ This starter kit uses `Sequelize` to perform ORM between JavaScript and Postgres
 ### Windows
 
     1. Install Postgres using the GUI installer
+        - *SKIP* If you are going to use ElephantSQL, continue to 2.
         - https://www.postgresql.org/
         - Choose all default options
         - When prompt for password, enter `postgres`
@@ -40,7 +44,7 @@ This starter kit uses `Sequelize` to perform ORM between JavaScript and Postgres
         - Right-click on Databases node, and create a database called `Demo`
         - Right-click on the new `Demo` node and select `Query Tool`
         - This will bring up a place where you can execute SQL statements
-        - Copy-paste db/dbscripts/CreateUsersTable.sql and execute
+        - Copy-paste db/CreateUsersTable.sql and execute
         - This will create a `Users` table and insert two fake users
         - Verify by running SELECT * FROM Users
     3. Install Node.js using the GUI installer
@@ -61,10 +65,11 @@ This starter kit uses `Sequelize` to perform ORM between JavaScript and Postgres
         - `packages.json` also defines other useful commands, basic info, etc
     7. Run `npm run dev` in project root
         - This will start the server
+        - You might need to modify `env_setup` file if your database wasn't set up identical to mine, or if you are using ElephantSQL (see below)
         - You should be able to see the webapp at http://localhost:3000
         - You should see the two fake users displayed on the main screen
 
-## Running Project Locally
+## Running Project Locally (UI Only)
 
 ### Build Setup
 
@@ -85,7 +90,31 @@ For detailed explanation on how things work, checkout the [Nuxt.js docs](https:/
 
 We use [backpack](https://github.com/palmerhq/backpack) to watch and build the application, so you can use the latest ES6 features (module syntax, async/await, etc.).
 
-## Deploy to Heroku
+## Deploying to Remote Servers
+
+If you are not already familiar with Heroku, it is recommended that you use ElephantSQL + Now over Heroku (In my opinion it's the easier route). If you are familiar with Heroku, you are encouraged to try out new things. Nevertheless, it is possible to deploy
+
+### Running Postgres Server with ElephantSQL (Recommended)
+
+ElephantSQL (https://www.elephantsql.com/plans.html) provides Postgres as a service. The free tier allows 20 MB of data and 5 concurrent connections, which is more than enough for the purpose of the course project. Signing up is extremely easy and it even provides a web console from running SQL commands -- All you need to do is to copy your database script (i.e. `db/CreateUsersTable.sql`) into the console and execute.
+
+Again, you need to modify `env_setup` file to get the UI to connect to your remote Postgres server. Everytime after you modify this file or if you restart your shell, you should run `source env_setup` in your terminal to set environment variables.
+
+### Deploying Node.js UI to Zeit Now (Recommended)
+
+`Now` is a deployment tool developed by Zeit (https://zeit.co/). It supports all things Node.js and Docker (for those familiar with containers). For our purposes, all you need to know is that as long as your package has a `package.json` file at the root folder, and the file has appropriate commands defined in it (i.e. `npm run build` and `npm start`), `Now` simply uploads your source code and executes those two commands (which is what you'd do manually if you have access to an AWS virtual machine, say.)
+
+First, you need to download `now-cli` by running `npm install -g now-cli`. Another nice thing about `Now` is that the only dependency it needs is the Node.js environment, but you already have this set up since you are working on a Node.js project.
+
+Then, normally you can deploy your project by simply running `now` in your terminal. However, for this project, we need to make sure we have the database connections properly configured. Again, make sure you have `env_setup` configured correctly and you have ran `source env_setup` in your current shell session. Then you want to run the command in `deploy_now` file to tell `Now` to use the correct environment variables. The first time you run it, you will be asked to login using an email -- If you haven't done so already, registering an account take about two minutes. Run `now ls` and it'll spit out an url for your application.
+
+Some useful commands:
+
+1. `now ls` tells you the instances you have running. With a free tier account, you can only run up to three instances.
+2. `now rm <instance_id>` lets you remove an instance.
+3. `now logs <instance_id>` shows you the console logs for your application.
+
+### Deploy to Heroku
 
 First, look up how to use Heroku at https://devcenter.heroku.com/articles/getting-started-with-nodejs#introduction. At the very minimum, you will need to add an Postgres add-on.
 

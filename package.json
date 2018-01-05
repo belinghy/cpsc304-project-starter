@@ -1,7 +1,7 @@
 {
-  "name": "demoui",
+  "name": "304demoproject",
   "version": "1.0.0",
-  "description": "Nuxt.js project",
+  "description": "A Starter Project for CPSC304 at UBC",
   "author": "Ben Ling <belinghy@gmail.com>",
   "private": true,
   "scripts": {
