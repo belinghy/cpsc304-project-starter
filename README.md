@@ -121,3 +121,18 @@ First, look up how to use Heroku at https://devcenter.heroku.com/articles/gettin
 Heroku requires the root folder to contain `package.json` for Node projects, so make sure you have that (should be there by default if you haven't changed the folder structure). In order to make `nuxt` work with Heroku, follow this guide https://github.com/nuxt/docs/blob/master/en/faq/heroku-deployment.md.
 
 Finally, you'll need to configure `server/configs/sequelize.js` to change the Postgres database connection settings, in particular the username, password, database name, host, and port. You can configure these parameters by setting them as environment variables (standard practice for production environments), which can be done through the heroku dashboard under `Settings Tab > Config Variables`. You can find these information on your project's Heroku dashboard. On the same page, you'll also find a command which allows you to launch psql, you can use it to initialize your database.
+
+## Random
+
+1. Why Node.js?
+
+    Node.js is easy to set up on all platforms. For a project of this size, performance doesn't really matter. Plus the majority of application is really just displaying information from databases.
+
+2. Why Nuxt.js (Vue.js)?
+    
+    Vue.js is very easy to learn, and is as powerful as other popular alternatives (like React) once you know how to use it.  Nuxt.js makes it so that you can focus on making the content of your website and provides additional benefits like server side rendering.
+
+3. Why is the website so ugly?
+
+    It doesn't use any CSS libraries (like Bootstrap and Semantic UI); this was to improve performance by reducing amount of data that's needed to be transfered over the internet.  As is, the layout is quite responsive and delivers consistent user experience on desktop and mobile.
+    
