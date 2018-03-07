@@ -35,15 +35,14 @@ Before you install Postgres DBMS on your machine, you might want to consider run
 ### Windows
 
     1. Install Postgres using the GUI installer
-        - *SKIP* If you are going to use ElephantSQL, continue to 2.
+        - *SKIP* If you are going to use ElephantSQL, continue to 2. But read Running Postgres Server with ElephantSQL first.
         - https://www.postgresql.org/
         - Choose all default options
         - When prompt for password, enter `postgres`
-    2. Setup the database locally
-        - Use pgAdmin to access postgres graphically
-        - Right-click on Databases node, and create a database called `Demo`
-        - Right-click on the new `Demo` node and select `Query Tool`
-        - This will bring up a place where you can execute SQL statements
+    2. Setup the database locally/remotely
+        - Use pgAdmin to access postgres graphically or use the web console
+        - [Local] Right-click on Databases node, and create a database called `Demo`
+        - [Local] Right-click on the new `Demo` node and select `Query Tool`, this will bring up a place where you can execute SQL statements
         - Copy-paste db/CreateUsersTable.sql and execute
         - This will create a `Users` table and insert two fake users
         - Verify by running SELECT * FROM Users
@@ -51,11 +50,10 @@ Before you install Postgres DBMS on your machine, you might want to consider run
         - https://nodejs.org/en/
         - Choose the latest version, which should be v8.7.0
         - Choose all default options
-    4. [Optional] Install `vue-cli`
-        - https://github.com/vuejs/vue
-        - Vue-cli is a npm module which allows you to quickly get started with vue
-        - In PowerShell run `npm install -g vue-cli`
-        - The -g option says that the module will be installed globally
+    4. [Optional] Install Git for Windows
+        - Installing Git for Windows lets you run the commands in this document as is
+        - You can also use PowerShell, but you'll need to change the way environment variables are set in `env_setup`
+        - There should be a context menu option for launching Git Bash, use that
     5. Clone starter code from https://github.com/belinghy/cpsc304-project-starter
         - Uses `nuxt-express` template internally
         - Nuxt.js is a module built on top of Vue.js
@@ -98,7 +96,7 @@ If you are not already familiar with Heroku, it is recommended that you use Elep
 
 ElephantSQL (https://www.elephantsql.com/plans.html) provides Postgres as a service. The free tier allows 20 MB of data and 5 concurrent connections, which is more than enough for the purpose of the course project. Signing up is extremely easy and it even provides a web console from running SQL commands -- All you need to do is to copy your database script (i.e. `db/CreateUsersTable.sql`) into the console and execute.
 
-Again, you need to modify `env_setup` file to get the UI to connect to your remote Postgres server. Everytime after you modify this file or if you restart your shell, you should run `source env_setup` in your terminal to set environment variables.
+Again, you need to modify `env_setup` file to get the UI to connect to your remote Postgres server. Everytime after you modify this file or if you restart your shell, you should run `source env_setup` in your terminal to set environment variables. If you are running on Windows, you can set environment variables like `$env:DB_NAME = "Demo"`, instead of `export DB_NAME=Demo` etc.
 
 ### Deploying Node.js UI to Zeit Now (Recommended)
 
