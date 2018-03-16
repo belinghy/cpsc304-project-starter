@@ -90,13 +90,13 @@ We use [backpack](https://github.com/palmerhq/backpack) to watch and build the a
 
 ## Deploying to Remote Servers
 
-If you are not already familiar with Heroku, it is recommended that you use ElephantSQL + Now over Heroku (In my opinion it's the easier route). If you are familiar with Heroku, you are encouraged to try out new things. Nevertheless, it is possible to deploy
+If you are not already familiar with Heroku, it is recommended that you use ElephantSQL + Now over Heroku (In my opinion it's the easier route). If you are familiar with Heroku, you are encouraged to try out new things. Nevertheless, it is possible to deploy to either.
 
 ### Running Postgres Server with ElephantSQL (Recommended)
 
 ElephantSQL (https://www.elephantsql.com/plans.html) provides Postgres as a service. The free tier allows 20 MB of data and 5 concurrent connections, which is more than enough for the purpose of the course project. Signing up is extremely easy and it even provides a web console from running SQL commands -- All you need to do is to copy your database script (i.e. `db/CreateUsersTable.sql`) into the console and execute.
 
-Again, you need to modify `env_setup` file to get the UI to connect to your remote Postgres server. Everytime after you modify this file or if you restart your shell, you should run `source env_setup` in your terminal to set environment variables. If you are running on Windows, you can set environment variables like `$env:DB_NAME = "Demo"`, instead of `export DB_NAME=Demo` etc.
+Again, you need to modify `env_setup` file to get the UI to connect to your remote Postgres server. Every time after you modify this file or if you restart your shell, you should run `source env_setup` in your terminal to set environment variables. If you are using PowerShell on Windows, you can set environment variables like `$env:DB_NAME = "Demo"`, instead of `export DB_NAME=Demo` etc.
 
 ### Deploying Node.js UI to Zeit Now (Recommended)
 
