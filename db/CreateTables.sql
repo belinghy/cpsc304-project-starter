@@ -219,6 +219,7 @@ INSERT intO Referrals(patientid, doctorid, referraldoctorid, referralDate)
 VALUES	(123,77,78, TO_DATE('02/06/2017', 'MM/MDD/YYYY'));
 
 
+
 -- /**
 -- ** Build Appointments Rows
 --  */
