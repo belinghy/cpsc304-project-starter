@@ -1,25 +1,36 @@
+/* eslint-disable */
 import { Router } from 'express'
 var connection = require('../configs/sequelize')
 const bodyParser = require('body-parser')
 
 const router = Router()
 
+// /* GET users listing. */
+// router.get('/users', function (req, res, next) {
+//   const query = 'SELECT * FROM Users;'
+//   connection.query(query, { type: connection.QueryTypes.SELECT })
+//     .then(users => {
+//       console.log(users)
+//       res.json(users)
+//     })
+// })
+
 /* GET users listing. */
 router.get('/users', function (req, res, next) {
-  const query = 'SELECT * FROM Users;'
-  connection.query(query, { type: connection.QueryTypes.SELECT })
-    .then(users => {
-      console.log(users)
-      res.json(users)
-    })
+    const query = 'SELECT * FROM patient;'
+    connection.query(query, { type: connection.QueryTypes.SELECT })
+        .then(users => {
+            console.log(users)
+            res.json(users)
+        })
 })
 
 /* GET user by ID. */
 router.get('/users/:username', function (req, res, next) {
   const username = req.params.username
   const query = 'SELECT * FROM Users WHERE username = :username ;'
-  connection.query(query, 
-    { 
+  connection.query(query,
+    {
       type: connection.QueryTypes.SELECT,
       replacements: {
         username: username
@@ -73,6 +84,31 @@ router.post('/users/add', bodyParser.json(), function (req, res, next) {
       // result[1] is the number of rows changed
       res.send('/users')
     })
+})
+
+router.post('/users/addPatient', bodyParser.json(), function (req, res, next) {
+    const patientname = req.body.data.patientname;
+    const age = req.body.data.age;
+    const address = req.body.data.address;
+    const phonenum = req.body.data.phonenum;
+    const gender = req.body.data.gender;
+
+    const query = 'INSERT INTO patient (age, address, patientname, gender, phonenum) VALUES (:age, :address, :patientname, :gender, :phonenum) ;';
+    connection.query(query,
+        {
+            type: connection.QueryTypes.INSERT,
+            replacements: {
+                patientname: patientname,
+                age: age,
+                address: address,
+                phonenum: phonenum,
+                gender: gender,
+            }
+        })
+        .then(result => {
+            // result[1] is the number of rows changed
+            res.send('/users')
+        })
 })
 
 export default router
