@@ -34,7 +34,7 @@ CREATE TABLE Specialist (
           ON DELETE CASCADE);
 
 CREATE TABLE Patient(
-    patientid int,
+    patientid SERIAL,
     age int,
     address varchar(300),
     patientname varchar(100),
