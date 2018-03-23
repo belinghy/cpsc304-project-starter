@@ -1,12 +1,12 @@
-drop table Referrals;
-drop table Appointments;
-drop table Prescription;
-drop table Medication;
-drop table Creates_Record;
-drop table Patient;
-drop table Specialist;
-drop table Doctor;
-drop table Location;
+DROP TABLE IF EXISTS Referrals;
+DROP TABLE IF EXISTS Appointments;
+DROP TABLE IF EXISTS Prescription;
+DROP TABLE IF EXISTS Medication;
+DROP TABLE IF EXISTS Creates_Record;
+DROP TABLE IF EXISTS Patient;
+DROP TABLE IF EXISTS Specialist;
+DROP TABLE IF EXISTS Doctor;
+DROP TABLE IF EXISTS Location;
 
 CREATE TABLE Location(
     address varchar(300),

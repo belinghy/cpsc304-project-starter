@@ -1,23 +1,22 @@
 <template>
   <section class="container">
     <div>
-    <Logo />
       <h1 class="title">
-        Demo Project
+        Login here
       </h1>
       <div class="links">
-        <nuxt-link class="button--grey link" style="margin-left: 15px;" to="/users">View Users</nuxt-link>
+        <nuxt-link class="button--grey link" style="margin-left: 15px;" to="/patient">Patient</nuxt-link>
+        <nuxt-link class="button--grey link" style="margin-left: 15px;" to="/doctor">Doctor</nuxt-link>
+        <nuxt-link class="button--grey link" style="margin-left: 15px;" to="/admin">Admin</nuxt-link>
       </div>
     </div>
   </section>
 </template>
 
 <script>
-import Logo from '~/components/Logo.vue'
 
 export default {
   components: {
-    Logo
   }
 }
 </script>
