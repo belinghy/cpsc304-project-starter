@@ -1,31 +1,34 @@
 <template>
     <section class="user-view">
         <div class="content">
-            <div class="subsection">
-                <form style="margin: 15px 15px;">
-                    <div style="margin: 10px 0;">
-                        <span class="patient-patientname">Name: </span>
-                        <input type="text" v-model="patientname"/>
-                    </div>
-                    <div style="margin: 10px 0;">
-                        <span class="patient-age">Age: </span>
-                        <input type="number" v-model="age"/>
-                    </div>
-                    <div style="margin: 10px 0;">
-                        <span class="patient-address">Address: </span>
-                        <input type="text" v-model="address"/>
-                    </div>
-                    <div style="margin: 10px 0;">
-                        <span class="patient-phonenum">Phone Number: </span>
-                        <input type="text" v-model="phonenum"/>
-                    </div>
-                    <div style="margin: 10px 0;">
-                        <span class="patient-gender">Gender: </span>
-                        <input type="text" v-model="gender"/>
-                    </div>
-                </form>
-                <button type="button" class="button--grey" @click="submitInsert">Add Patient</button>
-            </div>
+            <button type="button" class="button--grey" v-on:click='show = !show' >Add Patient</button>
+            <transition name="expand">
+                <div class="subsection" v-if="show" >
+                    <form style="margin: 15px 15px;">
+                        <div style="margin: 10px 0;">
+                            <span class="patient-patientname">Name: </span>
+                            <input type="text" v-model="patientname"/>
+                        </div>
+                        <div style="margin: 10px 0;">
+                            <span class="patient-age">Age: </span>
+                            <input type="number" v-model="age"/>
+                        </div>
+                        <div style="margin: 10px 0;">
+                            <span class="patient-address">Address: </span>
+                            <input type="text" v-model="address"/>
+                        </div>
+                        <div style="margin: 10px 0;">
+                            <span class="patient-phonenum">Phone Number: </span>
+                            <input type="text" v-model="phonenum"/>
+                        </div>
+                        <div style="margin: 10px 0;">
+                            <span class="patient-gender">Gender: </span>
+                            <input type="text" v-model="gender"/>
+                        </div>
+                    </form>
+                    <button type="button" class="button--grey" @click="submitInsert">Add Patient</button>
+                </div>
+            </transition>
         </div>
     </section>
 </template>
@@ -37,6 +40,7 @@ export default {
 
   data () {
     return {
+      show: false,
       patientname: '',
       age: '',
       address: '',
@@ -112,5 +116,19 @@ export default {
             text-decoration underline
         &:hover
             color #515ec4
+
+    .expand-enter-active, .expand-leave-active {
+        transition: all .3s ease;
+        height: 30px;
+        padding: 10px;
+        background-color: #eee;
+        overflow: hidden;
+      }
+    .expand-enter, .expand-leave-to /* .fade-leave-active below version 2.1.8 */ {
+        height: 0;
+        padding: 0 10px;
+        opacity: 0;
+    }
+
 
 </style>
