@@ -24,8 +24,6 @@ router.get('/patient/appointments/:patientid', function (req, res, next) {
 router.post('/patient/makeAppointment/:patientid', bodyParser.json(), function (req, res, next) {
     const patientid = req.params.patientid
     const doctorid = req.body.data.doctorid
-    const date = req.body.data.date
-    const booktime = req.body.data.booktime
     const datetime = req.body.data.date + ' ' + req.body.data.booktime
     const duration = req.body.data.duration
     const timeFormat = "YYYY/MM/DD HH24:MI"
@@ -36,8 +34,6 @@ router.post('/patient/makeAppointment/:patientid', bodyParser.json(), function (
         replacements: {
             patientid: patientid,
             doctorid: doctorid,
-            date: date,
-            booktime: booktime,
             datetime: datetime,
             duration: duration,
             timeFormat: timeFormat

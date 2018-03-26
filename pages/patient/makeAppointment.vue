@@ -1,31 +1,36 @@
 <template>
     <transition name="expand">
-        <section class="users-view" v-if="show">
-                <form style="margin: 15px 15px;">
-                    <div style="margin: 10px 0;">
-                        <span class="doctor-doctorid">Doctor </span>
-                        <select v-model="doctorid">
-                            {{doctors[0].doctorname}}
-                            <option disabled value="">Please select one</option>
-                            <option v-for="doctor in doctors" v-bind:value="doctor.doctorid">
-                                {{doctor.doctorname}}
-                            </option>
-                        </select>
-                    </div>
-                    <div style="margin: 10px 0;">
+        <section class="users-view" v-if="show" >
+            <form style="padding: 10px 20px; margin: 0 25px; position: relative;">
+                <div style="margin: 10px 0;">
+                    <span class="doctor-doctorid">Choose Doctor </span>
+                    <select v-model="doctorid">
+                        {{doctors[0].doctorname}}
+                        <option disabled value="">Please select one</option>
+                        <option v-for="doctor in doctors" v-bind:value="doctor.doctorid">
+                            {{doctor.doctorname}}
+                        </option>
+                    </select>
+                </div>
+                <transition name="expand">
+                    <div style="margin: 10px 0;" v-if="doctorid">
                         <span class="appointment-date">Date </span>
                         <input type="date" v-model="date"/>
                     </div>
-                    <div style="margin: 10px 0;">
-                        <span class="appointment-time">Time </span>
-                        <input type="time" v-model="booktime"/>
+                </transition>
+                <transition name="expand">
+                    <div style="margin: 10px 0;" v-if="date" >
+                        <span class="appointment-time">Available Times </span>
+                        <div v-for="time in appointmentTimes" style="margin: 10px 0;">
+                            <input type="radio" :id="time.time" :value="time.time" v-model="booktime" />
+                            <label :for="time.time" style="padding: 10px">{{time.time}}</label>
+                        </div>
                     </div>
-                    <div style="margin: 10px 0;">
-                        <span class="appointment-duration">Duration (hours): </span>
-                        <input type="number" min="1" max="3" v-model="duration"/>
-                    </div>
-                </form>
-                <button type="button" class="button--grey" @click="submitInsert">Book</button>
+                </transition>
+            </form>
+            <transition name="expand">
+                <button type="button" class="button--grey" @click="submitInsert" v-if="booktime" style="padding: 10px 20px; margin: 0 25px; position: relative;">Book</button>
+            </transition>
         </section>
     </transition>
 </template>
@@ -40,7 +45,21 @@
           doctorid: '',
           date: '',
           booktime: '',
-          duration: ''
+          duration: 1,
+          appointmentTimes: [{time: '09:00:00'}, {time: '10:00:00'}, {time: '11:00:00'}, {time: '12:00:00'}, {time: '01:00:00'}, {time: '02:00:00'}, {time: '03:00:00'}, {time: '04:00:00'}]
+        }
+      },
+
+      watch: {
+        date: function (val) {
+          axios.get('/api/doctor/appointments/' + this.doctorid + '/' + val).then((res) => {
+            for (var time in res.data) {
+              var index = this.appointmentTimes.findIndex(value => value.time === res.data[time].appointmentdatetime)
+              if (index !== -1) {
+                this.appointmentTimes.splice(index, 1)
+              }
+            }
+          })
         }
       },
 

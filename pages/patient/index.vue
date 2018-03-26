@@ -2,17 +2,15 @@
     <section class="users-view">
         <div class="content">
             <div class="subsection">
-                <div class="subsection">
-                    <H3>
-                        Appointments
-                        <button type="button" v-on:click='show = !show' >new</button>
-                    </H3>
-                </div>
+                <H3 >
+                    Appointments
+                    <button type="button" v-on:click='show = true' >new</button>
+                </H3>
                 <makeAppointment :show="show" :doctors="doctors"/>
                 <ul style="list-style-type: none; padding: 0; margin: 0;">
                     <li v-for="(appointment, appointmentdatetime) in appointments" :key="appointmentdatetime" style="padding: 10px 20px; margin: 0 25px; position: relative;">
-                        {{ 'Appointment with ' + appointment.doctorname + ' on ' + appointment.appointmentdatetime +  ' for '+ appointment.duration + 'hour'}}
-                        <button type="button" v-on:click='cancel(appointment.appointmentdatetime )' style="float: right;">cancel</button>
+                        {{ appointment.duration + ' hour appointment with ' + appointment.doctorname + ' on ' + appointment.appointmentdatetime}}
+                        <button type="button" v-on:click='cancel(appointment.appointmentdatetime )' >cancel</button>
                     </li>
                 </ul>
             </div>
