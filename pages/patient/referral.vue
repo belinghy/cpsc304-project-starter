@@ -1,18 +1,30 @@
 <template>
     <section class="users-view">
         <div class="content">
+            <h1 class = "title"> Referrals </h1>
             <div class="subsection">
-                <div class="links">
-                    <nuxt-link class="button--grey link" style="margin-left: 15px;" to="/patient/prescription">My Prescriptions</nuxt-link>
-                    <nuxt-link class="button--grey link" style="margin-left: 15px;" to="/patient/referral">My Referrals</nuxt-link>
-                </div>
+                <ul>
+                    <li v-for="referral in referralsAndDoctors.referrals">
+                        You were referred by Dr.{{referral.referredBy}} to  Dr.{{referral.referredTo}}
+                    </li>
+                </ul>
             </div>
         </div>
     </section>
 </template>
 
 <script>
+    import axios from '~/plugins/axios'
     export default {
+      async asyncData () {
+        let { data } = await axios.get('/api/patient/referral')
+        return {referralsAndDoctors: data}
+      },
+      head () {
+        return {
+          show: false
+        }
+      }
     }
 </script>
 
