@@ -21,24 +21,6 @@ router.get('/patient/appointments/:patientid', function (req, res, next) {
         })
 })
 
-router.get('/patient/appointments/:patientid/:appointmentdatetime', function (req, res, next) {
-    const patientid = req.params.patientid
-    const appointmentdatetime = req.params.appointmentdatetime
-    const timeFormat = "YYYY/MM/DD HH24:MI"
-    const query = 'SELECT * FROM Appointments WHERE patientid = :patientid AND appointmentdatetime = :appointmentdatetime;'
-    connection.query(query, {
-        type: connection.QueryTypes.SELECT,
-        replacements: {
-            patientid: patientid,
-            appointmentdatetime: appointmentdatetime,
-            timeFormat: timeFormat
-        }
-    })
-        .then(users => {
-            res.json(users)
-        })
-})
-
 router.post('/patient/makeAppointment/:patientid', bodyParser.json(), function (req, res, next) {
     const patientid = req.params.patientid
     const doctorid = req.body.data.doctorid
