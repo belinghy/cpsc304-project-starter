@@ -2,11 +2,17 @@
     <section class="users-view">
         <div class="content">
             <div class="subsection">
-                <button type="button" class="button--grey" v-on:click='show = !show' >Make Appointment</button>
-                <makeAppointment :show="show"/>
+                <div class="subsection">
+                    <H3>
+                        Appointments
+                        <button type="button" v-on:click='show = !show' >new</button>
+                    </H3>
+                </div>
+                <makeAppointment :show="show" :doctors="doctors"/>
                 <ul style="list-style-type: none; padding: 0; margin: 0;">
                     <li v-for="(appointment, appointmentdatetime) in appointments" :key="appointmentdatetime" style="padding: 10px 20px; margin: 0 25px; position: relative;">
-                        {{ 'Appointment with ' + appointment.doctorname + ' on ' +appointment.appointmentdatetime +  ' for '+ appointment.duration + 'hour'}}
+                        {{ 'Appointment with ' + appointment.doctorname + ' on ' + appointment.appointmentdatetime +  ' for '+ appointment.duration + 'hour'}}
+                        <button type="button" v-on:click='cancel(appointment.appointmentdatetime )' style="float: right;">cancel</button>
                     </li>
                 </ul>
             </div>
@@ -19,13 +25,30 @@
     import makeAppointment from './makeAppointment'
 
     export default {
+
       async asyncData () {
-        let { data } = await axios.get('/api/patient/appointments/143')
-        return { appointments: data }
+        let appointmentData = await axios.get('/api/patient/appointments/143')
+        let doctorData = await axios.get('/api/doctors')
+        return { appointments: appointmentData.data, doctors: doctorData.data }
       },
 
       components: {
         'makeAppointment': makeAppointment
+      },
+    
+      methods: {
+        cancel (datetime) {
+          axios.post('/api/patient/cancelAppointment/143', {
+            headers:
+                    {
+                      'Content-Type': 'application/json'
+                    },
+            data:
+                    {
+                      datetime: datetime
+                    }})
+          self.$nuxt.$router.go({ path: '/patient', force: true })
+        }
       },
 
       data () {

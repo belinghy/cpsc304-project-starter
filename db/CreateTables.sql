@@ -224,15 +224,15 @@ VALUES	(123,77,78, TO_DATE('02/06/2017', 'MM/DD/YYYY'));
 ** Build Appointments Rows
  */
 INSERT intO Appointments(patientid, doctorid, appointmentDateTime, duration)
-VALUES	(128,77, TO_TIMESTAMP('01/02/2017 12:00:00', 'MM/DD/YYYY HH24:MI:SS') ,1);
+VALUES	(128,77, TO_TIMESTAMP('01/02/2017 12:00', 'MM/DD/YYYY HH24:MI') ,1);
 INSERT intO Appointments(patientid, doctorid, appointmentDateTime, duration)
-VALUES	(128,77, TO_TIMESTAMP('04/28/2017 12:00:00', 'MM/DD/YYYY HH24:MI:SS'),1);
+VALUES	(128,77, TO_TIMESTAMP('04/28/2017 12:00', 'MM/DD/YYYY HH24:MI'),1);
 INSERT intO Appointments(patientid, doctorid, appointmentDateTime, duration)
-VALUES	(143, 78, TO_TIMESTAMP('10/22/2016 12:00:00', 'MM/DD/YYYY HH24:MI:SS'),1);
+VALUES	(143, 78, TO_TIMESTAMP('10/22/2016 12:00', 'MM/DD/YYYY HH24:MI'),1);
 INSERT intO Appointments(patientid, doctorid, appointmentDateTime, duration)
-VALUES	(143, 78, TO_TIMESTAMP('02/01/2018 12:00:00', 'MM/DD/YYYY HH24:MI:SS'),1);
+VALUES	(143, 78, TO_TIMESTAMP('02/01/2018 12:00', 'MM/DD/YYYY HH24:MI'),1);
 INSERT intO Appointments(patientid, doctorid, appointmentDateTime, duration)
-VALUES	(153, 78, TO_TIMESTAMP('02/06/2017 12:00:00', 'MM/DD/YYYY HH24:MI:SS'),2);
+VALUES	(153, 78, TO_TIMESTAMP('02/06/2017 12:00', 'MM/DD/YYYY HH24:MI'),2);
 
 
 

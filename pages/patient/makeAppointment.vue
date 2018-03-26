@@ -1,11 +1,16 @@
 <template>
     <transition name="expand">
         <section class="users-view" v-if="show">
-
                 <form style="margin: 15px 15px;">
                     <div style="margin: 10px 0;">
-                        <span class="patient-patientname">Doctor ID: </span>
-                        <input type="text" v-model="doctorname"/>
+                        <span class="doctor-doctorid">Doctor </span>
+                        <select v-model="doctorid">
+                            {{doctors[0].doctorname}}
+                            <option disabled value="">Please select one</option>
+                            <option v-for="doctor in doctors" v-bind:value="doctor.doctorid">
+                                {{doctor.doctorname}}
+                            </option>
+                        </select>
                     </div>
                     <div style="margin: 10px 0;">
                         <span class="appointment-date">Date </span>
@@ -13,11 +18,11 @@
                     </div>
                     <div style="margin: 10px 0;">
                         <span class="appointment-time">Time </span>
-                        <input type="time" f v-model="booktime"/>
+                        <input type="time" v-model="booktime"/>
                     </div>
                     <div style="margin: 10px 0;">
                         <span class="appointment-duration">Duration (hours): </span>
-                        <input type="number" v-model="duration"/>
+                        <input type="number" min="1" max="3" v-model="duration"/>
                     </div>
                 </form>
                 <button type="button" class="button--grey" @click="submitInsert">Book</button>
@@ -29,16 +34,17 @@
     import axios from '~/plugins/axios'
 
     export default {
+
       data () {
         return {
-          doctorname: '',
+          doctorid: '',
           date: '',
           booktime: '',
           duration: ''
         }
       },
 
-      props: ['show'],
+      props: ['show', 'doctors'],
 
       methods: {
         submitInsert () {
@@ -51,18 +57,15 @@
                         },
             data:
                         {
-                          doctorname: self.doctorname,
+                          doctorid: self.doctorid,
                           date: self.date,
                           booktime: self.booktime,
                           duration: self.duration
                         }})
             .catch((e) => {
               console.log(e)
-              self.$nuxt.$router.go({ path: '/patient', force: true })
             })
-            .then(() => {
-              self.$nuxt.$router.go({ path: '/patient', force: true })
-            })
+          self.$nuxt.$router.go({ path: '/patient', force: true })
         }
       }
     }
