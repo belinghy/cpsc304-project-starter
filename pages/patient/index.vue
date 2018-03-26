@@ -8,9 +8,11 @@
                 </H3>
                 <makeAppointment :show="show" :doctors="doctors"/>
                 <ul style="list-style-type: none; padding: 0; margin: 0;">
-                    <li v-for="(appointment, appointmentdatetime) in appointments" :key="appointmentdatetime" style="padding: 10px 20px; margin: 0 25px; position: relative;">
-                        {{ appointment.duration + ' hour appointment with ' + appointment.doctorname + ' on ' + appointment.appointmentdatetime}}
-                        <button type="button" v-on:click='cancel(appointment.appointmentdatetime )' >cancel</button>
+                    <li v-for="(appointment, appointmentdatetime) in appointments" :key="appointmentdatetime" style="padding: 10px 20px; margin: 0 25px; position: relative; display: flex;">
+                        {{ appointment.duration + ' hour appointment with ' + appointment.doctorname + ' on ' + appointment.appointmentdatetime }}
+                        {{'at ' + appointment.address}}
+                        <button type="button" class="button--grey" v-on:click='update(appointment.doctorid, appointment.date)' style="flex: 10%">update</button>
+                        <button type="button" class="button--grey" v-on:click='cancel(appointment.appointmentdatetime )' style="flex: 10%">cancel</button>
                     </li>
                 </ul>
             </div>
@@ -35,6 +37,11 @@
       },
     
       methods: {
+        update (doctorid, date) {
+          this.$store.commit('setDoctorID', doctorid)
+          this.$store.commit('setAppointmentDate', date)
+          self.$nuxt.$router.replace({ path: '/patient/appointment' })
+        },
         cancel (datetime) {
           axios.post('/api/patient/cancelAppointment/143', {
             headers:

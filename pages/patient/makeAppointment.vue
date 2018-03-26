@@ -21,15 +21,17 @@
                 <transition name="expand">
                     <div style="margin: 10px 0;" v-if="date" >
                         <span class="appointment-time">Available Times </span>
-                        <div v-for="time in appointmentTimes" style="margin: 10px 0;">
-                            <input type="radio" :id="time.time" :value="time.time" v-model="booktime" />
-                            <label :for="time.time" style="padding: 10px">{{time.time}}</label>
-                        </div>
+                        <select v-model="booktime">
+                            <option disabled value="">select time</option>
+                            <option v-for="time in appointmentTimes" v-bind:value="time.time">
+                                {{time.time}}
+                            </option>
+                        </select>
                     </div>
                 </transition>
             </form>
             <transition name="expand">
-                <button type="button" class="button--grey" @click="submitInsert" v-if="booktime" style="padding: 10px 20px; margin: 0 25px; position: relative;">Book</button>
+                <button type="button" class="button--grey" @click="submitInsert" v-if="booktime" style="padding: 10px 20px; margin: 0 45px; position: relative;">Book</button>
             </transition>
         </section>
     </transition>
@@ -46,7 +48,7 @@
           date: '',
           booktime: '',
           duration: 1,
-          appointmentTimes: [{time: '09:00:00'}, {time: '10:00:00'}, {time: '11:00:00'}, {time: '12:00:00'}, {time: '01:00:00'}, {time: '02:00:00'}, {time: '03:00:00'}, {time: '04:00:00'}]
+          appointmentTimes: [{time: '09:00:00'}, {time: '10:00:00'}, {time: '11:00:00'}, {time: '12:00:00'}, {time: '13:00:00'}, {time: '14:00:00'}, {time: '15:00:00'}, {time: '16:00:00'}]
         }
       },
 
