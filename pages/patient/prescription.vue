@@ -1,7 +1,13 @@
 <template>
     <section class="users-view">
         <div class="content">
+            <h1 class = "title"> PRESCRIPTIONS </h1>
             <div class="subsection">
+                <ul>
+                    <li v-for="prescription in prescriptions">
+                        {{prescription.medicationname}} {{prescription.patientid}}
+                    </li>
+                </ul>
             </div>
         </div>
     </section>
@@ -11,12 +17,12 @@
     import axios from '~/plugins/axios'
     export default {
       async asyncData () {
-        let { data } = await axios.get('/patient/prescription')
+        let { data } = await axios.get('/api/patient/prescription')
         return { prescriptions: data }
       },
       head () {
         return {
-          title: 'Prescriptions'
+          show: false
         }
       }
     }

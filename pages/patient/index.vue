@@ -2,6 +2,9 @@
     <section class="users-view">
         <div class="content">
             <div class="subsection">
+                <div class="links">
+                    <nuxt-link class="button--grey link" style="margin-left: 15px;" to="/patient/prescription">Prescriptions</nuxt-link>
+                </div>
             </div>
         </div>
     </section>
