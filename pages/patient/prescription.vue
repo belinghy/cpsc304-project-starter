@@ -5,7 +5,7 @@
             <div class="subsection">
                 <ul>
                     <li v-for="prescription in prescriptions">
-                        {{prescription.medicationname}} {{prescription.patientid}}
+                        {{prescription.medicationname}} {{prescription.dosage}}
                     </li>
                 </ul>
             </div>
