@@ -5,7 +5,7 @@
     <form style="margin: 15px 15px;">
       <div style="margin: 10px 0;">
         <span class="user-username">Username: </span>
-        <input type="text" v-model="username"></input>
+        <input type="text"  v-model="username"></input>
       </div>
       <div style="margin: 10px 0;">
         <span class="user-password">Password: </span>

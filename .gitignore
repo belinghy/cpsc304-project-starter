@@ -17,3 +17,4 @@ build
 env_setup
 
 .idea/*
+*.json

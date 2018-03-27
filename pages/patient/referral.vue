@@ -1,11 +1,11 @@
 <template>
     <section class="users-view">
         <div class="content">
-            <h1 class = "title"> PRESCRIPTIONS </h1>
+            <h1 class = "title"> Referrals </h1>
             <div class="subsection">
                 <ul>
-                    <li v-for="prescription in prescriptions">
-                        {{prescription.medicationname}} {{prescription.dosage}}
+                    <li v-for="referral in referralsAndDoctors.referrals">
+                        You were referred by Dr.{{referral.referredBy}} to  Dr.{{referral.referredTo}}
                     </li>
                 </ul>
             </div>
@@ -17,8 +17,8 @@
     import axios from '~/plugins/axios'
     export default {
       async asyncData () {
-        let { data } = await axios.get('/api/patient/prescription')
-        return { prescriptions: data }
+        let { data } = await axios.get('/api/patient/referral')
+        return {referralsAndDoctors: data}
       },
       head () {
         return {
