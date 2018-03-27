@@ -6,7 +6,7 @@
       </h1>
       <div class="links">
         <nuxt-link class="button--grey link" style="margin-left: 15px;" to="/patient">Patient</nuxt-link>
-        <nuxt-link class="button--grey link" style="margin-left: 15px;" to="/doctor">Doctor</nuxt-link>
+        <nuxt-link class="button--grey link" style="margin-left: 15px;" to="/doctor/">Doctor</nuxt-link>
         <nuxt-link class="button--grey link" style="margin-left: 15px;" to="/admin">Admin</nuxt-link>
       </div>
     </div>

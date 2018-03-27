@@ -3,15 +3,12 @@
         <div class="content">
             <div class="subsection">
                 <div style="margin: 25px 10px;">
-                    <span class="subsection-title" style="vertical-align: middle;">Patients in Database</span>
-                    <nuxt-link class="button--grey" style="padding: 5px 20px; text-decoration: none;" to="/users/addPatient">Add Patient</nuxt-link>
+                    <span v-if="dosages"class="subsection-title" style="vertical-align: middle;">{{dosages[0].patientname}}</span>
                 </div>
                 <ul style="list-style-type: none; padding: 0; margin: 0;">
-                    <li v-for="(patient, patientid) in patients" :key="patientid" style="padding: 10px 20px; margin: 0 25px; position: relative;">
-                        <nuxt-link :to="{ path: `/doctor/${patient.patientid}`, params: { username: patient.patientid }}">
-                            {{'Patient Name: '+ patient.patientname }} <br>
-                            {{'Patient ID: '+ patient.patientid }}
-                        </nuxt-link>
+                    <li v-for="(patient, patientid) in dosages" :key="patientid" style="padding: 10px 20px; margin: 0 25px; position: relative;">
+                        {{'Medication Name: ' + patient.medicationname}} <br>
+                        {{'Dosage: ' + patient.max}}
                     </li>
                 </ul>
             </div>
@@ -20,20 +17,27 @@
 </template>
 
 <script>
-import axios from '~/plugins/axios'
+    import axios from '~/plugins/axios'
 
-export default {
-  async asyncData () {
-    let { data } = await axios.get('/api/doctor')
-    return { patients: data }
-  },
+    export default {
 
-  head () {
-    return {
-      title: 'Users'
+      name: 'username',
+      asyncData ({ params, error }) {
+        return axios.get('/api/doctor/dosages')
+          .then((res) => {
+            console.log(res.data)
+            return { dosages: res.data }
+          })
+          .catch((e) => {
+            error({ statusCode: 404, message: 'User not found' })
+          })
+      },
+      head () {
+        return {
+          title: `Patient dosages`
+        }
+      }
     }
-  }
-}
 </script>
 
 <style lang="stylus" scoped>
