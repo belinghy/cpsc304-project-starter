@@ -4,8 +4,10 @@
             <h1 class = "title"> PRESCRIPTIONS </h1>
             <div class="subsection">
                 <ul>
-                    <li v-for="prescription in prescriptions">
-                        {{prescription.medicationname}} {{prescription.dosage}}
+                    <li v-for="prescription in prescriptionsAndDoctors.prescriptions">
+                        Prescribed by: {{prescription.prescribedBy}}<br>
+                        Prescription: {{prescription.medicationname}}<br>
+                        Dosage: {{prescription.dosage}} <br><br><br>
                     </li>
                 </ul>
             </div>
@@ -18,7 +20,7 @@
     export default {
       async asyncData () {
         let { data } = await axios.get('/api/patient/prescription')
-        return { prescriptions: data }
+        return { prescriptionsAndDoctors: data }
       },
       head () {
         return {
