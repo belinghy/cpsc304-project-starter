@@ -14,7 +14,7 @@ SELECT + attribute
 
 -- TODO Division query
 
-test edit
+test edit 2
 
 
 -- TODO Aggregation query
