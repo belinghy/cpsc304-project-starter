@@ -7,10 +7,10 @@
   "scripts": {
     "precommit": "npm run lint",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
-    "dev": "nuxt",
-    "build": "nuxt build",
-    "start": "nuxt start",
-    "heroku-postbuild": "npm run build"
+    "heroku-postbuild": "npm run build",
+    "dev": "backpack dev && nuxt",
+    "build": "nuxt build && backpack build",
+    "start": "nuxt start"
   },
   "dependencies": {
     "@nuxtjs/pwa": "^1.0.2",
