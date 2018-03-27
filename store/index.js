@@ -4,7 +4,8 @@ const createStore = () => {
   return new Vuex.Store({
     state: {
       doctorid: null,
-      appointmentDate: null
+      appointmentDate: null,
+      appointmentTime: null
     },
     mutations: {
       setDoctorID (state, data) {
@@ -12,6 +13,9 @@ const createStore = () => {
       },
       setAppointmentDate (state, data) {
         state.appointmentDate = data
+      },
+      setAppointmentTime (state, data) {
+        state.appointmentTime = data
       }
     },
     getters: {
@@ -20,6 +24,9 @@ const createStore = () => {
       },
       getAppointmentDate: state => {
         return state.appointmentDate
+      },
+      getAppointmentTime: state => {
+        return state.appointmentTime
       }
     }
   })

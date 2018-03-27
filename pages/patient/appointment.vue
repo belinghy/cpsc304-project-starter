@@ -37,11 +37,16 @@
         let doctorData = await axios.get('/api/doctors')
         return { doctors: doctorData.data }
       },
+      beforeCreate () {
+        if (this.$store.getters.getDoctorID === null || this.$store.getters.getAppointmentDate === null) {
+          this.$nuxt.$router.replace({ path: '/patient' })
+        }
+      },
       data () {
         return {
           doctorid: this.$store.getters.getDoctorID || '',
           date: this.$store.getters.getAppointmentDate || '',
-          booktime: '',
+          booktime: this.$store.getters.getAppointmentTime || '',
           duration: 1,
           appointmentTimes: [{time: '09:00:00'}, {time: '10:00:00'}, {time: '11:00:00'}, {time: '12:00:00'}, {time: '13:00:00'}, {time: '14:00:00'}, {time: '15:00:00'}, {time: '16:00:00'}]
         }
@@ -50,21 +55,23 @@
         update () {
           let self = this
 
-          // axios.post('/api/patient/updateAppointment/143', {
-          //   headers:
-          //           {
-          //             'Content-Type': 'application/json'
-          //           },
-          //   data:
-          //           {
-          //             doctorid: self.doctorid,
-          //             date: self.date,
-          //             booktime: self.booktime,
-          //             duration: self.duration
-          //           }})
-          //   .catch((e) => {
-          //     console.log(e)
-          //   })
+          axios.post('/api/patient/updateAppointment/143', {
+            headers:
+                    {
+                      'Content-Type': 'application/json'
+                    },
+            data:
+                    {
+                      doctorid: self.doctorid,
+                      date: self.date,
+                      booktime: self.booktime,
+                      duration: self.duration,
+                      appointmentdatetime: this.$store.getters.getAppointmentDate + ' ' + this.$store.getters.getAppointmentTime
+
+                    }})
+            .catch((e) => {
+              console.log(e)
+            })
           self.$nuxt.$router.replace({ path: '/patient' })
         }
 
