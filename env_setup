@@ -2,8 +2,8 @@
 # You should not commit this file!
 # Everytime you change this file, you should run `source env_setup`
 
-export DB_NAME=ouikdqby
-export DB_USER=ouikdqby
-export DB_PASSWORD=kSZ2Fq36lvLix8XgOz_2nB8NfofO47ZO
-export DB_HOST=baasu.db.elephantsql.com
+export DB_NAME="ouikdqby"
+export DB_USER="ouikdqby"
+export DB_PASSWORD="kSZ2Fq36lvLix8XgOz_2nB8NfofO47ZO"
+export DB_HOST="baasu.db.elephantsql.com"
 export DB_PORT=5432
