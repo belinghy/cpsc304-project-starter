@@ -81,7 +81,7 @@ CREATE TABLE Prescription(
 CREATE TABLE Appointments(
     patientid int,
     doctorid int,
-    appointmentDateTime DATE ,
+    appointmentDateTime TIMESTAMP ,
     duration int,
     PRIMARY KEY(patientid,appointmentDateTime),
     FOREIGN KEY(patientid)
@@ -208,31 +208,31 @@ VALUES	('Xanax', 'Pfizer', 'Take once daily, do not discontinue without consulti
 ** Build Referrals Rows
  */
 INSERT intO Referrals(patientid, doctorid, referraldoctorid, referralDate)
-VALUES	(128,77,78, TO_DATE('01/02/2017', 'MM/MDD/YYYY'));
+VALUES	(128,77,78, TO_DATE('01/02/2017', 'MM/DD/YYYY'));
 INSERT intO Referrals(patientid, doctorid, referraldoctorid, referralDate)
-VALUES	(128,77,58, TO_DATE('04/28/2017', 'MM/MDD/YYYY'));
+VALUES	(128,77,58, TO_DATE('04/28/2017', 'MM/DD/YYYY'));
 INSERT intO Referrals(patientid, doctorid, referraldoctorid, referralDate)
-VALUES	(128,77,53, TO_DATE('10/22/2016', 'MM/MDD/YYYY'));
+VALUES	(128,77,53, TO_DATE('10/22/2016', 'MM/DD/YYYY'));
 INSERT intO Referrals(patientid, doctorid, referraldoctorid, referralDate)
-VALUES	(111,77,63, TO_DATE('02/01/2018', 'MM/MDD/YYYY'));
+VALUES	(111,77,63, TO_DATE('02/01/2018', 'MM/DD/YYYY'));
 INSERT intO Referrals(patientid, doctorid, referraldoctorid, referralDate)
-VALUES	(123,77,78, TO_DATE('02/06/2017', 'MM/MDD/YYYY'));
+VALUES	(123,77,78, TO_DATE('02/06/2017', 'MM/DD/YYYY'));
 
 
 
--- /**
--- ** Build Appointments Rows
---  */
--- INSERT intO Appointments(patientid, doctorid, appointmentDateTime, duration)
--- VALUES	(128,77, '1518760800',3600);
--- INSERT intO Appointments(patientid, doctorid, appointmentDateTime, duration)
--- VALUES	(128,77, '1521183600',1800);
--- INSERT intO Appointments(patientid, doctorid, appointmentDateTime, duration)
--- VALUES	(130, 80, '1521183600',3600);
--- INSERT intO Appointments(patientid, doctorid, appointmentDateTime, duration)
--- VALUES	(130, 80, '1521529200',5400);
--- INSERT intO Appointments(patientid, doctorid, appointmentDateTime, duration)
--- VALUES	(123, 80, '1521529200',1800);
+/**
+** Build Appointments Rows
+ */
+INSERT intO Appointments(patientid, doctorid, appointmentDateTime, duration)
+VALUES	(128,77, TO_TIMESTAMP('01/02/2017 12:00', 'MM/DD/YYYY HH24:MI') ,1);
+INSERT intO Appointments(patientid, doctorid, appointmentDateTime, duration)
+VALUES	(128,77, TO_TIMESTAMP('04/28/2017 12:00', 'MM/DD/YYYY HH24:MI'),1);
+INSERT intO Appointments(patientid, doctorid, appointmentDateTime, duration)
+VALUES	(143, 78, TO_TIMESTAMP('10/22/2016 12:00', 'MM/DD/YYYY HH24:MI'),1);
+INSERT intO Appointments(patientid, doctorid, appointmentDateTime, duration)
+VALUES	(143, 78, TO_TIMESTAMP('02/01/2018 12:00', 'MM/DD/YYYY HH24:MI'),1);
+INSERT intO Appointments(patientid, doctorid, appointmentDateTime, duration)
+VALUES	(153, 78, TO_TIMESTAMP('02/06/2017 12:00', 'MM/DD/YYYY HH24:MI'),2);
 
 
 
