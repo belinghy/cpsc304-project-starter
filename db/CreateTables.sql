@@ -81,7 +81,7 @@ CREATE TABLE Prescription(
 CREATE TABLE Appointments(
     patientid int,
     doctorid int,
-    appointmentDateTime DATE ,
+    appointmentDateTime TIMESTAMP ,
     duration int,
     PRIMARY KEY(patientid,appointmentDateTime),
     FOREIGN KEY(patientid)
@@ -220,19 +220,19 @@ VALUES	(123,77,78, TO_DATE('02/06/2017', 'MM/MDD/YYYY'));
 
 
 
--- /**
--- ** Build Appointments Rows
---  */
--- INSERT intO Appointments(patientid, doctorid, appointmentDateTime, duration)
--- VALUES	(128,77, '1518760800',3600);
--- INSERT intO Appointments(patientid, doctorid, appointmentDateTime, duration)
--- VALUES	(128,77, '1521183600',1800);
--- INSERT intO Appointments(patientid, doctorid, appointmentDateTime, duration)
--- VALUES	(130, 80, '1521183600',3600);
--- INSERT intO Appointments(patientid, doctorid, appointmentDateTime, duration)
--- VALUES	(130, 80, '1521529200',5400);
--- INSERT intO Appointments(patientid, doctorid, appointmentDateTime, duration)
--- VALUES	(123, 80, '1521529200',1800);
+ /**
+ ** Build Appointments Rows
+  */
+ INSERT intO Appointments(patientid, doctorid, appointmentDateTime, duration)
+ VALUES	(128,53, '2008-11-11 13:23:54',3600);
+ INSERT intO Appointments(patientid, doctorid, appointmentDateTime, duration)
+ VALUES	(128,53, '2008-11-11 13:23:34',1800);
+ INSERT intO Appointments(patientid, doctorid, appointmentDateTime, duration)
+ VALUES	(143, 53, '2008-11-11 13:23:24',3600);
+ INSERT intO Appointments(patientid, doctorid, appointmentDateTime, duration)
+ VALUES	(143, 58, '2008-11-11 13:23:14',5400);
+ INSERT intO Appointments(patientid, doctorid, appointmentDateTime, duration)
+ VALUES	(153, 58, '2008-11-11 13:23:44',1800);
 
 
 
