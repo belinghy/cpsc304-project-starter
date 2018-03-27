@@ -18,6 +18,18 @@
                     </li>
                 </ul>
             </div>
+            <div class="subsection">
+                <H3 >
+                    Referrals
+                    <nuxt-link type="button" class="button--grey" to="/patient/referral" style="postion: right;">View Referrals</nuxt-link>
+                </H3>
+            </div>
+            <div class="subsection">
+                <H3 >
+                    Prescriptions
+                    <nuxt-link type="button" class="button--grey" to="/patient/prescription" style="flex: 10%">My Prescriptions</nuxt-link>
+                </H3>
+            </div>
         </div>
     </section>
 </template>

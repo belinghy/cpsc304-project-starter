@@ -24,9 +24,9 @@ router.get('/patient/referral', function (req, res, next) {
     Promise.all([referralQueryPromise,queryDoctorPromise]).then((result) => {
         var doctorMap = {}
 
-        for (var doctor of result[1]){
+        for (var doctor of result[1]) {
             var id = doctor.doctorid
-            doctorMap[id] = doctor;
+            doctorMap[id] = doctor
         }
 
         for (var referral of result[0]) {
@@ -34,6 +34,8 @@ router.get('/patient/referral', function (req, res, next) {
             referral.referredTo = doctorMap[referral.referraldoctorid].doctorname
         }
         res.json({referrals: result[0]})
+    })
+})
 
 router.get('/patient/appointments/:patientid', function (req, res, next) {
     const patientid = req.params.patientid
