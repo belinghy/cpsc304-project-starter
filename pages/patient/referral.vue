@@ -5,7 +5,9 @@
             <div class="subsection">
                 <ul>
                     <li v-for="referral in referralsAndDoctors.referrals">
-                        You were referred by Dr.{{referral.referredBy}} to  Dr.{{referral.referredTo}}
+                        Referred to:  Dr.{{referral.referredTo}} <br>
+                        Referred by: Dr.{{referral.referredBy}} <br>
+                        Date: {{referral.referraldate}} <br> <br> <br>
                     </li>
                 </ul>
             </div>
