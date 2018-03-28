@@ -7,22 +7,19 @@ WHERE tName= + "'" + tName + "'",
 
 -- TODO Join Query
 
-SELECT + attribute
-+ FROM managers
-+ INNER JOIN teamsInLeague ON teamInLeague.teamID=managers.teamId
-+ WHERE teamsInLeague.tName = + "'" + tName + "'",
+SELECT attribute
+FROM managers
+INNER JOIN teamsInLeague ON teamInLeague.teamID=managers.teamId
+WHERE teamsInLeague.tName = + "'" + tName + "'",
 
 -- TODO Division query
 -- Find the names of players who have more than 10 goals
 
 SELECT name
 FROM playersInTeam P
-WHERE NOT EXISTS (SELECT C.name
-  FROM Class C
-  WHERE NOT EXISTS (SELECT E.snum
-    FROM Enrolled E
-    WHERE C.name=E.cname
-    AND E.snum=S.snum));
+WHERE NOT EXISTS (SELECT P.name
+  FROM playersInTeam P
+  WHERE P.goals <= 10);
 
 
 -- TODO Aggregation query
