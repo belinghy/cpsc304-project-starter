@@ -76,7 +76,8 @@ WHERE tName = someRandomTeam
 
 -- Non-Cascading: Delete a player on a team (playersInTeam)
 -- If you delete a player on a team (playersInTeam), there are no tables that need to be updated
-
+DELETE FROM playersInTeam
+WHERE Jersey# = 10
 
 -- TODO  Update operation:
 -- Change the jersey number of the highest goal-scorer to number 10
