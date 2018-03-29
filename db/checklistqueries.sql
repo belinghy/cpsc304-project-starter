@@ -29,6 +29,7 @@ SELECT name
 FROM playersInTeam
 WHERE goals = (SELECT max(goals) from playersInTeam)
 
+
 -- TODO Nested aggregation with group-by
 -- Find the number of players on each team
 
