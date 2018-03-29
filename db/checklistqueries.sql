@@ -70,6 +70,7 @@ ORDER BY COUNT(*) DESC;
 -- TODO  Delete operation
 -- Cascading: Delete a team in a league (teamsInLeague)
 -- If you delete a team in a league (teamsInLeague), then all the playes on the team must all be deleted
+-- This is handled in the creation of the tables
 DELETE FROM teamsInLeague
 WHERE tName = someRandomTeam
 
