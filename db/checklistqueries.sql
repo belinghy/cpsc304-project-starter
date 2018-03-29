@@ -3,13 +3,13 @@
 
 SELECT t_name, standing
 FROM teams_in_league
-WHERE total_red_cardsedCards = 10;
+WHERE total_red_cards = 10;
 
 -- Find the team name and standing of teams with 5 yellow cards
 
 SELECT t_name, standing
 FROM teams_in_league
-WHERE total_yellow_cardsellowCards = 5;
+WHERE total_yellow_cards = 5;
 
 
 -- TODO Join Query
