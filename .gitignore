@@ -15,3 +15,6 @@ build
 
 # Sensitive files
 env_setup
+
+.idea/*
+*.json

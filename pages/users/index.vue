@@ -4,12 +4,12 @@
       <div class="subsection">
         <div style="margin: 25px 10px;">
           <span class="subsection-title" style="vertical-align: middle;">Users in Database</span>
-          <nuxt-link class="button--grey" style="padding: 5px 20px; text-decoration: none;" to="/users/add">Add User</nuxt-link>
+          <nuxt-link class="button--grey" style="padding: 5px 20px; text-decoration: none;" to="/users/addPatient">Add Patient</nuxt-link>
         </div>
         <ul style="list-style-type: none; padding: 0; margin: 0;">
-          <li v-for="(user, index) in users" :key="index" style="padding: 10px 20px; margin: 0 25px; position: relative;">
-            <nuxt-link :to="{ path: `/users/${user.username}`, params: { username: user.username }}">
-              {{ user.userid + ' ' + user.username }}
+          <li v-for="(patient, patientid) in users" :key="patientid" style="padding: 10px 20px; margin: 0 25px; position: relative;">
+            <nuxt-link :to="{ path: `/users/${patient.patientid}`, params: { username: patient.patientname }}">
+              {{ patient.patientid + ' ' + patient.patientname }}
             </nuxt-link>
           </li>
         </ul>

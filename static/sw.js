@@ -19,45 +19,97 @@ importScripts('workbox-sw.prod.v1.3.0.js');
  */
 const fileManifest = [
   {
-    "url": "/_nuxt/app.ae8a577bc8597cc4e375.js",
-    "revision": "3bf8b78352ff09540363ce0e977adec3"
+    "url": "/_nuxt/app.e848fbe789af00b598aa.js",
+    "revision": "aa9a4deffd934997f7cd6100c51587ee"
   },
   {
-    "url": "/_nuxt/common.d588f9e89784c93b7646.js",
-    "revision": "c239c764a6a02b9a7719a8fba200263a"
+    "url": "/_nuxt/common.fcaba9d8785715f3e601.js",
+    "revision": "a311e8155637697e546191851df9b819"
   },
   {
-    "url": "/_nuxt/layouts/default.99a3689e875b9d0926e9.js",
-    "revision": "9f6208307b89fa9af4cac67346ec9b20"
+    "url": "/_nuxt/layouts/default.04a073663662994fb095.js",
+    "revision": "6f6a40bee02ff0d4f64a14c9af77e21d"
   },
   {
-    "url": "/_nuxt/manifest.48c71b10d1719bfa7825.js",
-    "revision": "840d3f5239b3e62fefdce04321949410"
+    "url": "/_nuxt/manifest.5adab02f2ed62dafd009.js",
+    "revision": "42ee56d7fc24d4e4b4c0777a8515b7d6"
   },
   {
-    "url": "/_nuxt/pages/index.cb9087eee956a2c62d03.js",
-    "revision": "5702841bd074bf6731016234302dceaa"
+    "url": "/_nuxt/pages/admin\\index.807c8d6f46a28735f348.js",
+    "revision": "388a19368fefcb6901e80b504a0fedd9"
   },
   {
-    "url": "/_nuxt/pages/users/_username/index.3af7d904484d518ebe87.js",
-    "revision": "9e510e65b86144b05b21883ca1b0ba99"
+    "url": "/_nuxt/pages/doctor\\_username\\appointment.ac17d4ffb6a1eda5ecd5.js",
+    "revision": "5a3211a498f1148e5867b7647371090f"
   },
   {
-    "url": "/_nuxt/pages/users/_username/update.bf41ce0e30762df1c85a.js",
-    "revision": "f12e44c93826bfa31e51e37f6137bcdf"
+    "url": "/_nuxt/pages/doctor\\_username\\index.11fe311e4c3c12d86797.js",
+    "revision": "7f01d1318a418f6ac72bd13ec27fad2a"
   },
   {
-    "url": "/_nuxt/pages/users/add.e043bc0ef46b7d551d33.js",
-    "revision": "280258eed7db2f38c577b571e20d69a1"
+    "url": "/_nuxt/pages/doctor\\_username\\medrec.dc98ebee90d97753d9e0.js",
+    "revision": "053248a894c8d02b64bee017be5a8965"
   },
   {
-    "url": "/_nuxt/pages/users/index.64be98e22adddef6a8da.js",
-    "revision": "38765c25892e7b33cb02a56b6b4b6276"
+    "url": "/_nuxt/pages/doctor\\_username\\prescription.88288ac2b12d635bbd7a.js",
+    "revision": "b87c74b672b030e69f5ea2069ff4bc49"
+  },
+  {
+    "url": "/_nuxt/pages/doctor\\dosages.9d57598a8944feeb84b5.js",
+    "revision": "0d624a2c08cfcd6ef4f9fd6cb3ac42ab"
+  },
+  {
+    "url": "/_nuxt/pages/doctor\\index.8a78b6c9304374a7eee2.js",
+    "revision": "7dd57d76a8512de2c3b59572f7cd7433"
+  },
+  {
+    "url": "/_nuxt/pages/index.4f92085c9f4b6c36661b.js",
+    "revision": "22d588af4a1ffb43a94e70838aa1001c"
+  },
+  {
+    "url": "/_nuxt/pages/patient\\appointment.f71563a713ba4c8167da.js",
+    "revision": "9709c7ee5c0b41e68745fd130efb2e65"
+  },
+  {
+    "url": "/_nuxt/pages/patient\\index.78723dd00c7c85ae86ef.js",
+    "revision": "965a3c42301e869e917a8bc04e1853c1"
+  },
+  {
+    "url": "/_nuxt/pages/patient\\makeAppointment.1ac435a1414e4ec39624.js",
+    "revision": "e421d032a25b51339d6fb3df083c6137"
+  },
+  {
+    "url": "/_nuxt/pages/patient\\prescription.0b2d4b527e737df8f9b3.js",
+    "revision": "6f5fc71d7f153cdb13a58941ab94824e"
+  },
+  {
+    "url": "/_nuxt/pages/patient\\referral.2173a10f331610cfbab8.js",
+    "revision": "82018ad4de0dd41a3d97caa435a4265e"
+  },
+  {
+    "url": "/_nuxt/pages/users\\_username\\index.b6b19be4294ed08c9cb8.js",
+    "revision": "b8ba846475b100e85207a7a0eaf55dd2"
+  },
+  {
+    "url": "/_nuxt/pages/users\\_username\\update.ca2b1d375d2fdd7ffe9c.js",
+    "revision": "468ce661d5aad17837f4472116a2d3ff"
+  },
+  {
+    "url": "/_nuxt/pages/users\\add.024c4a61c90e35884008.js",
+    "revision": "f247175198915f3db6c308a6b4544bd1"
+  },
+  {
+    "url": "/_nuxt/pages/users\\addPatient.c899732fb149f0b8b14d.js",
+    "revision": "5bd5069e930a6ffdb6d09a5c9d6cdc96"
+  },
+  {
+    "url": "/_nuxt/pages/users\\index.beaa08d71290fa098ccd.js",
+    "revision": "ff4709e1aa8a27e5144018b23c252785"
   }
 ];
 
 const workboxSW = new self.WorkboxSW({
-  "cacheId": "demoui_1.0.0",
+  "cacheId": "304demoproject_1.0.0",
   "clientsClaim": true,
   "directoryIndex": "/"
 });
