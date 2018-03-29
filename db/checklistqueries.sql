@@ -7,7 +7,7 @@ WHERE redCards = 10
 
 
 -- TODO Join Query
--- Find the names and teams of all players
+-- Find the names and corresponding teams of all players
 
 SELECT pName, tName
 FROM playersInTeam P, teamsInLeague T
