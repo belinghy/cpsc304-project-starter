@@ -3,11 +3,32 @@
         <div class="content">
             <div class="subsection">
                 <div style="margin: 25px 10px;">
-                    <span v-if="dosages"class="subsection-title" style="vertical-align: middle;">{{dosages[0].patientname}}</span>
+                    <span class="subsection-title" style="vertical-align: middle;">Max Dosage Prescribed</span>
                 </div>
                 <ul style="list-style-type: none; padding: 0; margin: 0;">
                     <li v-for="(patient, patientid) in dosages" :key="patientid" style="padding: 10px 20px; margin: 0 25px; position: relative;">
                         {{'Medication Name: ' + patient.medicationname}} <br>
+                        {{'Dosage: ' + patient.max}}
+                    </li>
+                </ul>
+            </div>
+            <div class="subsection">
+                <div style="margin: 25px 10px;">
+                    <span class="subsection-title" style="vertical-align: middle;">Min Dosage Prescribed</span>
+                </div>
+                <ul style="list-style-type: none; padding: 0; margin: 0;">
+                    <li v-for="(patient, patientid) in dosagesmin" :key="patientid" style="padding: 10px 20px; margin: 0 25px; position: relative;">
+                        {{'Medication Name: ' + patient.medicationname}} <br>
+                        {{'Dosage: ' + patient.min}}
+                    </li>
+                </ul>
+            </div>
+            <div class="subsection">
+                <div style="margin: 25px 10px;">
+                    <span class="subsection-title" style="vertical-align: middle;">Max Dosage of Min Prescription of Any Drug Sorted by Doctor</span>
+                </div>
+                <ul style="list-style-type: none; padding: 0; margin: 0;">
+                    <li v-for="(patient, patientid) in dosagesavg" :key="patientid" style="padding: 10px 20px; margin: 0 25px; position: relative;">
                         {{'Dosage: ' + patient.max}}
                     </li>
                 </ul>
@@ -22,15 +43,11 @@
     export default {
 
       name: 'username',
-      asyncData ({ params, error }) {
-        return axios.get('/api/doctor/dosages')
-          .then((res) => {
-            console.log(res.data)
-            return { dosages: res.data }
-          })
-          .catch((e) => {
-            error({ statusCode: 404, message: 'User not found' })
-          })
+      async asyncData () {
+        let dosagemax = await axios.get('/api/doctor/dosages')
+        let dosagemin = await axios.get('/api/doctor/dosagesmin')
+        let dosageavg = await axios.get('/api/doctor/dosagesavg')
+        return { dosages: dosagemax.data, dosagesmin: dosagemin.data, dosagesavg: dosageavg.data }
       },
       head () {
         return {

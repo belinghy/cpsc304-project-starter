@@ -66,7 +66,7 @@ CREATE TABLE Prescription(
     patientid int,
     doctorid int,
     medicationName varchar(100),
-    dosage varchar(200),
+    dosage int,
     PRIMARY KEY (patientid, doctorid, medicationName),
 	FOREIGN KEY (medicationName)
         REFERENCES Medication
@@ -241,12 +241,12 @@ VALUES	(153, 78, TO_TIMESTAMP('02/06/2017 12:00', 'MM/DD/YYYY HH24:MI'),2);
 ** Build Prescription Rows
  */
 INSERT intO Prescription(patientid, doctorid, medicationName, dosage)
-VALUES	(128,77, 'Melatonin', 'b.i.d');
+VALUES	(128,77, 'Melatonin', 1);
 INSERT intO Prescription(patientid, doctorid, medicationName, dosage)
-VALUES	(128,77, 'Tylenol', 'b.i.d');
+VALUES	(128,77, 'Tylenol', 2);
 INSERT intO Prescription(patientid, doctorid, medicationName, dosage)
-VALUES	(143, 78, 'Melatonin', 'q.o.d');
+VALUES	(143, 78, 'Melatonin', 3);
 INSERT intO Prescription(patientid, doctorid, medicationName, dosage)
-VALUES	(143, 78, 'Tylenol', 'q.6h');
+VALUES	(143, 78, 'Tylenol', 4);
 INSERT intO Prescription(patientid, doctorid, medicationName, dosage)
-VALUES	(153, 78, 'Xanax', 'b.i.d');
+VALUES	(153, 78, 'Xanax', 5);

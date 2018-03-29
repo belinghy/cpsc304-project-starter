@@ -114,7 +114,29 @@ router.post('/doctor/addPrescription', bodyParser.json(), function (req, res, ne
 // })
 
 router.get('/doctor/dosages', function (req, res, next) {
-    const query = 'SELECT medicationName, max(dosage) FROM Prescription group by medicationName;'
+    const query = 'SELECT medicationName, MAX(dosage) FROM Prescription group by medicationName;'
+    connection.query(query,
+        {
+            type: connection.QueryTypes.SELECT,
+        })
+        .then(dosages => {
+            res.json(dosages)
+        })
+})
+
+router.get('/doctor/dosagesmin', function (req, res, next) {
+    const query = 'SELECT medicationName, MIN(dosage) FROM Prescription group by medicationName;'
+    connection.query(query,
+        {
+            type: connection.QueryTypes.SELECT,
+        })
+        .then(dosages => {
+            res.json(dosages)
+        })
+})
+
+router.get('/doctor/dosagesavg', function (req, res, next) {
+    const query = 'SELECT MAX(t.avgdose) FROM (SELECT doctorname, (SELECT MIN(p.dosage) avgdose FROM (SELECT * FROM prescription p WHERE p.doctorid = d.doctorid) p) FROM doctor d) t;'
     connection.query(query,
         {
             type: connection.QueryTypes.SELECT,
