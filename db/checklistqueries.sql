@@ -7,11 +7,11 @@ WHERE redCards = 10
 
 
 -- TODO Join Query
+-- Find the names and teams of all players
 
-SELECT attribute
-FROM managers
-INNER JOIN teamsInLeague ON teamInLeague.teamID=managers.teamId
-WHERE teamsInLeague.tName = + "'" + tName + "'",
+SELECT pName, tName
+FROM playersInTeam P, teamsInLeague T
+WHERE P.teamId = T.teamId
 
 
 -- TODO Division query
