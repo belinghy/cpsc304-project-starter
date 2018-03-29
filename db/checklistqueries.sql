@@ -1,8 +1,9 @@
 -- TODO Selection and Projection Query
+-- Find the team name and standing of teams with 10 red cards
 
-SELECT teamID
+SELECT tname, standing
 FROM teamsInLeague
-WHERE tName= + "'" + tName + "'",
+WHERE redCards = 10
 
 
 -- TODO Join Query
@@ -12,14 +13,24 @@ FROM managers
 INNER JOIN teamsInLeague ON teamInLeague.teamID=managers.teamId
 WHERE teamsInLeague.tName = + "'" + tName + "'",
 
+
 -- TODO Division query
 -- Find the names of players who have more than 10 goals
 
 SELECT name
 FROM playersInTeam P
-WHERE NOT EXISTS (SELECT P.name
+WHERE NOT EXISTS (
+  SELECT P.name
   FROM playersInTeam P
   WHERE P.goals <= 10);
+
+-- Find the names of players who have less than 10 goals
+  SELECT name
+  FROM playersInTeam P
+  WHERE NOT EXISTS (
+    SELECT P.name
+    FROM playersInTeam P
+    WHERE P.goals > = 10);
 
 
 -- TODO Aggregation query
@@ -28,6 +39,11 @@ WHERE NOT EXISTS (SELECT P.name
 SELECT name
 FROM playersInTeam
 WHERE goals = (SELECT max(goals) from playersInTeam)
+
+-- Find the names of the player(s) who have scored the least goals
+SELECT name
+FROM playersInTeam
+WHERE goals = (SELECT min(goals) from playersInTeam)
 
 
 -- TODO Nested aggregation with group-by
