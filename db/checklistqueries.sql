@@ -60,3 +60,25 @@ FROM teamsInLeague
 JOIN playersInTeam ON teamsInLeague.teamID=playersInTeam.teamID
 GROUP BY tName
 ORDER BY COUNT(*) DESC;
+
+SELECT tName, COUNT(*)
+FROM teamsInLeague
+JOIN playersInTeam ON teamsInLeague.teamID=playersInTeam.teamID
+GROUP BY tName
+ORDER BY COUNT(*) DESC;
+
+-- TODO  Delete operation
+-- Cascading: Delete a team in a league (teamsInLeague)
+-- If you delete a team in a league (teamsInLeague), then all the playes on the team must all be deleted
+
+
+-- Non-Cascading: Delete a player on a team (playersInTeam)
+-- If you delete a player on a team (playersInTeam), there are no tables that need to be updated
+
+
+-- TODO  Update operation:
+-- Change the jersey number of Lionel Messi to number 10
+
+UPDATE playersInTeam
+SET Jersey# = 10
+WHERE pName = Lionel Messi
