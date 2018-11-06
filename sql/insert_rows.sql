@@ -1,3 +1,98 @@
+-- acct01-10: SignedUpUsers
+insert into Account values
+('Triforium', 'acct01');
+
+insert into Account values
+('Abderian', 'acct02');
+
+insert into Account values
+('Panurgic', 'acct03');
+
+insert into Account values
+('Aardwolf', 'acct04');
+
+insert into Account values
+('Nonplussed', 'acct05');
+
+insert into Account values
+('Prognathic', 'acct06');
+
+insert into Account values
+('Monsoon', 'acct07');
+
+insert into Account values
+('Aardwolf', 'acct08');
+
+insert into Account values
+('Resiniferous', 'acct09');
+
+insert into Account values
+('BramblecUneath', 'acct10');
+
+-- acct11-20: Restaurant Owners
+insert into Account values
+('Abattoir', 'acct11');
+
+insert into Account values
+('Ria4Deity', 'acct12');
+
+insert into Account values
+('Trumeau', 'acct13');
+
+insert into Account values
+('NunoMottle', 'acct14');
+
+insert into Account values
+('LukukAerobe', 'acct15');
+
+insert into Account values
+('Cecutiency', 'acct16');
+
+insert into Account values
+('LarcenyShuck', 'acct17');
+
+insert into Account values
+('Schematism', 'acct18');
+
+insert into Account values
+('Binnacle', 'acct19');
+
+insert into Account values
+('Vamoose', 'acct20');
+
+
+
+
+
+insert into Food values('cereals');
+insert into Food values('fruit and parfait');
+insert into Food values('coffee');
+insert into Food values('pancakes and waffles');
+insert into Food values('eggs');
+insert into Food values('juice');
+insert into Food values('milk and dairy subs');
+insert into Food values('bread and pastries');
+insert into Food values('salads');
+insert into Food values('grab-n-go items');
+insert into Food values('bacon and sausages');
+insert into Food values('all-in combos');
+
+
+
+
+
+CREATE TABLE Owner
+(oid 		INTEGER not null PRIMARY KEY,
+ name		CHAR(20) not null,
+ username 	CHAR(20) not null,
+FOREIGN KEY(username) REFERENCES Account
+	ON DELETE CASCADE
+	ON UPDATE CASCADE );
+-- ** Note: We can’t enforce that each owner should belong to 
+-- at least one restaurant in restaurant table on this or restaurant table
+--  (so must do that separately with assertion)
+
+
 insert into branch values
 ( 10, 'Main', '1234 Main St.', 'Vancouver', 5551234 );
 
