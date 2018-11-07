@@ -85,6 +85,34 @@ insert into SignedUpUser values(831222, '', 'Thamy', 'BramblecUneath');
 
 
 -- add HoursOfOperation here
+insert into HoursOfOperation values ('Monday', 00:00, 24:00); -- open 24hr
+insert into HoursOfOperation values ('Monday', 6:30, 11:30);
+insert into HoursOfOperation values ('Monday', 8:00, 20:00);
+insert into HoursOfOperation values ('Monday', 8:00, 8:00); -- does not open on Mondays
+insert into HoursOfOperation values ('Tuesday', 00:00, 24:00);
+insert into HoursOfOperation values ('Tuesday', 6:30, 11:30);
+insert into HoursOfOperation values ('Tuesday', 8:00, 20:00);
+insert into HoursOfOperation values ('Tuesday', 8:00, 8:00); -- does not open on Tuesdays
+insert into HoursOfOperation values ('Wednesday', 00:00, 24:00);
+insert into HoursOfOperation values ('Wednesday', 6:30, 11:30);
+insert into HoursOfOperation values ('Wednesday', 8:00, 20:00);
+insert into HoursOfOperation values ('Wednesday', 8:00, 8:00); -- does not open on Mondays
+insert into HoursOfOperation values ('Thursday', 00:00, 24:00);
+insert into HoursOfOperation values ('Thursday', 6:30, 11:30);
+insert into HoursOfOperation values ('Thursday', 8:00, 20:00);
+insert into HoursOfOperation values ('Thursday', 8:00, 8:00); -- does not open on Thursdays
+insert into HoursOfOperation values ('Friday', 00:00, 24:00);
+insert into HoursOfOperation values ('Friday', 6:30, 11:30);
+insert into HoursOfOperation values ('Friday', 8:00, 20:00);
+insert into HoursOfOperation values ('Friday', 8:00, 8:00); -- does not open on Fridays
+insert into HoursOfOperation values ('Friday', 00:00, 24:00);
+insert into HoursOfOperation values ('Saturday', 6:30, 11:30);
+insert into HoursOfOperation values ('Saturday', 10:00, 20:00);
+insert into HoursOfOperation values ('Saturday', 8:00, 8:00); -- does not open on Saturdays
+insert into HoursOfOperation values ('Sunday', 00:00, 24:00);
+insert into HoursOfOperation values ('Sunday', 6:30, 11:30);
+insert into HoursOfOperation values ('Sunday', 10:00, 20:00);
+insert into HoursOfOperation values ('Sunday', 8:00, 8:00); -- does not open on Sundays
 
 
 insert into Location values('V6R2B4', 'Vancouver', 'W Broadway', 3431, 21921);
