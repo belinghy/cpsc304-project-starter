@@ -171,12 +171,31 @@ insert into SignedUpUserFoodSearches values ('997284', 'cereals');
 insert into SignedUpUserFoodSearches values ('997284', 'toast');
 insert into SignedUpUserFoodSearches values ('997284', 'panini');
 insert into SignedUpUserFoodSearches values ('997284', 'oatmeal');
-insert into SignedUpUserFoodSearches values ('831222', 'tea')
+insert into SignedUpUserFoodSearches values ('831222', 'tea');
 
 
 /*SignedUpUserLocationTimeSearches*/
 
 /*SignedUpUserRestaurantFavourites*/
+insert into SignedUpUserRestaurantFavourites values ('656129', '21921');
+insert into SignedUpUserRestaurantFavourites values ('369008', '35878');
+insert into SignedUpUserRestaurantFavourites values ('369008', '03504');
+insert into SignedUpUserRestaurantFavourites values	('772157', '58136');
+insert into SignedUpUserRestaurantFavourites values	('772157', '21921');
+insert into SignedUpUserRestaurantFavourites values ('943127', '71046');
+insert into SignedUpUserRestaurantFavourites values ('943127', '58136');
+insert into SignedUpUserRestaurantFavourites values ('294663', '06847');
+insert into SignedUpUserRestaurantFavourites values ('294663', '02846');
+insert into SignedUpUserRestaurantFavourites values ('298849', '82789');
+insert into SignedUpUserRestaurantFavourites values ('647216', '06847');
+insert into SignedUpUserRestaurantFavourites values ('647216', '21921');
+insert into SignedUpUserRestaurantFavourites values ('568122', '93531');
+insert into SignedUpUserRestaurantFavourites values ('568122', '84921');
+insert into SignedUpUserRestaurantFavourites values ('997284', '21921');
+insert into SignedUpUserRestaurantFavourites values ('997284', '84921t');
+insert into SignedUpUserRestaurantFavourites values ('997284', '35878');
+insert into SignedUpUserRestaurantFavourites values ('997284', '71046');
+insert into SignedUpUserRestaurantFavourites values ('831222', '35878');
 
 /*RestaurantHoursOfOperation*/
 
