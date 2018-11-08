@@ -34,6 +34,13 @@ insert into Food values('salads');
 insert into Food values('grab-n-go items');
 insert into Food values('bacon and sausages');
 insert into Food values('all-in combos');
+insert into Food values('omelette');
+insert into Food values('toast');
+insert into Food values('sandwiches');
+insert into Food values('panini');
+insert into Food values('oatmeal');
+
+
 
 
 insert into Owner values(5699572, 'Adam', 'Abattoir');
@@ -46,6 +53,7 @@ insert into Owner values(4747245, 'Greg', 'LarcenyShuck');
 insert into Owner values(1756280, 'Hellen', 'Schematism');
 insert into Owner values(4385958, 'Ian', 'Binnacle');
 insert into Owner values(5676173, 'Jason', 'Vamoose');
+
 
 
 insert into Restaurant values(21921, 'Mamalee', 5699572);
@@ -131,5 +139,66 @@ insert into Location values('V7T1X5', 'West Vancouver', 'Inglewood Ave', 725, 02
 insert into Location values('V0N1G0', 'Vancouver', 'Cypress Bowl Rd', 6000, 82789);
 insert into Location values('V3R1N5', 'Surrey', '104 Ave', 15269, 35878);
 
+
+/* UserLikesFoodAtRestaurant(uid, food_type, rid)*/
+insert into UserLikesFoodAtRestaurant values ('277156', 'cereals', '21921');
+insert into UserLikesFoodAtRestaurant values ('277156', 'sandwiches', '03504');
+insert into UserLikesFoodAtRestaurant values ('294484', 'all-in combos', '84921');
+insert into UserLikesFoodAtRestaurant values ('294484', 'sandwiches', '03504');
+insert into UserLikesFoodAtRestaurant values ('863588', 'tea', '93531');
+insert into UserLikesFoodAtRestaurant values ('863588', 'panini', '71046');
+insert into UserLikesFoodAtRestaurant values ('578126', 'omelette', '35878');
+insert into UserLikesFoodAtRestaurant values ('578126', 'milk and dairy subs', '58136');
+insert into UserLikesFoodAtRestaurant values ('734378', 'oatmeal', '38449');
+insert into UserLikesFoodAtRestaurant values ('734378', 'bread and pastries', '12381');
+
+/*SignedUpUserFoodSearches(uid, food_type)*/
+insert into SignedUpUserFoodSearches values ('656129', 'tea');
+insert into SignedUpUserFoodSearches values ('369008', 'oatmeal');
+insert into SignedUpUserFoodSearches values ('369008', 'panini');
+insert into SignedUpUserFoodSearches values	('772157', 'salads');
+insert into SignedUpUserFoodSearches values	('772157', 'salads');
+insert into SignedUpUserFoodSearches values ('943127', 'coffee');
+insert into SignedUpUserFoodSearches values ('943127', 'eggs');
+insert into SignedUpUserFoodSearches values ('294663', 'salads');
+insert into SignedUpUserFoodSearches values ('294663', 'bread and pastries');
+insert into SignedUpUserFoodSearches values ('298849', 'eggs');
+insert into SignedUpUserFoodSearches values ('647216', 'juice');
+insert into SignedUpUserFoodSearches values ('647216', 'coffee');
+insert into SignedUpUserFoodSearches values ('568122', 'coffee');
+insert into SignedUpUserFoodSearches values ('568122', 'fruit and parfait');
+insert into SignedUpUserFoodSearches values ('997284', 'cereals');
+insert into SignedUpUserFoodSearches values ('997284', 'toast');
+insert into SignedUpUserFoodSearches values ('997284', 'panini');
+insert into SignedUpUserFoodSearches values ('997284', 'oatmeal');
+insert into SignedUpUserFoodSearches values ('831222', 'tea')
+
+
+/*SignedUpUserLocationTimeSearches*/
+
+/*SignedUpUserRestaurantFavourites*/
+
+/*RestaurantHoursOfOperation*/
+
+/* FoodsServedAtRestaurants(rid, food_type) */
+insert into FoodsServedAtRestaurants values ('21921', 'cereals');
+insert into FoodsServedAtRestaurants values ('21921', 'fruit and parfait');
+insert into FoodsServedAtRestaurants values ('42726', 'coffee');
+insert into FoodsServedAtRestaurants values ('42726', 'pancakes and waffles');
+insert into FoodsServedAtRestaurants values ('82252', 'eggs');
+insert into FoodsServedAtRestaurants values ('82252', 'juice');
+insert into FoodsServedAtRestaurants values ('58136', 'milk and dairy subs');
+insert into FoodsServedAtRestaurants values ('12381', 'bread and pastries');
+insert into FoodsServedAtRestaurants values ('03504', 'sandwiches');
+insert into FoodsServedAtRestaurants values ('71046', 'panini');
+insert into FoodsServedAtRestaurants values ('16196', 'toast');
+insert into FoodsServedAtRestaurants values ('38449', 'oatmeal');
+insert into FoodsServedAtRestaurants values ('93531', 'tea');
+insert into FoodsServedAtRestaurants values ('84921', 'all-in combos');
+insert into FoodsServedAtRestaurants values ('06847', 'bacon and sausages');
+insert into FoodsServedAtRestaurants values ('02846', 'omelette');
+insert into FoodsServedAtRestaurants values ('82789', 'salads');
+insert into FoodsServedAtRestaurants values ('35878', 'cereals');
+insert into FoodsServedAtRestaurants values ('35878', 'omelette');
 
 commit work;
