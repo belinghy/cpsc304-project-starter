@@ -96,31 +96,24 @@ insert into SignedUpUser values(831222, '', 'Thamy', 'BramblecUneath');
 insert into HoursOfOperation values ('Monday', 00:00, 24:00); -- open 24hr
 insert into HoursOfOperation values ('Monday', 6:30, 11:30);
 insert into HoursOfOperation values ('Monday', 8:00, 20:00);
-insert into HoursOfOperation values ('Monday', 8:00, 8:00); -- does not open on Mondays
 insert into HoursOfOperation values ('Tuesday', 00:00, 24:00);
 insert into HoursOfOperation values ('Tuesday', 6:30, 11:30);
 insert into HoursOfOperation values ('Tuesday', 8:00, 20:00);
-insert into HoursOfOperation values ('Tuesday', 8:00, 8:00); -- does not open on Tuesdays
 insert into HoursOfOperation values ('Wednesday', 00:00, 24:00);
 insert into HoursOfOperation values ('Wednesday', 6:30, 11:30);
 insert into HoursOfOperation values ('Wednesday', 8:00, 20:00);
-insert into HoursOfOperation values ('Wednesday', 8:00, 8:00); -- does not open on Mondays
 insert into HoursOfOperation values ('Thursday', 00:00, 24:00);
 insert into HoursOfOperation values ('Thursday', 6:30, 11:30);
 insert into HoursOfOperation values ('Thursday', 8:00, 20:00);
-insert into HoursOfOperation values ('Thursday', 8:00, 8:00); -- does not open on Thursdays
 insert into HoursOfOperation values ('Friday', 00:00, 24:00);
 insert into HoursOfOperation values ('Friday', 6:30, 11:30);
 insert into HoursOfOperation values ('Friday', 8:00, 20:00);
-insert into HoursOfOperation values ('Friday', 8:00, 8:00); -- does not open on Fridays
 insert into HoursOfOperation values ('Friday', 00:00, 24:00);
 insert into HoursOfOperation values ('Saturday', 6:30, 11:30);
 insert into HoursOfOperation values ('Saturday', 10:00, 20:00);
-insert into HoursOfOperation values ('Saturday', 8:00, 8:00); -- does not open on Saturdays
 insert into HoursOfOperation values ('Sunday', 00:00, 24:00);
 insert into HoursOfOperation values ('Sunday', 6:30, 11:30);
 insert into HoursOfOperation values ('Sunday', 10:00, 20:00);
-insert into HoursOfOperation values ('Sunday', 8:00, 8:00); -- does not open on Sundays
 
 
 insert into Location values('V6R2B4', 'Vancouver', 'W Broadway', 3431, 21921);
@@ -197,7 +190,129 @@ insert into SignedUpUserRestaurantFavourites values ('997284', '35878');
 insert into SignedUpUserRestaurantFavourites values ('997284', '71046');
 insert into SignedUpUserRestaurantFavourites values ('831222', '35878');
 
-/*RestaurantHoursOfOperation*/
+/*RestaurantHoursOfOperation(rid, day, openTime, closeTime)*/
+-- some restaurant (ie. 35878 & 82789 & 02846) do not have Hours Of Operation
+insert into RestaurantHoursOfOperation values 
+(21921, 'Monday', 00:00, 24:00);
+insert into RestaurantHoursOfOperation values 
+(21921, 'Tuesday', 00:00, 24:00);
+insert into RestaurantHoursOfOperation values 
+(21921, 'Wednesday', 00:00, 24:00);
+insert into RestaurantHoursOfOperation values 
+(21921, 'Thursday', 00:00, 24:00);
+insert into RestaurantHoursOfOperation values 
+(21921, 'Friday', 00:00, 24:00);
+insert into RestaurantHoursOfOperation values 
+(21921, 'Saturday', 00:00, 24:00);
+insert into RestaurantHoursOfOperation values 
+(21921, 'Sunday', 00:00, 24:00);
+insert into RestaurantHoursOfOperation values 
+(42726, 'Saturday', 10:00, 20:00);
+insert into RestaurantHoursOfOperation values 
+(42726, 'Sunday', 10:00, 20:00);
+insert into RestaurantHoursOfOperation values 
+(82252, 'Monday', 6:30, 11:30);
+insert into RestaurantHoursOfOperation values 
+(82252, 'Wednesday', 6:30, 11:30);
+insert into RestaurantHoursOfOperation values 
+(82252, 'Thursday', 6:30, 11:30);
+insert into RestaurantHoursOfOperation values 
+(82252, 'Friday', 6:30, 11:30);
+insert into RestaurantHoursOfOperation values 
+(82252, 'Saturday', 6:30, 11:30);
+insert into RestaurantHoursOfOperation values 
+(82252, 'Sunday', 6:30, 11:30);
+insert into RestaurantHoursOfOperation values 
+(58136, 'Monday', 8:00, 20:00);
+insert into RestaurantHoursOfOperation values 
+(58136, 'Tuesday', 8:00, 20:00);
+insert into RestaurantHoursOfOperation values 
+(58136, 'Wednesday', 8:00, 20:00);
+insert into RestaurantHoursOfOperation values 
+(58136, 'Thursday', 8:00, 20:00);
+insert into RestaurantHoursOfOperation values 
+(58136, 'Friday', 8:00, 20:00);
+insert into RestaurantHoursOfOperation values 
+(12381, 'Monday', 8:00, 20:00);
+insert into RestaurantHoursOfOperation values 
+(12381, 'Wednesday', 8:00, 20:00);
+insert into RestaurantHoursOfOperation values 
+(12381, 'Thursday', 8:00, 20:00);
+insert into RestaurantHoursOfOperation values 
+(12381, 'Friday', 8:00, 20:00);
+insert into RestaurantHoursOfOperation values 
+(12381, 'Sunday', 8:00, 20:00);
+insert into RestaurantHoursOfOperation values 
+(03504, 'Saturday', 00:00, 24:00);
+insert into RestaurantHoursOfOperation values 
+(03504, 'Sunday', 00:00, 24:00);
+insert into RestaurantHoursOfOperation values 
+(71046, 'Saturday', 00:00, 24:00);
+insert into RestaurantHoursOfOperation values 
+(71046, 'Sunday', 00:00, 24:00);
+insert into RestaurantHoursOfOperation values 
+(16196, 'Monday', 8:00, 20:00);
+insert into RestaurantHoursOfOperation values 
+(16196, 'Tuesday', 8:00, 20:00);
+insert into RestaurantHoursOfOperation values 
+(16196, 'Wednesday', 8:00, 20:00);
+insert into RestaurantHoursOfOperation values 
+(16196, 'Thursday', 8:00, 20:00);
+insert into RestaurantHoursOfOperation values 
+(16196, 'Friday', 8:00, 20:00);
+insert into RestaurantHoursOfOperation values 
+(16196, 'Saturday', 6:30, 11:30);
+insert into RestaurantHoursOfOperation values 
+(16196, 'Sunday', 6:30, 11:30);
+insert into RestaurantHoursOfOperation values 
+(38449, 'Monday', 6:30, 11:30);
+insert into RestaurantHoursOfOperation values 
+(38449, 'Tuesday', 8:00, 20:00);
+insert into RestaurantHoursOfOperation values 
+(38449, 'Wednesday', 6:30, 11:30);
+insert into RestaurantHoursOfOperation values 
+(38449, 'Thursday', 6:30, 11:30);
+insert into RestaurantHoursOfOperation values 
+(38449, 'Friday', 6:30, 11:30);
+insert into RestaurantHoursOfOperation values 
+(93531, 'Saturday', 00:00, 24:00);
+insert into RestaurantHoursOfOperation values 
+(93531, 'Sunday', 00:00, 24:00);
+insert into RestaurantHoursOfOperation values 
+(84921, 'Monday', 6:30, 11:30);
+insert into RestaurantHoursOfOperation values 
+(84921, 'Tuesday', 8:00, 20:00);
+insert into RestaurantHoursOfOperation values 
+(84921, 'Wednesday', 6:30, 11:30);
+insert into RestaurantHoursOfOperation values 
+(84921, 'Thursday', 6:30, 11:30);
+insert into RestaurantHoursOfOperation values 
+(84921, 'Friday', 6:30, 11:30);
+insert into RestaurantHoursOfOperation values 
+(06847, 'Monday', 8:00, 20:00);
+insert into RestaurantHoursOfOperation values 
+(06847, 'Tuesday', 8:00, 20:00);
+insert into RestaurantHoursOfOperation values 
+(06847, 'Wednesday', 8:00, 20:00);
+insert into RestaurantHoursOfOperation values 
+(06847, 'Thursday', 8:00, 20:00);
+insert into RestaurantHoursOfOperation values 
+(06847, 'Friday', 8:00, 20:00);
+insert into RestaurantHoursOfOperation values 
+(06847, 'Monday', 00:00, 24:00);
+insert into RestaurantHoursOfOperation values 
+(06847, 'Tuesday', 00:00, 24:00);
+insert into RestaurantHoursOfOperation values 
+(06847, 'Wednesday', 00:00, 24:00);
+insert into RestaurantHoursOfOperation values 
+(06847, 'Thursday', 00:00, 24:00);
+insert into RestaurantHoursOfOperation values 
+(06847, 'Friday', 00:00, 24:00);
+insert into RestaurantHoursOfOperation values 
+(06847, 'Saturday', 00:00, 24:00);
+insert into RestaurantHoursOfOperation values 
+(06847, 'Sunday', 00:00, 24:00);
+
 
 /* FoodsServedAtRestaurants(rid, food_type) */
 insert into FoodsServedAtRestaurants values ('21921', 'cereals');
