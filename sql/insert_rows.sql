@@ -167,7 +167,31 @@ insert into SignedUpUserFoodSearches values ('997284', 'oatmeal');
 insert into SignedUpUserFoodSearches values ('831222', 'tea');
 
 
-/*SignedUpUserLocationTimeSearches*/
+/*SignedUpUserLocationTimeSearches(uid, day, openTime, closeTime, postalCode)*/
+-- why does the TIME has to match HoursOfOperation?
+insert into SignedUpUserLocationTimeSearches values 
+(656129, 'Monday', 00:00, 24:00, V6R2B4);
+insert into SignedUpUserLocationTimeSearches values 
+(656129, 'Tuesday', 8:00, 20:00, V6R2B4);
+insert into SignedUpUserLocationTimeSearches values 
+(298849, 'Wednesday', 00:00, 24:00, V6R2G7);
+insert into SignedUpUserLocationTimeSearches values 
+(568122, 'Friday', 6:30, 11:30, V5W3A1);
+insert into SignedUpUserLocationTimeSearches values 
+(568122, 'Friday', 8:00, 20:00, V5X3T4);
+insert into SignedUpUserLocationTimeSearches values 
+(568122, 'Saturday', 6:30, 11:30, V7L3V6);
+insert into SignedUpUserLocationTimeSearches values 
+(772157, 'Saturday', 6:30, 11:30, V7T1X5);
+insert into SignedUpUserLocationTimeSearches values 
+(943127, 'Sunday', 6:30, 11:30, V7T1X5);
+insert into SignedUpUserLocationTimeSearches values 
+(294663, 'Thursday', 00:00, 24:00, V0N1G0);
+insert into SignedUpUserLocationTimeSearches values 
+(831222, 'Tuesday', 00:00, 24:00, V0N1G0);
+insert into SignedUpUserLocationTimeSearches values 
+(831222, 'Thursday', 8:00, 20:00, V3R1N5);
+
 
 /*SignedUpUserRestaurantFavourites*/
 insert into SignedUpUserRestaurantFavourites values ('656129', '21921');
