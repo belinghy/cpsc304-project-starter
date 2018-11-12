@@ -46,16 +46,20 @@ const ENTITIES = {
         FaveFood = 'eggs',
         FoodTypes = ['eggs', 'pancakes', 'hashbrowns', 'FrenchToast', ...],
     },
-    // TODO: return this instead of old one
-    searchHistoryListItem: {
-        searchID = 23,
-        Location: '2394 blah st, city' | NULL,
-        lat: 123,
-        lon: 123,
-        day: 'Mon' | NULL,
-        Time: '12' | NULL,
-        FoodType: 'pancakes' | NULL,
+
+    // TODO: FOR BEN: had to split this this way because otherwise I have to iterate over list and separate out the values
+    searchHistoryLocListItem: {
+        sid = 23,
+        number: '2394',
+        street: 'blah st',
+        city : 'sf',
+        day: 'Mon',
+        Time: '12:00',
     },
+    SearchHistoryList: {
+        LocTimeList : [Entities.searchHistoryLocListItem],
+        FoodType: ['pancakes'], // This is a list of all foods searched (not specific to loc search!)
+    }
 
 }
 
@@ -172,7 +176,7 @@ const REST_ENDPOINTS = {
         body: NULL,
         response: {
             code: 200 || 404,
-            body: [ ENTITIES.searchHistoryListItem ] // with search history values
+            body: [ ENTITIES.SearchHistoryList ]
         }
     },
     userDelLikedRestaurant : {
@@ -181,7 +185,7 @@ const REST_ENDPOINTS = {
         body: NULL,
         response: {
             code: 200 || 404,
-            body: [ ENTITIES.restaurantListItem ]
+            body: [ ENTITIES.FaveRestaurantItem ]
         }
     },
 
@@ -334,7 +338,7 @@ router.get('/user-profile/:id', function (req, res, next) {
       .then(user => {
         if (user.length === 1){
             // do another query to get fave restaurants:
-            const RestQuery = 'SELECT R.rid, R.name FROM SignedUpUser U, SignedUpUserRestaurantFavourites F, Restaurant R WHERE U.uid = :uid and U.uid == F.uid and R.rid == F.rid;'
+            const RestQuery = 'SELECT R.rid, R.name FROM SignedUpUserRestaurantFavourites F, Restaurant R WHERE U.uid = :uid and and R.rid == F.rid;'
             connection.query(RestQueryquery,
               {
                 type: connection.QueryTypes.SELECT,
@@ -559,9 +563,10 @@ router.post('/owner-profile/:id/edit', function (req, res, next) {
     })
 })
 
-router.get('/user-profile/:id/search-history', function (req, res, next) { // TODO: do we want a separate page to load??
+// Done
+router.get('/user-profile/:id/search-history', function (req, res, next) {
     const uid = req.params.id
-    const query = 'SELECT * FROM Users WHERE uid = :uid;'
+    const query = 'SELECT * FROM SignedUpUser WHERE uid = :uid;'
     connection.query(query,
       {
         type: connection.QueryTypes.SELECT,
@@ -572,36 +577,40 @@ router.get('/user-profile/:id/search-history', function (req, res, next) { // TO
       .then(user => {
         if (user.length === 1){
             // do another query to get search history:
-            query = 'SELECT S.day, S.openTime, S.postalCode FROM User U, Search S WHERE U.uid = :uid and U.uid == S.uid UNION'
-            connection.query(query,
+            const query2 = 'SELECT S.sid, S.day, S.openTime, L.number, L.street, L.city FROM SignedUpUser U, SignedUpUserLocationTimeSearches S, Location L WHERE U.uid = :uid and U.uid == S.uid and L.postalCode == S.postalCode;'
+            connection.query(query2,
               {
                 type: connection.QueryTypes.SELECT,
                 replacements: {
                   uid: uid
                 }
               })
-              .then(searchRes => {
-                  res.json(
-                      {'uid': uid,
-                      'username': user[0].username,
-                      'password': user[0].password,
-                      'name': user[0].name,
-                      'img': user[0].image,
-                      'favRestaurants': NULL,
-                      'favFoods': NULL,
-                      'searches': searchRes
+              .then(searchLoc => {
+                // do another query to get food search history:
+                const query3 = 'SELECT S.food_type FROM SignedUpUser U, SignedUpUserFoodSearches S WHERE U.uid = :uid and U.uid == S.uid;'
+                connection.query(query3,
+                {
+                    type: connection.QueryTypes.SELECT,
+                    replacements: { uid: uid }
+                })
+                .then(searchFood => {
+                  res.json({
+                    TimeLocationSearch: searchLoc,
+                    FoodType: searchFood
                     })
                 })
+            })
         } else {
             res.status(404).json({})
         }
       })
 })
 
+// Done
 router.get('/user/:id/remove-liked-restaurant/:rid', function (req, res, next) {
     const uid = req.params.id
     const rid = req.params.rid
-    const query = 'SELECT * FROM Users WHERE uid = :uid;'
+    const query = 'SELECT * FROM SignedUpUser WHERE uid = :uid;'
     connection.query(query,
       {
         type: connection.QueryTypes.SELECT,
@@ -612,7 +621,7 @@ router.get('/user/:id/remove-liked-restaurant/:rid', function (req, res, next) {
       .then(user => {
         if (user.length === 1){
             // do another query to remove liked restaurants:
-            const RestQuery = 'DELETE FROM  SignedUpUserRestaurantFavourites WHERE uid = :uid and rid = :rid;'
+            const RestQuery = 'DELETE FROM SignedUpUserRestaurantFavourites WHERE uid = :uid and rid = :rid;'
             connection.query(RestQueryquery,
               {
                 type: connection.QueryTypes.SELECT,
@@ -621,7 +630,18 @@ router.get('/user/:id/remove-liked-restaurant/:rid', function (req, res, next) {
                   rid: rid
                 }
               })
-              res.send('/user-profile/:id') //TODO: is this right?
+            const RestQuery = 'SELECT R.rid, R.name FROM SignedUpUserRestaurantFavourites F, Restaurant R WHERE U.uid = :uid and and R.rid == F.rid;'
+            connection.query(RestQueryquery,
+                {
+                  type: connection.QueryTypes.SELECT,
+                  replacements: {
+                    uid: uid
+                  }
+                })
+                .then(restaurants => {
+                    res.json({restaurants})
+                })
+              
         } else {
             res.status(404).json({})
         }

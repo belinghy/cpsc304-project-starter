@@ -91,6 +91,7 @@ day			CHAR(10) not null,
 openTime  	TIME not null,
 closeTime 	TIME not null,
 postalCode 	CHAR(6) not null,
+sid         CHAR(45) not null unique,
 PRIMARY KEY(uid, day, openTime, closeTime, postalCode),
 FOREIGN KEY(uid) REFERENCES SignedUpUser
 	ON DELETE CASCADE

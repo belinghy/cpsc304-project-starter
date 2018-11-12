@@ -175,27 +175,27 @@ insert into SignedUpUserFoodSearches values ('831222', 'tea');
 /*SignedUpUserLocationTimeSearches(uid, day, openTime, closeTime, postalCode)*/
 -- why does the TIME has to match HoursOfOperation?
 insert into SignedUpUserLocationTimeSearches values 
-(656129, 'Monday', '00:00', '24:00', V6R2B4);
+(656129, 'Monday', '00:00', '24:00', V6R2B4, '1');
 insert into SignedUpUserLocationTimeSearches values 
-(656129, 'Tuesday', '8:00', '20:00', V6R2B4);
+(656129, 'Tuesday', '8:00', '20:00', V6R2B4, '2');
 insert into SignedUpUserLocationTimeSearches values 
-(298849, 'Wednesday', '00:00', '24:00', V6R2G7);
+(298849, 'Wednesday', '00:00', '24:00', V6R2G7, '3');
 insert into SignedUpUserLocationTimeSearches values 
-(568122, 'Friday', '6:30', '11:30', V5W3A1);
+(568122, 'Friday', '6:30', '11:30', V5W3A1, '4');
 insert into SignedUpUserLocationTimeSearches values 
-(568122, 'Friday', '8:00', '20:00', V5X3T4);
+(568122, 'Friday', '8:00', '20:00', V5X3T4, '5');
 insert into SignedUpUserLocationTimeSearches values 
-(568122, 'Saturday', '6:30', '11:30', V7L3V6);
+(568122, 'Saturday', '6:30', '11:30', V7L3V6, '6');
 insert into SignedUpUserLocationTimeSearches values 
-(772157, 'Saturday', '6:30', '11:30', V7T1X5);
+(772157, 'Saturday', '6:30', '11:30', V7T1X5, '7');
 insert into SignedUpUserLocationTimeSearches values 
-(943127, 'Sunday', '6:30', '11:30', V7T1X5);
+(943127, 'Sunday', '6:30', '11:30', V7T1X5, '8');
 insert into SignedUpUserLocationTimeSearches values 
-(294663, 'Thursday', '00:00', '24:00', V0N1G0);
+(294663, 'Thursday', '00:00', '24:00', V0N1G0, '9');
 insert into SignedUpUserLocationTimeSearches values 
-(831222, 'Tuesday', '00:00', '24:00', V0N1G0);
+(831222, 'Tuesday', '00:00', '24:00', V0N1G0, '10');
 insert into SignedUpUserLocationTimeSearches values 
-(831222, 'Thursday', '8:00', '20:00', V3R1N5);
+(831222, 'Thursday', '8:00', '20:00', V3R1N5, '11');
 
 
 /*SignedUpUserRestaurantFavourites*/
