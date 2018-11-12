@@ -10,7 +10,7 @@ const ENTITIES = {
         password: 'password',
         name: 's334',
         img: 'https://google.com/image',
-        favRestaurants: [ ENTITIES.restaurantItem ],
+        favRestaurants: [ ENTITIES.FaveRestaurantItem ],
         // empty at first
         favFoods: [ ENTITIES.favFoodListItem ],
         // empty at first
@@ -28,6 +28,10 @@ const ENTITIES = {
         rid: 123,
         name: 'dons bar and grill',
         isFavourited: true,
+    },
+    FaveRestaurantItem: { // TODO for ben: this is what I'll be returning in userprofile because I'm returning the resultof query which is a list itself with these 2 values (otherwise I have to iterate over the list again and add isfave field which is useless)
+        rid: 123,
+        name: 'dons bar and grill',
     },
     favFoodListItem: {
         restaurantId: 123,
@@ -64,9 +68,8 @@ const REST_ENDPOINTS = {
             password: ''
         },
         response: {
-            code: 200,
-            // identifies whether to redirect to /home/owner or to /home/user or to not redirectbased on username/password verification
-            body: ENTITIES.user || false
+            code: 200 || 400, //when the username/ password combo is invalid
+            body: ENTITIES.user
         }
     },
     signup: {
@@ -80,9 +83,9 @@ const REST_ENDPOINTS = {
             owner: true             // no need to verify (just a checkbox)
         },
         response: {
-            code: 200,
-            // identifies whether to redirect to /home/owner or to /home/user or to not redirectbased on username if username already exists
-            body: ENTITES.user || false
+            code: 200 || 400, //when the username entered is not unique
+            // identifies whether to redirect to /home/owner or to /home/user based on owner value (front end task to redirect to the following 2 endpoints) 
+            body: ENTITES.user
         }
     },
     userhome: {
@@ -103,7 +106,7 @@ const REST_ENDPOINTS = {
             body: ENTITES.user
         }
     },
-    // TODO: hit this URL on page load
+    // TODO: hit this URL on page load (for Ben) and redicrt to ${baseURL}/guest-home/id on response
     guesthome: {
         type: 'GET',
         requestUrl: `${baseURL}/guest-home/`,
@@ -136,7 +139,7 @@ const REST_ENDPOINTS = {
     userprofileEdit: {
         type: 'POST',
         requestUrl: `${baseURL}/user-profile/${id}/edit`,
-        // TODO: return whole body even if items left blank
+        // TODO: return whole body even if items left blank (for Ben)
         body: {
             username: 'fe',
             password: 'erf',
@@ -196,14 +199,16 @@ const REST_ENDPOINTS = {
     // getting search result for manual search loc/time
     //getting search result for manual search by food
 
-    // TODO: change all ids to be strings using uuid package
 }
 
 // corresponding code:
+const uuidv1 = require('uuid/v1');
+
+// done
 router.get('/home', function (req, res, next) {
-    const username = req.body.username
-    const password = req.body.password
-    const userQuery = 'SELECT * FROM Users WHERE username = :username and password = :password;'
+    const username = req.query.username
+    const password = req.query.password
+    const userQuery = 'SELECT * FROM SignedUpUser U, Account A WHERE U.username = :username and A.username == U.username and  A.password = :password;'
     connection.query(userQuery,
       {
         type: connection.QueryTypes.SELECT,
@@ -217,7 +222,7 @@ router.get('/home', function (req, res, next) {
           // need to return the home page for signed in user
           res.json({'id': user[0].uid, 'name': user[0].name, 'owner': false})
         } else { // check if owner:
-            const ownerQuery = 'SELECT * FROM Owner WHERE username = :username and password = :password;'
+            const ownerQuery = 'SELECT * FROM Owner O, Account A WHERE O.username = :username and A.username == O.username and  A.password = :password;'
             connection.query(ownerQuery,
               {
                 type: connection.QueryTypes.SELECT,
@@ -233,13 +238,14 @@ router.get('/home', function (req, res, next) {
                 }
                 else
                 {
-                    res.send(false)
+                    res.status(400).json({})
                 }
             })
         }
     })
 })
 
+// done
 router.post('/signup', function (req, res, next) {
     const username = req.body.username
     const password = req.body.password
@@ -247,7 +253,7 @@ router.post('/signup', function (req, res, next) {
     const img = req.body.img
     const owner = req.body.owner
 
-    const query = 'SELECT * FROM User WHERE username = :username UNION SELECT * FROM Owner WHERE username = :username;'
+    const query = 'SELECT * FROM SignedUpUser WHERE username = :username UNION SELECT * FROM Owner WHERE username = :username;'
     connection.query(query,
       {
         type: connection.QueryTypes.SELECT,
@@ -260,14 +266,16 @@ router.post('/signup', function (req, res, next) {
           // username is not in db yet so it will be unique and can add it
           if (owner == true)
           { // create a owner user
-            const query = 'INSERT INTO Owner (username, password, oid, name, img) VALUES (:username, :password, :oid, :name, :img) ;'
+            query1 = 'INSERT INTO Account (username, password) VALUES (:username, :password);'
+            query2 = 'INSERT INTO Owner (username, oid, name, img) VALUES (:username, :oid, :name, :img) ;'
+            const query = query1 + query2
             connection.query(query,
               {
                 type: connection.QueryTypes.INSERT,
                 replacements: {
                   username: username,
                   password: password,
-                  oid: 1, //TODO: gen sequentially
+                  oid: uuidv1(),
                   name: name,
                   img: img,
                 }
@@ -275,14 +283,16 @@ router.post('/signup', function (req, res, next) {
               res.json({'id': oid, 'name': name, 'owner': true})
           }
           else { // create a regular user
-            const query = 'INSERT INTO User (username, password, uid, name, img) VALUES (:username, :password, :uid, :name, :img) ;'
+            query1 = 'INSERT INTO Account (username, password) VALUES (:username, :password);'
+            query2 = 'INSERT INTO SignedUpUser (username, oid, name, img) VALUES (:username, :oid, :name, :img) ;'
+            const query = query1 + query2
             connection.query(query,
               {
                 type: connection.QueryTypes.INSERT,
                 replacements: {
                   username: username,
                   password: password,
-                  uid: 1, //TODO: gen sequentially
+                  uid: uuidv1(),
                   name: name,
                   img: img,
                 }
@@ -291,29 +301,30 @@ router.post('/signup', function (req, res, next) {
           }
         }
         else { // username already exists so return a fail
-            res.send(false)
+            res.status(400).json({})
         }
     })
 })
 
+// done
 router.get('/guest-home', function (req, res, next) {
-    const query = 'INSERT INTO GuestUsers (uid) VALUES (:uid) ;'
+    const query = 'INSERT INTO GuestUser (uid) VALUES (:uid) ;'
     connection.query(query,
       {
         type: connection.QueryTypes.INSERT,
         replacements: {
-          uid: 1, // TODO: fix this to gen next uid
+          uid: uuidv1()
         }
       })
       .then(result => {
-        // result[1] is the number of rows changed
-        res.send('/home/guest')
+        res.send(uid)
       })
 })
 
+// Done
 router.get('/user-profile/:id', function (req, res, next) {
     const uid = req.params.id
-    const query = 'SELECT * FROM Users WHERE uid = :uid;'
+    const query = 'SELECT * FROM SignedUpUser WHERE uid = :uid;'
     connection.query(query,
       {
         type: connection.QueryTypes.SELECT,
@@ -324,7 +335,7 @@ router.get('/user-profile/:id', function (req, res, next) {
       .then(user => {
         if (user.length === 1){
             // do another query to get fave restaurants:
-            const RestQuery = 'SELECT R.rid, R.name FROM Users U, FavRestaurant R WHERE U.uid = :uid and U.uid == R.uid;'
+            const RestQuery = 'SELECT R.rid, R.name FROM SignedUpUser U, SignedUpUserRestaurantFavourites F, Restaurant R WHERE U.uid = :uid and U.uid == F.uid and R.rid == F.rid;'
             connection.query(RestQueryquery,
               {
                 type: connection.QueryTypes.SELECT,
@@ -350,6 +361,7 @@ router.get('/user-profile/:id', function (req, res, next) {
       })
 })
 
+// Done
 router.get('/owner-profile/:id', function (req, res, next) {
     const oid = req.params.id
     const query = 'SELECT * FROM Owner WHERE oid = :oid;'
@@ -386,6 +398,7 @@ router.get('/owner-profile/:id', function (req, res, next) {
         }
       })
 })
+
 
 router.post('/user-profile/:id/edit', function (req, res, next) {
     const uid = req.params.id
