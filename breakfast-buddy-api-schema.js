@@ -24,10 +24,6 @@ const ENTITIES = {
         profilePicUrl: 'https://google.com/image',
         ownedRestaurants: [ ENTITIES.RestaurantItem ]
     },
-    RestaurantItem: {
-        rid: 12,
-        name: 'werf'
-    },
     restaurantListItem: {
         rid: 123,
         name: 'dons bar and grill',
@@ -38,11 +34,6 @@ const ENTITIES = {
         restaurantName: 'ihop',
         foodType: 'pancakes'
     },
-    searchHistoryListItem: {
-        day: 'mond',
-        time: '34',
-        postalCode: 'v7t hf7f'
-    },
     expandedRestaurant: {
         restaurantID = 234,
         RestaurantName = 'Macs',
@@ -51,20 +42,23 @@ const ENTITIES = {
         FaveFood = 'eggs',
         FoodTypes = ['eggs', 'pancakes', 'hashbrowns', 'FrenchToast', ...],
     },
-    SearchHistoryListItem: {
-        seachID = 23,
+    // TODO: return this instead of old one
+    searchHistoryListItem: {
+        searchID = 23,
         Location: '2394 blah st, city' | NULL,
+        lat: 123,
+        lon: 123,
         day: 'Mon' | NULL,
         Time: '12' | NULL,
         FoodType: 'pancakes' | NULL,
     },
-    
+
 }
 
 const REST_ENDPOINTS = {
     login: {
         type: 'GET',
-        requestUrl: `${baseURL}/home`,
+        requestUrl: `${baseURL}/home?username=${username}&password=${password}`,
         body: {
             username: 'foo',
             password: ''
@@ -72,7 +66,7 @@ const REST_ENDPOINTS = {
         response: {
             code: 200,
             // identifies whether to redirect to /home/owner or to /home/user or to not redirectbased on username/password verification
-            body: user || false
+            body: ENTITIES.user || false
         }
     },
     signup: {
@@ -88,16 +82,16 @@ const REST_ENDPOINTS = {
         response: {
             code: 200,
             // identifies whether to redirect to /home/owner or to /home/user or to not redirectbased on username if username already exists
-            body: user || false
+            body: ENTITES.user || false
         }
     },
-    Userhome: {
+    userhome: {
         type: 'GET',
         requestUrl: `${baseURL}/user-home/${id}`,
         body: { NULL },
         response: {
             code: 200 || 404,
-            body: user
+            body: ENTITES.user
         }
     },
     ownerhome: {
@@ -106,16 +100,19 @@ const REST_ENDPOINTS = {
         body: { NULL },
         response: {
             code: 200 || 404,
-            body: user
+            body: ENTITES.user
         }
     },
+    // TODO: hit this URL on page load
     guesthome: {
         type: 'GET',
         requestUrl: `${baseURL}/guest-home/`,
         body: { NULL },
         response: {
             code: 200,
-            body: NULL
+            body: {
+                userId: 123
+            }
         }
     },
     userprofile: {
@@ -139,15 +136,17 @@ const REST_ENDPOINTS = {
     userprofileEdit: {
         type: 'POST',
         requestUrl: `${baseURL}/user-profile/${id}/edit`,
+        // TODO: return whole body even if items left blank
         body: {
             username: 'fe',
             password: 'erf',
             name: '',
+            // TODO: if img empty, leave it
             img: ''
         },
         response: {
-            code: 200 || 404,
-            body: userProfile || false // false when the username entered is not unique
+            code: 200 || 404 || 400, //when the username entered is not unique
+            body: userProfile
         }
     },
     ownerprofileEdit: {
@@ -160,8 +159,8 @@ const REST_ENDPOINTS = {
             img: ''
         },
         response: {
-            code: 200 || 404,
-            body: ownerProfile || false // false when the username entered is not unique
+            code: 200 || 404 || 400, //when the username entered is not unique
+            body: ownerProfile
         }
     },
     userprofileSearchHistory: {
@@ -170,16 +169,17 @@ const REST_ENDPOINTS = {
         body: NULL,
         response: {
             code: 200 || 404,
-            body: userProfile // with search history values
+            body: [ ENTITIES.searchHistoryListItem ] // with search history values
         }
-    }, // TODO: do we want sep endpoints for this and fave foods at places?? then also TODO: favefoods..
+    },
     userDelLikedRestaurant : {
         type: 'DELETE',
         requestUrl: `${baseURL}/user/${id}/remove-liked-restaurant/${rid}`,
         body: NULL,
         response: {
             code: 200 || 404,
-            body: userProfile
+            // TODO: update response to return array below instead of profile
+            body: [ ENTITIES.restaurantListItem ]
         }
     },
 
@@ -196,6 +196,7 @@ const REST_ENDPOINTS = {
     // getting search result for manual search loc/time
     //getting search result for manual search by food
 
+    // TODO: change all ids to be strings using uuid package
 }
 
 // corresponding code:
@@ -203,8 +204,8 @@ router.get('/home', function (req, res, next) {
     const username = req.body.username
     const password = req.body.password
     const userQuery = 'SELECT * FROM Users WHERE username = :username and password = :password;'
-    connection.query(userQuery, 
-      { 
+    connection.query(userQuery,
+      {
         type: connection.QueryTypes.SELECT,
         replacements: {
           username: username,
@@ -217,8 +218,8 @@ router.get('/home', function (req, res, next) {
           res.json({'id': user[0].uid, 'name': user[0].name, 'owner': false})
         } else { // check if owner:
             const ownerQuery = 'SELECT * FROM Owner WHERE username = :username and password = :password;'
-            connection.query(ownerQuery, 
-              { 
+            connection.query(ownerQuery,
+              {
                 type: connection.QueryTypes.SELECT,
                 replacements: {
                   username: username,
@@ -247,8 +248,8 @@ router.post('/signup', function (req, res, next) {
     const owner = req.body.owner
 
     const query = 'SELECT * FROM User WHERE username = :username UNION SELECT * FROM Owner WHERE username = :username;'
-    connection.query(query, 
-      { 
+    connection.query(query,
+      {
         type: connection.QueryTypes.SELECT,
         replacements: {
           username: username
@@ -260,8 +261,8 @@ router.post('/signup', function (req, res, next) {
           if (owner == true)
           { // create a owner user
             const query = 'INSERT INTO Owner (username, password, oid, name, img) VALUES (:username, :password, :oid, :name, :img) ;'
-            connection.query(query, 
-              { 
+            connection.query(query,
+              {
                 type: connection.QueryTypes.INSERT,
                 replacements: {
                   username: username,
@@ -275,8 +276,8 @@ router.post('/signup', function (req, res, next) {
           }
           else { // create a regular user
             const query = 'INSERT INTO User (username, password, uid, name, img) VALUES (:username, :password, :uid, :name, :img) ;'
-            connection.query(query, 
-              { 
+            connection.query(query,
+              {
                 type: connection.QueryTypes.INSERT,
                 replacements: {
                   username: username,
@@ -309,7 +310,7 @@ router.get('/guest-home', function (req, res, next) {
         res.send('/home/guest')
       })
 })
-  
+
 router.get('/user-profile/:id', function (req, res, next) {
     const uid = req.params.id
     const query = 'SELECT * FROM Users WHERE uid = :uid;'
@@ -348,7 +349,7 @@ router.get('/user-profile/:id', function (req, res, next) {
         }
       })
 })
-  
+
 router.get('/owner-profile/:id', function (req, res, next) {
     const oid = req.params.id
     const query = 'SELECT * FROM Owner WHERE oid = :oid;'
@@ -385,7 +386,7 @@ router.get('/owner-profile/:id', function (req, res, next) {
         }
       })
 })
-  
+
 router.post('/user-profile/:id/edit', function (req, res, next) {
     const uid = req.params.id
     username = req.body.username
@@ -395,8 +396,8 @@ router.post('/user-profile/:id/edit', function (req, res, next) {
     valid = true
     // check if this user even exists
     const queryUID = 'SELECT * FROM User WHERE uid = :uid;'
-    connection.query(queryUID, 
-      { 
+    connection.query(queryUID,
+      {
         type: connection.QueryTypes.SELECT,
         replacements: {
           uid: uid
@@ -407,8 +408,8 @@ router.post('/user-profile/:id/edit', function (req, res, next) {
           if (username != '') {
             // check if new username is unique
             const queryUsername = 'SELECT from User WHERE username = :username UNION SELECT from Owner WHERE username = :username;'
-            connection.query(queryUsername, 
-              { 
+            connection.query(queryUsername,
+              {
                 type: connection.QueryTypes.SELECT,
                 replacements: {
                   username: username
@@ -435,8 +436,8 @@ router.post('/user-profile/:id/edit', function (req, res, next) {
           }
           if (valid) { // can update user profile with new username or null
             const updateQuery = 'UPDATE Users SET username = :username, password = :password, name = :name, img = :img WHERE uid = :uid ;'
-            connection.query(updateQuery, 
-              { 
+            connection.query(updateQuery,
+              {
                 type: connection.QueryTypes.UPDATE,
                 replacements: {
                   username: username,
@@ -447,12 +448,12 @@ router.post('/user-profile/:id/edit', function (req, res, next) {
                 }
               })
               res.send('user-profile/:id')  //TODO: is this right?
-          } else { 
+          } else {
             // username already exists so return a fail
             res.send(false)
           }
         }
-        else { 
+        else {
             // user does not exist!!
             res.status(404).json({})
         }
@@ -468,8 +469,8 @@ router.post('/owner-profile/:id/edit', function (req, res, next) {
     valid = true
     // check if this user even exists
     const queryOID = 'SELECT * FROM Owner WHERE oid = :oid;'
-    connection.query(queryOID, 
-      { 
+    connection.query(queryOID,
+      {
         type: connection.QueryTypes.SELECT,
         replacements: {
           oid: oid
@@ -480,8 +481,8 @@ router.post('/owner-profile/:id/edit', function (req, res, next) {
           if (username != '' && username != user[0].username) {
             // check if new username is unique
             const queryUsername = 'SELECT from User WHERE username = :username UNION SELECT from Owner WHERE username = :username;'
-            connection.query(queryUsername, 
-              { 
+            connection.query(queryUsername,
+              {
                 type: connection.QueryTypes.SELECT,
                 replacements: {
                   username: username
@@ -508,8 +509,8 @@ router.post('/owner-profile/:id/edit', function (req, res, next) {
           }
           if (valid) { // can update user profile with new username or null
             const updateQuery = 'UPDATE Owner SET username = :username, password = :password, name = :name, img = :img WHERE oid = :oid ;'
-            connection.query(updateQuery, 
-              { 
+            connection.query(updateQuery,
+              {
                 type: connection.QueryTypes.UPDATE,
                 replacements: {
                   username: username,
@@ -520,12 +521,12 @@ router.post('/owner-profile/:id/edit', function (req, res, next) {
                 }
               })
               res.send('owner-profile/:id')  //TODO: is this right?
-          } else { 
+          } else {
             // username already exists so return a fail
             res.send(false)
           }
         }
-        else { 
+        else {
             // user does not exist!!
             res.status(404).json({})
         }
