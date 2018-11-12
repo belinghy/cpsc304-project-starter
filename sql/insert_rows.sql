@@ -122,6 +122,7 @@ insert into HoursOfOperation values ('Sunday', '10:00', '20:00');
 insert into HoursOfOperation values ('Sunday', '8:00', '20:00');
 
 
+-- TODO: need real lat/lons for these addresses
 insert into Location values('V6R2B4', 'Vancouver', 'W Broadway', 3431, 21921);
 insert into Location values('V6K2H3', 'Vancouver', 'W Broadway', 3144, 42726);
 insert into Location values('V6R2G7', 'Vancouver', 'W 10th Ave', 3763, 82252);
@@ -170,7 +171,7 @@ insert into SignedUpUserFoodSearches values ('997284', 'panini');
 insert into SignedUpUserFoodSearches values ('997284', 'oatmeal');
 insert into SignedUpUserFoodSearches values ('831222', 'tea');
 
-
+-- TODO: fix postal code to be string
 /*SignedUpUserLocationTimeSearches(uid, day, openTime, closeTime, postalCode)*/
 -- why does the TIME has to match HoursOfOperation?
 insert into SignedUpUserLocationTimeSearches values 

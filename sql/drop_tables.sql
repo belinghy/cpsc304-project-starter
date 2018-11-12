@@ -11,6 +11,6 @@ drop table SignedUpUserFoodSearches;
 drop table SignedUpUserLocationTimeSearches;
 drop table SignedUpUserRestaurantFavourites;
 drop table RestaurantHoursOfOperation;
-drop table FoodServedAtRestaurants;
+drop table FoodsServedAtRestaurants;
 
 commit;
