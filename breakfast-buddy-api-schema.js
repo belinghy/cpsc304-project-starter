@@ -10,7 +10,7 @@ const ENTITIES = {
         password: 'password',
         name: 's334',
         img: 'https://google.com/image',
-        favRestaurants: [ ENTITIES.restaurantListItem ],
+        favRestaurants: [ ENTITIES.restaurantItem ],
         // empty at first
         favFoods: [ ENTITIES.favFoodListItem ],
         // empty at first
@@ -22,10 +22,14 @@ const ENTITIES = {
         password: 'password',
         name: 'jrf',
         profilePicUrl: 'https://google.com/image',
-        ownedRestaurants: [ ENTITIES.restaurantListItem ]
+        ownedRestaurants: [ ENTITIES.RestaurantItem ]
+    },
+    RestaurantItem: {
+        rid: 12,
+        name: 'werf'
     },
     restaurantListItem: {
-        restaurantId: 123,
+        rid: 123,
         name: 'dons bar and grill',
         isFavourited: true,
     },
@@ -35,7 +39,9 @@ const ENTITIES = {
         foodType: 'pancakes'
     },
     searchHistoryListItem: {
-
+        day: 'mond',
+        time: '34',
+        postalCode: 'v7t hf7f'
     },
     expandedRestaurant: {
         restaurantID = 234,
@@ -130,9 +136,68 @@ const REST_ENDPOINTS = {
             body: ownerProfile
         }
     },
+    userprofileEdit: {
+        type: 'POST',
+        requestUrl: `${baseURL}/user-profile/${id}/edit`,
+        body: {
+            username: 'fe',
+            password: 'erf',
+            name: '',
+            img: ''
+        },
+        response: {
+            code: 200 || 404,
+            body: userProfile || false // false when the username entered is not unique
+        }
+    },
+    ownerprofileEdit: {
+        type: 'POST',
+        requestUrl: `${baseURL}/owner-profile/${id}/edit`,
+        body: {
+            username: 'fe',
+            password: 'erf',
+            name: '',
+            img: ''
+        },
+        response: {
+            code: 200 || 404,
+            body: ownerProfile || false // false when the username entered is not unique
+        }
+    },
+    userprofileSearchHistory: {
+        type: 'GET',
+        requestUrl: `${baseURL}/user-profile/${id}/search-history`,
+        body: NULL,
+        response: {
+            code: 200 || 404,
+            body: userProfile // with search history values
+        }
+    }, // TODO: do we want sep endpoints for this and fave foods at places?? then also TODO: favefoods..
+    userDelLikedRestaurant : {
+        type: 'DELETE',
+        requestUrl: `${baseURL}/user/${id}/remove-liked-restaurant/${rid}`,
+        body: NULL,
+        response: {
+            code: 200 || 404,
+            body: userProfile
+        }
+    },
+
+    // TODO:
+    //userprofilesearch clear
+    // user profile show food fave
+    // ~~~~ edit/ remove food item
+    // owner add owned restaurant
+    // owner delete owned restaurant
+    // owner update a retautant
+    // restaurant expanded view for user
+    // restaurant expanded view for owner
+    // getting search result end point for near me
+    // getting search result for manual search loc/time
+    //getting search result for manual search by food
+
 }
 
-//user = {'id': u/oid, 'name': name, 'owner': owner}
 // corresponding code:
 router.get('/home', function (req, res, next) {
     const username = req.body.username
@@ -258,8 +323,8 @@ router.get('/user-profile/:id', function (req, res, next) {
       .then(user => {
         if (user.length === 1){
             // do another query to get fave restaurants:
-            const query = 'SELECT * FROM Users U, FavRestaurant R WHERE U.uid = :uid and U.uid == R.uid;'
-            connection.query(query,
+            const RestQuery = 'SELECT R.rid, R.name FROM Users U, FavRestaurant R WHERE U.uid = :uid and U.uid == R.uid;'
+            connection.query(RestQueryquery,
               {
                 type: connection.QueryTypes.SELECT,
                 replacements: {
@@ -273,7 +338,7 @@ router.get('/user-profile/:id', function (req, res, next) {
                       'password': user[0].password,
                       'name': user[0].name,
                       'img': user[0].image,
-                      'favRestaurants': restaurants[0], // TODO: fix the format of this
+                      'favRestaurants': restaurants,
                       'favFoods': NULL,
                       'searches': NULL
                     })
@@ -297,8 +362,8 @@ router.get('/owner-profile/:id', function (req, res, next) {
       .then(owner => {
         if (owner.length === 1){
             // do another query to get restaurants:
-            const query = 'SELECT * FROM Owner O, Restaurant R WHERE O.oid = :oid and O.rid == R.rid;'
-            connection.query(query,
+            const RestQuery = 'SELECT R.rid, R.name FROM Owner O, Restaurant R WHERE O.oid = :oid and O.rid == R.rid;'
+            connection.query(RestQuery,
               {
                 type: connection.QueryTypes.SELECT,
                 replacements: {
@@ -312,7 +377,7 @@ router.get('/owner-profile/:id', function (req, res, next) {
                       'password': user[0].password,
                       'name': user[0].name,
                       'img': user[0].image,
-                      'ownedRestaurants': restaurants[0] // TODO: fix the format of this
+                      'ownedRestaurants': restaurants
                     })
                 })
         } else {
@@ -321,3 +386,217 @@ router.get('/owner-profile/:id', function (req, res, next) {
       })
 })
   
+router.post('/user-profile/:id/edit', function (req, res, next) {
+    const uid = req.params.id
+    username = req.body.username
+    password = req.body.password
+    name = req.body.name
+    img = req.body.img
+    valid = true
+    // check if this user even exists
+    const queryUID = 'SELECT * FROM User WHERE uid = :uid;'
+    connection.query(queryUID, 
+      { 
+        type: connection.QueryTypes.SELECT,
+        replacements: {
+          uid: uid
+        }
+      })
+      .then(user => {
+        if (user.length === 1 ) {
+          if (username != '') {
+            // check if new username is unique
+            const queryUsername = 'SELECT from User WHERE username = :username UNION SELECT from Owner WHERE username = :username;'
+            connection.query(queryUsername, 
+              { 
+                type: connection.QueryTypes.SELECT,
+                replacements: {
+                  username: username
+                }
+              })
+            .then(anyuser => {
+                if (anyuser.length != 0){
+                    // username is not unique so can't be updated
+                    valid = false
+                }
+            })
+          }
+          else {
+              username = user[0].username
+          }
+          if (password == '') {
+            password = user[0].password
+          }
+          if (name == '') {
+              name = user[0].name
+          }
+          if (img == '') {
+              img = user[0].img
+          }
+          if (valid) { // can update user profile with new username or null
+            const updateQuery = 'UPDATE Users SET username = :username, password = :password, name = :name, img = :img WHERE uid = :uid ;'
+            connection.query(updateQuery, 
+              { 
+                type: connection.QueryTypes.UPDATE,
+                replacements: {
+                  username: username,
+                  password: password,
+                  uid: uid,
+                  name: name,
+                  img: img,
+                }
+              })
+              res.send('user-profile/:id')  //TODO: is this right?
+          } else { 
+            // username already exists so return a fail
+            res.send(false)
+          }
+        }
+        else { 
+            // user does not exist!!
+            res.status(404).json({})
+        }
+    })
+})
+
+router.post('/owner-profile/:id/edit', function (req, res, next) {
+    const oid = req.params.id
+    username = req.body.username
+    password = req.body.password
+    name = req.body.name
+    img = req.body.img
+    valid = true
+    // check if this user even exists
+    const queryOID = 'SELECT * FROM Owner WHERE oid = :oid;'
+    connection.query(queryOID, 
+      { 
+        type: connection.QueryTypes.SELECT,
+        replacements: {
+          oid: oid
+        }
+      })
+      .then(user => {
+        if (user.length === 1 ) {
+          if (username != '' && username != user[0].username) {
+            // check if new username is unique
+            const queryUsername = 'SELECT from User WHERE username = :username UNION SELECT from Owner WHERE username = :username;'
+            connection.query(queryUsername, 
+              { 
+                type: connection.QueryTypes.SELECT,
+                replacements: {
+                  username: username
+                }
+              })
+            .then(anyuser => {
+                if (anyuser.length != 0){
+                    // username is not unique so can't be updated
+                    valid = false
+                }
+            })
+          }
+          else {
+              username = user[0].username
+          }
+          if (password == '') {
+            password = user[0].password
+          }
+          if (name == '') {
+              name = user[0].name
+          }
+          if (img == '') {
+              img = user[0].img
+          }
+          if (valid) { // can update user profile with new username or null
+            const updateQuery = 'UPDATE Owner SET username = :username, password = :password, name = :name, img = :img WHERE oid = :oid ;'
+            connection.query(updateQuery, 
+              { 
+                type: connection.QueryTypes.UPDATE,
+                replacements: {
+                  username: username,
+                  password: password,
+                  oid: oid,
+                  name: name,
+                  img: img,
+                }
+              })
+              res.send('owner-profile/:id')  //TODO: is this right?
+          } else { 
+            // username already exists so return a fail
+            res.send(false)
+          }
+        }
+        else { 
+            // user does not exist!!
+            res.status(404).json({})
+        }
+    })
+})
+
+router.get('/user-profile/:id/search-history', function (req, res, next) { // TODO: do we want a separate page to load??
+    const uid = req.params.id
+    const query = 'SELECT * FROM Users WHERE uid = :uid;'
+    connection.query(query,
+      {
+        type: connection.QueryTypes.SELECT,
+        replacements: {
+          uid: uid
+        }
+      })
+      .then(user => {
+        if (user.length === 1){
+            // do another query to get search history:
+            query = 'SELECT S.day, S.openTime, S.postalCode FROM User U, Search S WHERE U.uid = :uid and U.uid == S.uid UNION'
+            connection.query(query,
+              {
+                type: connection.QueryTypes.SELECT,
+                replacements: {
+                  uid: uid
+                }
+              })
+              .then(searchRes => {
+                  res.json(
+                      {'uid': uid,
+                      'username': user[0].username,
+                      'password': user[0].password,
+                      'name': user[0].name,
+                      'img': user[0].image,
+                      'favRestaurants': NULL,
+                      'favFoods': NULL,
+                      'searches': searchRes
+                    })
+                })
+        } else {
+            res.status(404).json({})
+        }
+      })
+})
+
+router.get('/user/:id/remove-liked-restaurant/:rid', function (req, res, next) {
+    const uid = req.params.id
+    const rid = req.params.rid
+    const query = 'SELECT * FROM Users WHERE uid = :uid;'
+    connection.query(query,
+      {
+        type: connection.QueryTypes.SELECT,
+        replacements: {
+          uid: uid
+        }
+      })
+      .then(user => {
+        if (user.length === 1){
+            // do another query to remove liked restaurants:
+            const RestQuery = 'DELETE FROM  SignedUpUserRestaurantFavourites WHERE uid = :uid and rid = :rid;'
+            connection.query(RestQueryquery,
+              {
+                type: connection.QueryTypes.SELECT,
+                replacements: {
+                  uid: uid,
+                  rid: rid
+                }
+              })
+              res.send('/user-profile/:id') //TODO: is this right?
+        } else {
+            res.status(404).json({})
+        }
+      })
+})

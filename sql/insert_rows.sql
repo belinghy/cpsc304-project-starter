@@ -22,23 +22,28 @@ insert into Account values('Binnacle', 'acct19');
 insert into Account values('Vamoose', 'acct20');
 
 
-insert into Food values('cereals');
-insert into Food values('fruit and parfait');
+insert into Food values('cereal');
+insert into Food values('fruit');
 insert into Food values('coffee');
-insert into Food values('pancakes and waffles');
-insert into Food values('eggs');
+insert into Food values('pancake');
+insert into Food values('waffle');
+insert into Food values('boiled eggs');
+insert into Food values('scrambled eggs');
+insert into Food values('eggs benedict');
+insert into Food values('sunny side up');
 insert into Food values('juice');
-insert into Food values('milk and dairy subs');
+insert into Food values('milk and dairy');
 insert into Food values('bread and pastries');
-insert into Food values('salads');
+insert into Food values('salad');
 insert into Food values('grab-n-go items');
-insert into Food values('bacon and sausages');
-insert into Food values('all-in combos');
+insert into Food values('bacon and sausage');
+insert into Food values('all-in combo');
 insert into Food values('omelette');
 insert into Food values('toast');
-insert into Food values('sandwiches');
+insert into Food values('sandwich');
 insert into Food values('panini');
 insert into Food values('oatmeal');
+insert into Food values('tea');
 
 
 
@@ -93,27 +98,28 @@ insert into SignedUpUser values(831222, '', 'Thamy', 'BramblecUneath');
 
 
 -- add HoursOfOperation here
-insert into HoursOfOperation values ('Monday', 00:00, 24:00); -- open 24hr
-insert into HoursOfOperation values ('Monday', 6:30, 11:30);
-insert into HoursOfOperation values ('Monday', 8:00, 20:00);
-insert into HoursOfOperation values ('Tuesday', 00:00, 24:00);
-insert into HoursOfOperation values ('Tuesday', 6:30, 11:30);
-insert into HoursOfOperation values ('Tuesday', 8:00, 20:00);
-insert into HoursOfOperation values ('Wednesday', 00:00, 24:00);
-insert into HoursOfOperation values ('Wednesday', 6:30, 11:30);
-insert into HoursOfOperation values ('Wednesday', 8:00, 20:00);
-insert into HoursOfOperation values ('Thursday', 00:00, 24:00);
-insert into HoursOfOperation values ('Thursday', 6:30, 11:30);
-insert into HoursOfOperation values ('Thursday', 8:00, 20:00);
-insert into HoursOfOperation values ('Friday', 00:00, 24:00);
-insert into HoursOfOperation values ('Friday', 6:30, 11:30);
-insert into HoursOfOperation values ('Friday', 8:00, 20:00);
-insert into HoursOfOperation values ('Friday', 00:00, 24:00);
-insert into HoursOfOperation values ('Saturday', 6:30, 11:30);
-insert into HoursOfOperation values ('Saturday', 10:00, 20:00);
-insert into HoursOfOperation values ('Sunday', 00:00, 24:00);
-insert into HoursOfOperation values ('Sunday', 6:30, 11:30);
-insert into HoursOfOperation values ('Sunday', 10:00, 20:00);
+insert into HoursOfOperation values ('Monday', '00:00', '24:00'); -- open 24hr
+insert into HoursOfOperation values ('Monday', '6:30', '11:30');
+insert into HoursOfOperation values ('Monday', '8:00', '20:00');
+insert into HoursOfOperation values ('Tuesday', '00:00', '24:00');
+insert into HoursOfOperation values ('Tuesday', '6:30', '11:30');
+insert into HoursOfOperation values ('Tuesday', '8:00', '20:00');
+insert into HoursOfOperation values ('Wednesday', '00:00', '24:00');
+insert into HoursOfOperation values ('Wednesday', '6:30', '11:30');
+insert into HoursOfOperation values ('Wednesday', '8:00', '20:00');
+insert into HoursOfOperation values ('Thursday', '00:00', '24:00');
+insert into HoursOfOperation values ('Thursday', '6:30', '11:30');
+insert into HoursOfOperation values ('Thursday', '8:00', '20:00');
+insert into HoursOfOperation values ('Friday', '00:00', '24:00');
+insert into HoursOfOperation values ('Friday', '6:30', '11:30');
+insert into HoursOfOperation values ('Friday', '8:00', '20:00');
+insert into HoursOfOperation values ('Saturday', '6:30', '11:30');
+insert into HoursOfOperation values ('Saturday', '10:00', '20:00');
+insert into HoursOfOperation values ('Saturday', '00:00', '24:00');
+insert into HoursOfOperation values ('Sunday', '00:00', '24:00');
+insert into HoursOfOperation values ('Sunday', '6:30', '11:30');
+insert into HoursOfOperation values ('Sunday', '10:00', '20:00');
+insert into HoursOfOperation values ('Sunday', '8:00', '20:00');
 
 
 insert into Location values('V6R2B4', 'Vancouver', 'W Broadway', 3431, 21921);
@@ -134,14 +140,14 @@ insert into Location values('V3R1N5', 'Surrey', '104 Ave', 15269, 35878);
 
 
 /* UserLikesFoodAtRestaurant(uid, food_type, rid)*/
-insert into UserLikesFoodAtRestaurant values ('277156', 'cereals', '21921');
-insert into UserLikesFoodAtRestaurant values ('277156', 'sandwiches', '03504');
-insert into UserLikesFoodAtRestaurant values ('294484', 'all-in combos', '84921');
-insert into UserLikesFoodAtRestaurant values ('294484', 'sandwiches', '03504');
+insert into UserLikesFoodAtRestaurant values ('277156', 'cereal', '21921');
+insert into UserLikesFoodAtRestaurant values ('277156', 'sandwich', '03504');
+insert into UserLikesFoodAtRestaurant values ('294484', 'all-in combo', '84921');
+insert into UserLikesFoodAtRestaurant values ('294484', 'sandwich', '03504');
 insert into UserLikesFoodAtRestaurant values ('863588', 'tea', '93531');
 insert into UserLikesFoodAtRestaurant values ('863588', 'panini', '71046');
 insert into UserLikesFoodAtRestaurant values ('578126', 'omelette', '35878');
-insert into UserLikesFoodAtRestaurant values ('578126', 'milk and dairy subs', '58136');
+insert into UserLikesFoodAtRestaurant values ('578126', 'milk and dairy', '58136');
 insert into UserLikesFoodAtRestaurant values ('734378', 'oatmeal', '38449');
 insert into UserLikesFoodAtRestaurant values ('734378', 'bread and pastries', '12381');
 
@@ -149,18 +155,16 @@ insert into UserLikesFoodAtRestaurant values ('734378', 'bread and pastries', '1
 insert into SignedUpUserFoodSearches values ('656129', 'tea');
 insert into SignedUpUserFoodSearches values ('369008', 'oatmeal');
 insert into SignedUpUserFoodSearches values ('369008', 'panini');
-insert into SignedUpUserFoodSearches values	('772157', 'salads');
-insert into SignedUpUserFoodSearches values	('772157', 'salads');
+insert into SignedUpUserFoodSearches values	('772157', 'salad');
 insert into SignedUpUserFoodSearches values ('943127', 'coffee');
-insert into SignedUpUserFoodSearches values ('943127', 'eggs');
-insert into SignedUpUserFoodSearches values ('294663', 'salads');
+insert into SignedUpUserFoodSearches values ('943127', 'boiled eggs');
+insert into SignedUpUserFoodSearches values ('294663', 'salad');
 insert into SignedUpUserFoodSearches values ('294663', 'bread and pastries');
-insert into SignedUpUserFoodSearches values ('298849', 'eggs');
 insert into SignedUpUserFoodSearches values ('647216', 'juice');
 insert into SignedUpUserFoodSearches values ('647216', 'coffee');
 insert into SignedUpUserFoodSearches values ('568122', 'coffee');
-insert into SignedUpUserFoodSearches values ('568122', 'fruit and parfait');
-insert into SignedUpUserFoodSearches values ('997284', 'cereals');
+insert into SignedUpUserFoodSearches values ('568122', 'fruit');
+insert into SignedUpUserFoodSearches values ('997284', 'cereal');
 insert into SignedUpUserFoodSearches values ('997284', 'toast');
 insert into SignedUpUserFoodSearches values ('997284', 'panini');
 insert into SignedUpUserFoodSearches values ('997284', 'oatmeal');
@@ -170,27 +174,27 @@ insert into SignedUpUserFoodSearches values ('831222', 'tea');
 /*SignedUpUserLocationTimeSearches(uid, day, openTime, closeTime, postalCode)*/
 -- why does the TIME has to match HoursOfOperation?
 insert into SignedUpUserLocationTimeSearches values 
-(656129, 'Monday', 00:00, 24:00, V6R2B4);
+(656129, 'Monday', '00:00', '24:00', V6R2B4);
 insert into SignedUpUserLocationTimeSearches values 
-(656129, 'Tuesday', 8:00, 20:00, V6R2B4);
+(656129, 'Tuesday', '8:00', '20:00', V6R2B4);
 insert into SignedUpUserLocationTimeSearches values 
-(298849, 'Wednesday', 00:00, 24:00, V6R2G7);
+(298849, 'Wednesday', '00:00', '24:00', V6R2G7);
 insert into SignedUpUserLocationTimeSearches values 
-(568122, 'Friday', 6:30, 11:30, V5W3A1);
+(568122, 'Friday', '6:30', '11:30', V5W3A1);
 insert into SignedUpUserLocationTimeSearches values 
-(568122, 'Friday', 8:00, 20:00, V5X3T4);
+(568122, 'Friday', '8:00', '20:00', V5X3T4);
 insert into SignedUpUserLocationTimeSearches values 
-(568122, 'Saturday', 6:30, 11:30, V7L3V6);
+(568122, 'Saturday', '6:30', '11:30', V7L3V6);
 insert into SignedUpUserLocationTimeSearches values 
-(772157, 'Saturday', 6:30, 11:30, V7T1X5);
+(772157, 'Saturday', '6:30', '11:30', V7T1X5);
 insert into SignedUpUserLocationTimeSearches values 
-(943127, 'Sunday', 6:30, 11:30, V7T1X5);
+(943127, 'Sunday', '6:30', '11:30', V7T1X5);
 insert into SignedUpUserLocationTimeSearches values 
-(294663, 'Thursday', 00:00, 24:00, V0N1G0);
+(294663, 'Thursday', '00:00', '24:00', V0N1G0);
 insert into SignedUpUserLocationTimeSearches values 
-(831222, 'Tuesday', 00:00, 24:00, V0N1G0);
+(831222, 'Tuesday', '00:00', '24:00', V0N1G0);
 insert into SignedUpUserLocationTimeSearches values 
-(831222, 'Thursday', 8:00, 20:00, V3R1N5);
+(831222, 'Thursday', '8:00', '20:00', V3R1N5);
 
 
 /*SignedUpUserRestaurantFavourites*/
@@ -209,7 +213,6 @@ insert into SignedUpUserRestaurantFavourites values ('647216', '21921');
 insert into SignedUpUserRestaurantFavourites values ('568122', '93531');
 insert into SignedUpUserRestaurantFavourites values ('568122', '84921');
 insert into SignedUpUserRestaurantFavourites values ('997284', '21921');
-insert into SignedUpUserRestaurantFavourites values ('997284', '84921t');
 insert into SignedUpUserRestaurantFavourites values ('997284', '35878');
 insert into SignedUpUserRestaurantFavourites values ('997284', '71046');
 insert into SignedUpUserRestaurantFavourites values ('831222', '35878');
@@ -217,146 +220,144 @@ insert into SignedUpUserRestaurantFavourites values ('831222', '35878');
 /*RestaurantHoursOfOperation(rid, day, openTime, closeTime)*/
 -- some restaurant (ie. 35878 & 82789 & 02846) do not have Hours Of Operation
 insert into RestaurantHoursOfOperation values 
-(21921, 'Monday', 00:00, 24:00);
+(21921, 'Monday', '00:00', '24:00');
 insert into RestaurantHoursOfOperation values 
-(21921, 'Tuesday', 00:00, 24:00);
+(21921, 'Tuesday', '00:00', '24:00');
 insert into RestaurantHoursOfOperation values 
-(21921, 'Wednesday', 00:00, 24:00);
+(21921, 'Wednesday', '00:00', '24:00');
 insert into RestaurantHoursOfOperation values 
-(21921, 'Thursday', 00:00, 24:00);
+(21921, 'Thursday', '00:00', '24:00');
 insert into RestaurantHoursOfOperation values 
-(21921, 'Friday', 00:00, 24:00);
+(21921, 'Friday', '00:00', '24:00');
 insert into RestaurantHoursOfOperation values 
-(21921, 'Saturday', 00:00, 24:00);
+(21921, 'Saturday', '00:00', '24:00');
 insert into RestaurantHoursOfOperation values 
-(21921, 'Sunday', 00:00, 24:00);
+(21921, 'Sunday', '00:00', '24:00');
 insert into RestaurantHoursOfOperation values 
-(42726, 'Saturday', 10:00, 20:00);
+(42726, 'Saturday', '10:00', '20:00');
 insert into RestaurantHoursOfOperation values 
-(42726, 'Sunday', 10:00, 20:00);
+(42726, 'Sunday', '10:00', '20:00');
 insert into RestaurantHoursOfOperation values 
-(82252, 'Monday', 6:30, 11:30);
+(82252, 'Monday', '6:30', '11:30');
 insert into RestaurantHoursOfOperation values 
-(82252, 'Wednesday', 6:30, 11:30);
+(82252, 'Wednesday', '6:30', '11:30');
 insert into RestaurantHoursOfOperation values 
-(82252, 'Thursday', 6:30, 11:30);
+(82252, 'Thursday', '6:30', '11:30');
 insert into RestaurantHoursOfOperation values 
-(82252, 'Friday', 6:30, 11:30);
+(82252, 'Friday', '6:30', '11:30');
 insert into RestaurantHoursOfOperation values 
-(82252, 'Saturday', 6:30, 11:30);
+(82252, 'Saturday', '6:30', '11:30');
 insert into RestaurantHoursOfOperation values 
-(82252, 'Sunday', 6:30, 11:30);
+(82252, 'Sunday', '6:30', '11:30');
 insert into RestaurantHoursOfOperation values 
-(58136, 'Monday', 8:00, 20:00);
+(58136, 'Monday', '8:00', '20:00');
 insert into RestaurantHoursOfOperation values 
-(58136, 'Tuesday', 8:00, 20:00);
+(58136, 'Tuesday', '8:00', '20:00');
 insert into RestaurantHoursOfOperation values 
-(58136, 'Wednesday', 8:00, 20:00);
+(58136, 'Wednesday', '8:00', '20:00');
 insert into RestaurantHoursOfOperation values 
-(58136, 'Thursday', 8:00, 20:00);
+(58136, 'Thursday', '8:00', '20:00');
 insert into RestaurantHoursOfOperation values 
-(58136, 'Friday', 8:00, 20:00);
+(58136, 'Friday', '8:00', '20:00');
 insert into RestaurantHoursOfOperation values 
-(12381, 'Monday', 8:00, 20:00);
+(12381, 'Monday', '8:00', '20:00');
 insert into RestaurantHoursOfOperation values 
-(12381, 'Wednesday', 8:00, 20:00);
+(12381, 'Wednesday', '8:00', '20:00');
 insert into RestaurantHoursOfOperation values 
-(12381, 'Thursday', 8:00, 20:00);
+(12381, 'Thursday', '8:00', '20:00');
 insert into RestaurantHoursOfOperation values 
-(12381, 'Friday', 8:00, 20:00);
+(12381, 'Friday', '8:00', '20:00');
 insert into RestaurantHoursOfOperation values 
-(12381, 'Sunday', 8:00, 20:00);
+(12381, 'Sunday', '8:00', '20:00');
 insert into RestaurantHoursOfOperation values 
-(03504, 'Saturday', 00:00, 24:00);
+(03504, 'Saturday', '00:00', '24:00');
 insert into RestaurantHoursOfOperation values 
-(03504, 'Sunday', 00:00, 24:00);
+(03504, 'Sunday', '00:00', '24:00');
 insert into RestaurantHoursOfOperation values 
-(71046, 'Saturday', 00:00, 24:00);
+(71046, 'Saturday', '00:00', '24:00');
 insert into RestaurantHoursOfOperation values 
-(71046, 'Sunday', 00:00, 24:00);
+(71046, 'Sunday', '00:00', '24:00');
 insert into RestaurantHoursOfOperation values 
-(16196, 'Monday', 8:00, 20:00);
+(16196, 'Monday', '8:00', '20:00');
 insert into RestaurantHoursOfOperation values 
-(16196, 'Tuesday', 8:00, 20:00);
+(16196, 'Tuesday', '8:00', '20:00');
 insert into RestaurantHoursOfOperation values 
-(16196, 'Wednesday', 8:00, 20:00);
+(16196, 'Wednesday', '8:00', '20:00');
 insert into RestaurantHoursOfOperation values 
-(16196, 'Thursday', 8:00, 20:00);
+(16196, 'Thursday', '8:00', '20:00');
 insert into RestaurantHoursOfOperation values 
-(16196, 'Friday', 8:00, 20:00);
+(16196, 'Friday', '8:00', '20:00');
 insert into RestaurantHoursOfOperation values 
-(16196, 'Saturday', 6:30, 11:30);
+(16196, 'Saturday', '6:30', '11:30');
 insert into RestaurantHoursOfOperation values 
-(16196, 'Sunday', 6:30, 11:30);
+(16196, 'Sunday', '6:30', '11:30');
 insert into RestaurantHoursOfOperation values 
-(38449, 'Monday', 6:30, 11:30);
+(38449, 'Monday', '6:30', '11:30');
 insert into RestaurantHoursOfOperation values 
-(38449, 'Tuesday', 8:00, 20:00);
+(38449, 'Tuesday', '8:00', '20:00');
 insert into RestaurantHoursOfOperation values 
-(38449, 'Wednesday', 6:30, 11:30);
+(38449, 'Wednesday', '6:30', '11:30');
 insert into RestaurantHoursOfOperation values 
-(38449, 'Thursday', 6:30, 11:30);
+(38449, 'Thursday', '6:30', '11:30');
 insert into RestaurantHoursOfOperation values 
-(38449, 'Friday', 6:30, 11:30);
+(38449, 'Friday', '6:30', '11:30');
 insert into RestaurantHoursOfOperation values 
-(93531, 'Saturday', 00:00, 24:00);
+(93531, 'Saturday', '00:00', '24:00');
 insert into RestaurantHoursOfOperation values 
-(93531, 'Sunday', 00:00, 24:00);
+(93531, 'Sunday', '00:00', '24:00');
 insert into RestaurantHoursOfOperation values 
-(84921, 'Monday', 6:30, 11:30);
+(84921, 'Monday', '6:30', '11:30');
 insert into RestaurantHoursOfOperation values 
-(84921, 'Tuesday', 8:00, 20:00);
+(84921, 'Tuesday', '8:00', '20:00');
 insert into RestaurantHoursOfOperation values 
-(84921, 'Wednesday', 6:30, 11:30);
+(84921, 'Wednesday', '6:30', '11:30');
 insert into RestaurantHoursOfOperation values 
-(84921, 'Thursday', 6:30, 11:30);
+(84921, 'Thursday', '6:30', '11:30');
 insert into RestaurantHoursOfOperation values 
-(84921, 'Friday', 6:30, 11:30);
+(84921, 'Friday', '6:30', '11:30');
 insert into RestaurantHoursOfOperation values 
-(06847, 'Monday', 8:00, 20:00);
+(06847, 'Monday', '8:00', '20:00');
 insert into RestaurantHoursOfOperation values 
-(06847, 'Tuesday', 8:00, 20:00);
+(06847, 'Tuesday', '8:00', '20:00');
 insert into RestaurantHoursOfOperation values 
-(06847, 'Wednesday', 8:00, 20:00);
+(06847, 'Wednesday', '8:00', '20:00');
 insert into RestaurantHoursOfOperation values 
-(06847, 'Thursday', 8:00, 20:00);
+(06847, 'Thursday', '8:00', '20:00');
 insert into RestaurantHoursOfOperation values 
-(06847, 'Friday', 8:00, 20:00);
+(06847, 'Friday', '8:00', '20:00');
 insert into RestaurantHoursOfOperation values 
-(06847, 'Monday', 00:00, 24:00);
+(06847, 'Monday', '00:00', '24:00');
 insert into RestaurantHoursOfOperation values 
-(06847, 'Tuesday', 00:00, 24:00);
+(06847, 'Tuesday', '00:00', '24:00');
 insert into RestaurantHoursOfOperation values 
-(06847, 'Wednesday', 00:00, 24:00);
+(06847, 'Wednesday', '00:00', '24:00');
 insert into RestaurantHoursOfOperation values 
-(06847, 'Thursday', 00:00, 24:00);
+(06847, 'Thursday', '00:00', '24:00');
 insert into RestaurantHoursOfOperation values 
-(06847, 'Friday', 00:00, 24:00);
+(06847, 'Friday', '00:00', '24:00');
 insert into RestaurantHoursOfOperation values 
-(06847, 'Saturday', 00:00, 24:00);
-insert into RestaurantHoursOfOperation values 
-(06847, 'Sunday', 00:00, 24:00);
+(06847, 'Sunday', '00:00', '24:00');
 
 
 /* FoodsServedAtRestaurants(rid, food_type) */
-insert into FoodsServedAtRestaurants values ('21921', 'cereals');
-insert into FoodsServedAtRestaurants values ('21921', 'fruit and parfait');
+insert into FoodsServedAtRestaurants values ('21921', 'cereal');
+insert into FoodsServedAtRestaurants values ('21921', 'fruit');
 insert into FoodsServedAtRestaurants values ('42726', 'coffee');
-insert into FoodsServedAtRestaurants values ('42726', 'pancakes and waffles');
-insert into FoodsServedAtRestaurants values ('82252', 'eggs');
+insert into FoodsServedAtRestaurants values ('42726', 'pancake');
+insert into FoodsServedAtRestaurants values ('82252', 'scrambled eggs');
 insert into FoodsServedAtRestaurants values ('82252', 'juice');
-insert into FoodsServedAtRestaurants values ('58136', 'milk and dairy subs');
+insert into FoodsServedAtRestaurants values ('58136', 'milk and dairy');
 insert into FoodsServedAtRestaurants values ('12381', 'bread and pastries');
-insert into FoodsServedAtRestaurants values ('03504', 'sandwiches');
+insert into FoodsServedAtRestaurants values ('03504', 'sandwich');
 insert into FoodsServedAtRestaurants values ('71046', 'panini');
 insert into FoodsServedAtRestaurants values ('16196', 'toast');
 insert into FoodsServedAtRestaurants values ('38449', 'oatmeal');
 insert into FoodsServedAtRestaurants values ('93531', 'tea');
-insert into FoodsServedAtRestaurants values ('84921', 'all-in combos');
-insert into FoodsServedAtRestaurants values ('06847', 'bacon and sausages');
+insert into FoodsServedAtRestaurants values ('84921', 'all-in combo');
+insert into FoodsServedAtRestaurants values ('06847', 'bacon and sausage');
 insert into FoodsServedAtRestaurants values ('02846', 'omelette');
-insert into FoodsServedAtRestaurants values ('82789', 'salads');
-insert into FoodsServedAtRestaurants values ('35878', 'cereals');
+insert into FoodsServedAtRestaurants values ('82789', 'salad');
+insert into FoodsServedAtRestaurants values ('35878', 'cereal');
 insert into FoodsServedAtRestaurants values ('35878', 'omelette');
 
 commit work;

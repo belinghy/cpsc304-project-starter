@@ -1,6 +1,7 @@
 CREATE TABLE Account 
 (username CHAR(20) not null PRIMARY KEY, 
  password CHAR(20) not null );
+ -- Note: need assertions to ensure every account belongs to an owner OR signedupuser
 
 CREATE TABLE Food
 (food_type varchar(40) not null PRIMARY KEY );
@@ -31,7 +32,7 @@ CREATE TABLE GuestUser
 
 CREATE TABLE SignedUpUser 
 (uid 		INTEGER not null PRIMARY KEY,
- profilePic	VARCHAR(255),
+ img	VARCHAR(255),
  name 		CHAR(20) not null,
  username 	CHAR(20) not null,
 FOREIGN KEY(username) REFERENCES Account
@@ -41,7 +42,7 @@ FOREIGN KEY(username) REFERENCES Account
 CREATE TABLE HoursOfOperation 
 (day 		CHAR(10) not null,
  openTime 	TIME not null,
- closeTime 	TIME not null,
+ closeTime 	TIME,
 PRIMARY KEY(day, openTime, closeTime) );
 
 CREATE TABLE Location 
@@ -62,10 +63,10 @@ rid			INTEGER not null,
 PRIMARY KEY(uid, food_type, rid),
 FOREIGN KEY(uid)REFERENCES GuestUser
 	ON DELETE CASCADE
-	ON UPDATE CASCADE
+	ON UPDATE CASCADE,
 FOREIGN KEY(food_type) REFERENCES Food
 	ON DELETE CASCADE
-	ON UPDATE CASCADE
+	ON UPDATE CASCADE,
 FOREIGN KEY(rid) REFERENCES Restaurant
 	ON DELETE CASCADE
 	ON UPDATE CASCADE);
@@ -76,7 +77,7 @@ food_type 	CHAR(20) not null,
 PRIMARY KEY(uid, food_type),
 FOREIGN KEY(uid) REFERENCES SignedUpUser
 	ON DELETE CASCADE
-	ON UPDATE CASCADE
+	ON UPDATE CASCADE,
 FOREIGN KEY(food_type) REFERENCES Food
 	ON DELETE CASCADE
 	ON UPDATE CASCADE);
@@ -90,10 +91,10 @@ postalCode 	CHAR(6) not null,
 PRIMARY KEY(uid, day, openTime, closeTime, postalCode),
 FOREIGN KEY(uid) REFERENCES SignedUpUser
 	ON DELETE CASCADE
-	ON UPDATE CASCADE
+	ON UPDATE CASCADE,
 FOREIGN KEY(day, openTime, closeTime) REFERENCES HoursOfOperation
 	ON DELETE CASCADE
-	ON UPDATE CASCADE
+	ON UPDATE CASCADE,
 FOREIGN KEY(postalCode) REFERENCES Location
 	ON DELETE CASCADE
 	ON UPDATE CASCADE);
@@ -105,7 +106,7 @@ rid		INTEGER not null,
 PRIMARY KEY(uid, rid),
 FOREIGN KEY(uid) REFERENCES SignedUpUser
 	ON DELETE CASCADE
-	ON UPDATE CASCADE
+	ON UPDATE CASCADE,
 FOREIGN KEY(rid) REFERENCES Restaurant
 	ON DELETE CASCADE
 	ON UPDATE CASCADE);
@@ -119,11 +120,11 @@ closeTime	TIME not null,
 PRIMARY KEY(rid, day, openTime, closeTime),
 FOREIGN KEY(rid) REFERENCES Restaurant
 	ON DELETE CASCADE
-	ON UPDATE CASCADE
+	ON UPDATE CASCADE,
 FOREIGN KEY(day,openTime, closeTime) REFERENCES HoursOfOperation
-	ON DELETE CASCADE
+	ON DELETE NO ACTION
 	ON UPDATE CASCADE);
--- change the 2nd ON DELETE NO ACTION to CASCADE
+
 
 CREATE TABLE FoodsServedAtRestaurants(
 rid			INTEGER not null,
@@ -131,12 +132,12 @@ food_type 	CHAR(20) not null,
 PRIMARY KEY(rid, food_type),
 FOREIGN KEY(rid) REFERENCES Restaurant
 	ON DELETE CASCADE
-	ON UPDATE CASCADE
+	ON UPDATE CASCADE,
 FOREIGN KEY(food_type) REFERENCES Food
-	ON DELETE CASCASE
+	ON DELETE CASCADE
 	ON UPDATE CASCADE);
 -- change the 2nd ON DELETE NO ACTION to CASCADE
 -- ** Note: We can’t enforce that each restaurant should belong to this table 
--- (so must do that separately with exceptions)
+-- (so must do that separately with assertions)
 
 commit;
