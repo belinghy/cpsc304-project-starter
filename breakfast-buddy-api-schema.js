@@ -21,7 +21,7 @@ const ENTITIES = {
         username: 'rojin',
         password: 'password',
         name: 'jrf',
-        profilePicUrl: 'https://google.com/image',
+        img: 'https://google.com/image',
         ownedRestaurants: [ ENTITIES.RestaurantItem ]
     },
     restaurantListItem: {
@@ -149,7 +149,7 @@ const REST_ENDPOINTS = {
         },
         response: {
             code: 200 || 404 || 400, //when the username entered is not unique
-            body: userProfile
+            body: userProfile // for ben: it will leave faverestaurants/searches as null as I assume those can be retained in backend
         }
     },
     ownerprofileEdit: {
@@ -163,7 +163,7 @@ const REST_ENDPOINTS = {
         },
         response: {
             code: 200 || 404 || 400, //when the username entered is not unique
-            body: ownerProfile
+            body: ownerProfile      // For ben: same as above (leaves owned restaurants out of this response)
         }
     },
     userprofileSearchHistory: {
@@ -181,7 +181,6 @@ const REST_ENDPOINTS = {
         body: NULL,
         response: {
             code: 200 || 404,
-            // TODO: update response to return array below instead of profile
             body: [ ENTITIES.restaurantListItem ]
         }
     },
@@ -399,7 +398,7 @@ router.get('/owner-profile/:id', function (req, res, next) {
       })
 })
 
-
+// Done
 router.post('/user-profile/:id/edit', function (req, res, next) {
     const uid = req.params.id
     username = req.body.username
@@ -408,7 +407,7 @@ router.post('/user-profile/:id/edit', function (req, res, next) {
     img = req.body.img
     valid = true
     // check if this user even exists
-    const queryUID = 'SELECT * FROM User WHERE uid = :uid;'
+    const queryUID = 'SELECT * FROM SignedUpUser WHERE uid = :uid;'
     connection.query(queryUID,
       {
         type: connection.QueryTypes.SELECT,
@@ -420,7 +419,7 @@ router.post('/user-profile/:id/edit', function (req, res, next) {
         if (user.length === 1 ) {
           if (username != '') {
             // check if new username is unique
-            const queryUsername = 'SELECT from User WHERE username = :username UNION SELECT from Owner WHERE username = :username;'
+            const queryUsername = 'SELECT from SignedUpUser WHERE username = :username UNION SELECT from Owner WHERE username = :username;'
             connection.query(queryUsername,
               {
                 type: connection.QueryTypes.SELECT,
@@ -444,11 +443,9 @@ router.post('/user-profile/:id/edit', function (req, res, next) {
           if (name == '') {
               name = user[0].name
           }
-          if (img == '') {
-              img = user[0].img
-          }
           if (valid) { // can update user profile with new username or null
-            const updateQuery = 'UPDATE Users SET username = :username, password = :password, name = :name, img = :img WHERE uid = :uid ;'
+            const updateQuery = 'UPDATE SignedUpUser SET username = :username, name = :name, img = :img WHERE uid = :uid;' +
+                                'UPDATE Account SET username = :username, password = :password;'
             connection.query(updateQuery,
               {
                 type: connection.QueryTypes.UPDATE,
@@ -460,10 +457,19 @@ router.post('/user-profile/:id/edit', function (req, res, next) {
                   img: img,
                 }
               })
-              res.send('user-profile/:id')  //TODO: is this right?
+              res.json(
+                {'uid': uid,
+                'username': username,
+                'password': password,
+                'name': name,
+                'img': image,
+                'favRestaurants': NULL,
+                'favFoods': NULL,
+                'searches': NULL
+              })
           } else {
             // username already exists so return a fail
-            res.send(false)
+            res.status(400).json({})
           }
         }
         else {
@@ -473,6 +479,7 @@ router.post('/user-profile/:id/edit', function (req, res, next) {
     })
 })
 
+// Done
 router.post('/owner-profile/:id/edit', function (req, res, next) {
     const oid = req.params.id
     username = req.body.username
@@ -493,7 +500,7 @@ router.post('/owner-profile/:id/edit', function (req, res, next) {
         if (user.length === 1 ) {
           if (username != '' && username != user[0].username) {
             // check if new username is unique
-            const queryUsername = 'SELECT from User WHERE username = :username UNION SELECT from Owner WHERE username = :username;'
+            const queryUsername = 'SELECT from SignedUpUser WHERE username = :username UNION SELECT from Owner WHERE username = :username;'
             connection.query(queryUsername,
               {
                 type: connection.QueryTypes.SELECT,
@@ -517,11 +524,10 @@ router.post('/owner-profile/:id/edit', function (req, res, next) {
           if (name == '') {
               name = user[0].name
           }
-          if (img == '') {
-              img = user[0].img
-          }
           if (valid) { // can update user profile with new username or null
-            const updateQuery = 'UPDATE Owner SET username = :username, password = :password, name = :name, img = :img WHERE oid = :oid ;'
+            const updateQuery = 'UPDATE Owner SET username = :username, name = :name, img = :img WHERE oid = :oid ;' +
+                                'UPDATE Account SET username = :username, password = :password;'
+
             connection.query(updateQuery,
               {
                 type: connection.QueryTypes.UPDATE,
@@ -533,10 +539,17 @@ router.post('/owner-profile/:id/edit', function (req, res, next) {
                   img: img,
                 }
               })
-              res.send('owner-profile/:id')  //TODO: is this right?
+              res.json(
+                {'oid': oid,
+                'username': username,
+                'password': password,
+                'name': name,
+                'img': image,
+                'ownedRestaurants': NULL
+              })
           } else {
             // username already exists so return a fail
-            res.send(false)
+            res.status(400).json({})
           }
         }
         else {
