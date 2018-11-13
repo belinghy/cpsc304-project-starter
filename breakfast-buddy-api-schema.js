@@ -10,7 +10,7 @@ const ENTITIES = {
         password: 'password',
         name: 's334',
         img: 'https://google.com/image',
-        favRestaurants: [ ENTITIES.FaveRestaurantItem ],
+        favRestaurants: [ ENTITIES.RestaurantItem ],
         // empty at first
         favFoods: [ ENTITIES.favFoodListItem ],
         // empty at first
@@ -21,7 +21,6 @@ const ENTITIES = {
         username: 'rojin',
         password: 'password',
         name: 'jrf',
-        img: 'https://google.com/image',
         ownedRestaurants: [ ENTITIES.RestaurantItem ]
     },
     restaurantListItem: {
@@ -29,22 +28,25 @@ const ENTITIES = {
         name: 'dons bar and grill',
         isFavourited: true,
     },
-    FaveRestaurantItem: { // TODO for ben: this is what I'll be returning in userprofile because I'm returning the resultof query which is a list itself with these 2 values (otherwise I have to iterate over the list again and add isfave field which is useless)
+    RestaurantItem: { // TODO for ben: this is what I'll be returning in userprofile because I'm returning the resultof query which is a list itself with these 2 values (otherwise I have to iterate over the list again and add isfave field which is useless)
         rid: 123,
         name: 'dons bar and grill',
     },
     favFoodListItem: {
         restaurantId: 123,
         restaurantName: 'ihop',
-        foodType: 'pancakes'
+        food_type: 'pancakes'
     },
     expandedRestaurant: {
         restaurantID = 234,
-        RestaurantName = 'Macs',
-        OpenHours = ['M:2-2', 'T:32-4',...],
-        Address = "293 dkjfj st, city",
-        FaveFood = 'eggs',
-        FoodTypes = ['eggs', 'pancakes', 'hashbrowns', 'FrenchToast', ...],
+        restaurantName = 'Macs',
+        OpenHours = [ENTITIES.HoursOfOpListItem],
+        number = "293",
+        street = "skj st",
+        city = "ewfk",
+        postalCode = "efqrf",
+        FaveFood = '',
+        Food_types = [ENTITIES.FoodTypeListItem],
     },
 
     // TODO: FOR BEN: had to split this this way because otherwise I have to iterate over list and separate out the values
@@ -57,8 +59,16 @@ const ENTITIES = {
         Time: '12:00',
     },
     SearchHistoryList: {
-        LocTimeList : [Entities.searchHistoryLocListItem],
-        FoodType: ['pancakes'], // This is a list of all foods searched (not specific to loc search!)
+        LocTimeList : [ENTITIES.searchHistoryLocListItem],
+        FoodType: [ENTITIES.FoodTypeListItem], // This is a list of all foods searched (not specific to loc search!)
+    },
+    FoodTypeListItem: {
+        food_type: 'eggs'
+    },
+    HoursOfOpListItem : {
+        day: 'Monday',
+        openTime: '00:00',
+        closeTime: '24:00'
     }
 
 }
@@ -162,8 +172,7 @@ const REST_ENDPOINTS = {
         body: {
             username: 'fe',
             password: 'erf',
-            name: '',
-            img: ''
+            name: ''
         },
         response: {
             code: 200 || 404 || 400, //when the username entered is not unique
@@ -180,28 +189,66 @@ const REST_ENDPOINTS = {
         }
     },
     userDelLikedRestaurant : {
-        type: 'DELETE',
+        type: 'Get',
         requestUrl: `${baseURL}/user/${id}/remove-liked-restaurant/${rid}`,
         body: NULL,
         response: {
             code: 200 || 404,
-            body: [ ENTITIES.FaveRestaurantItem ]
+            body: [ ENTITIES.RestaurantItem ]
         }
     },
-
-    // TODO:
-    //userprofilesearch clear
-    // user profile show food fave
-    // ~~~~ edit/ remove food item
+    userClearSearch : {
+        type: 'DELETE',
+        requestUrl: `${baseURL}/user/${id}/clear-search-history/`,
+        body: NULL,
+        response: {
+            code: 200 || 404,
+            body: NULL  // should retain user profile info on FE and just redirect to user profile showing search history tab as empty
+        }
+    },
+    userprofileFaveFood: {
+        type: 'GET',
+        requestUrl: `${baseURL}/user-profile/${id}/fave-food`,
+        body: NULL,
+        response: {
+            code: 200 || 404,
+            body: [ ENTITIES.favFoodListItem ]
+        }
+    },
+    userDelFaveFood : {
+        type: 'Get',
+        requestUrl: `${baseURL}/user/${id}/remove-fave-food/${rid}`,
+        body: NULL,
+        response: {
+            code: 200 || 404,
+            body: [ ENTITIES.favFoodListItem ]
+        }
+    },
+    ownerDelOwnedRestaurant : {
+        type: 'Get',
+        requestUrl: `${baseURL}/owner/${id}/remove-restaurant/${rid}`,
+        body: NULL,
+        response: {
+            code: 200 || 404,
+            // FE should retain owner profile info and redirect to show owner profile with this new list of restaurants
+            body: [ ENTITIES.RestaurantItem ] 
+        }
+    },
+    userViewRestaurant :{
+        type: 'Get',
+        requestUrl: `${baseURL}/view-restaurant/${rid}`,
+        body: NULL,
+        response: {
+            code: 200 || 404,
+            body: ENTITIES.expandedRestaurant
+        }
+    },
     // owner add owned restaurant
-    // owner delete owned restaurant
     // owner update a retautant
-    // restaurant expanded view for user
     // restaurant expanded view for owner
     // getting search result end point for near me
     // getting search result for manual search loc/time
     //getting search result for manual search by food
-
 }
 
 // corresponding code:
@@ -338,8 +385,8 @@ router.get('/user-profile/:id', function (req, res, next) {
       .then(user => {
         if (user.length === 1){
             // do another query to get fave restaurants:
-            const RestQuery = 'SELECT R.rid, R.name FROM SignedUpUserRestaurantFavourites F, Restaurant R WHERE U.uid = :uid and and R.rid == F.rid;'
-            connection.query(RestQueryquery,
+            const restQuery = 'SELECT R.rid, R.name FROM SignedUpUserRestaurantFavourites F, Restaurant R WHERE U.uid = :uid and and R.rid == F.rid;'
+            connection.query(restQuery,
               {
                 type: connection.QueryTypes.SELECT,
                 replacements: {
@@ -378,21 +425,19 @@ router.get('/owner-profile/:id', function (req, res, next) {
       .then(owner => {
         if (owner.length === 1){
             // do another query to get restaurants:
-            const RestQuery = 'SELECT R.rid, R.name FROM Owner O, Restaurant R WHERE O.oid = :oid and O.rid == R.rid;'
-            connection.query(RestQuery,
+            const restQuery ='SELECT rid, name FROM Restaurant WHERE oid = :oid;'
+            connection.query(restQuery,
               {
                 type: connection.QueryTypes.SELECT,
-                replacements: {
-                  uid: uid
-                }
+                replacements: {oid: oid}
               })
               .then(restaurants => {
                   res.json(
                       {'oid': oid,
-                      'username': user[0].username,
-                      'password': user[0].password,
-                      'name': user[0].name,
-                      'img': user[0].image,
+                      'username': owner[0].username,
+                      'password': owner[0].password,
+                      'name': owner[0].name,
+                      'img': owner[0].image,
                       'ownedRestaurants': restaurants
                     })
                 })
@@ -489,7 +534,6 @@ router.post('/owner-profile/:id/edit', function (req, res, next) {
     username = req.body.username
     password = req.body.password
     name = req.body.name
-    img = req.body.img
     valid = true
     // check if this user even exists
     const queryOID = 'SELECT * FROM Owner WHERE oid = :oid;'
@@ -529,7 +573,7 @@ router.post('/owner-profile/:id/edit', function (req, res, next) {
               name = user[0].name
           }
           if (valid) { // can update user profile with new username or null
-            const updateQuery = 'UPDATE Owner SET username = :username, name = :name, img = :img WHERE oid = :oid ;' +
+            const updateQuery = 'UPDATE Owner SET username = :username, name = :name WHERE oid = :oid ;' +
                                 'UPDATE Account SET username = :username, password = :password;'
 
             connection.query(updateQuery,
@@ -540,7 +584,6 @@ router.post('/owner-profile/:id/edit', function (req, res, next) {
                   password: password,
                   oid: oid,
                   name: name,
-                  img: img,
                 }
               })
               res.json(
@@ -548,7 +591,6 @@ router.post('/owner-profile/:id/edit', function (req, res, next) {
                 'username': username,
                 'password': password,
                 'name': name,
-                'img': image,
                 'ownedRestaurants': NULL
               })
           } else {
@@ -621,17 +663,17 @@ router.get('/user/:id/remove-liked-restaurant/:rid', function (req, res, next) {
       .then(user => {
         if (user.length === 1){
             // do another query to remove liked restaurants:
-            const RestQuery = 'DELETE FROM SignedUpUserRestaurantFavourites WHERE uid = :uid and rid = :rid;'
-            connection.query(RestQueryquery,
+            const delQuery = 'DELETE FROM SignedUpUserRestaurantFavourites WHERE uid = :uid and rid = :rid;'
+            connection.query(delQuery,
               {
-                type: connection.QueryTypes.SELECT,
+                type: connection.QueryTypes.DELETE,
                 replacements: {
                   uid: uid,
                   rid: rid
                 }
               })
-            const RestQuery = 'SELECT R.rid, R.name FROM SignedUpUserRestaurantFavourites F, Restaurant R WHERE U.uid = :uid and and R.rid == F.rid;'
-            connection.query(RestQueryquery,
+            const restQuery = 'SELECT R.rid, R.name FROM SignedUpUserRestaurantFavourites F, Restaurant R WHERE U.uid = :uid and and R.rid == F.rid;'
+            connection.query(restQuery,
                 {
                   type: connection.QueryTypes.SELECT,
                   replacements: {
@@ -639,9 +681,190 @@ router.get('/user/:id/remove-liked-restaurant/:rid', function (req, res, next) {
                   }
                 })
                 .then(restaurants => {
-                    res.json({restaurants})
+                    res.json(restaurants)
                 })
               
+        } else {
+            res.status(404).json({})
+        }
+      })
+})
+
+// Done
+router.delete('/user/:id/clear-search-history/', function (req, res, next) {
+    const uid = req.params.id
+    const userQuery = 'SELECT * FROM SignedUpUser WHERE uid = :uid;'
+    connection.query(userQuery,
+      {
+        type: connection.QueryTypes.SELECT,
+        replacements: { uid: uid }
+      })
+      .then(user => {
+        if (user.length === 1 ) {
+            const delQuery = 'DELETE FROM SignedUpUserLocationTimeSearches where uid = :uid;' +
+                              'DELETE FROM SignedUpUserFoodSearches where uid = :uid'
+            connection.query(delQuery,
+              {
+                type: connection.QueryTypes.DELETE,
+                replacements: { uid: uid }
+              })
+              res.status(200).json({})
+        } else { // user not found
+            res.status(400).json({})
+        }
+    })
+})
+
+// Done
+router.get('/user-profile/:id/fave-food', function (req, res, next) {
+    const uid = req.params.id
+    const query = 'SELECT * FROM SignedUpUser WHERE uid = :uid;'
+    connection.query(query,
+      {
+        type: connection.QueryTypes.SELECT,
+        replacements: {uid: uid}
+      })
+      .then(user => {
+        if (user.length === 1){
+            // do another query to get fave restaurants:
+            const foodQuery = 'SELECT R.rid as restaurantId, R.name as restaurantName, F.food_type FROM UserLikesFoodAtRestaurant F, Restaurant R WHERE F.uid = :uid and and R.rid = F.rid;'
+            connection.query(foodQuery,
+              {
+                type: connection.QueryTypes.SELECT,
+                replacements: {uid: uid}
+              })
+              .then(faveFoods => {
+                  res.json(faveFoods)
+                })
+        } else {
+            res.status(404).json({})
+        }
+      })
+})
+
+router.get('/user/:id/remove-fave-food/:rid', function (req, res, next) {
+    const uid = req.params.id
+    const rid = req.params.rid
+    const query = 'SELECT * FROM SignedUpUser WHERE uid = :uid;'
+    connection.query(query,
+      {
+        type: connection.QueryTypes.SELECT,
+        replacements: {uid: ui}
+      })
+      .then(user => {
+        if (user.length === 1){
+            // do another query to remove liked restaurants:
+            const delQuery = 'DELETE FROM UserLikesFoodAtRestaurant WHERE uid = :uid and rid = :rid;'
+            connection.query(delQuery,
+              {
+                type: connection.QueryTypes.DELETE,
+                replacements: {
+                  uid: uid,
+                  rid: rid
+                }
+              })
+              const foodQuery = 'SELECT R.rid as restaurantId, R.name as restaurantName, F.food_type FROM UserLikesFoodAtRestaurant F, Restaurant R WHERE F.uid = :uid and and R.rid = F.rid;'
+              connection.query(foodQuery,
+                {
+                  type: connection.QueryTypes.SELECT,
+                  replacements: {uid: uid}                
+                })
+                .then(favFoodListItem => {
+                    res.json(favFoodListItem)
+                })
+        } else {
+            res.status(404).json({})
+        }
+      })
+})
+
+router.get('/owner/:id/remove-restaurant/:rid', function (req, res, next) {
+    const oid = req.params.id
+    const rid = req.params.rid
+    const query = 'SELECT * FROM Owner WHERE oid = :oid;'
+    connection.query(query,
+      {
+        type: connection.QueryTypes.SELECT,
+        replacements: {oid: oid}
+      })
+      .then(owner => {
+        if (owner.length === 1){
+            // do another query to remove restaurant:
+            const delQuery = 'DELETE FROM Restaurant WHERE oid = :oid and rid = :rid;'
+            connection.query(delQuery,
+              {
+                type: connection.QueryTypes.DELETE,
+                replacements: {
+                  uid: uid,
+                  rid: rid
+                }
+              })
+              const restQuery = 'SELECT rid, name FROM Restaurant WHERE oid = :oid;'
+              connection.query(restQuery,
+                {
+                  type: connection.QueryTypes.SELECT,
+                  replacements: {uid: uid}                })
+                .then(RestaurantItem => {
+                    res.json(RestaurantItem)
+                })
+        } else {
+            res.status(404).json({})
+        }
+      })
+})
+
+
+router.get('/view-restaurant/:rid', function (req, res, next) {
+    const rid = req.params.rid
+    const query1 = 'SELECT R.rid, R.name, L.city, L.number, L.street, L.postalCode FROM Location L,' +
+                    'Restaurant R WHERE R.rid = :rid and L.rid=R.rid;'
+    connection.query(query1,
+      {
+        type: connection.QueryTypes.SELECT,
+        replacements: {rid: rid}
+      })
+      .then(restaurant => {
+        if (restaurant.length === 1){
+          const query2 = 'SELECT day, openTime, closeTime FROM RestaurantHoursOfOperation where rid=:rid;'
+          connection.query(query2,
+          {
+            type: connection.QueryTypes.SELECT,
+            replacements: {rid: rid}
+          })
+          .then(hoursOfOp => {
+            const query3 = 'SELECT food_type FROM FoodsServedAtRestaurants where rid=:rid;'
+            connection.query(query3,
+            {
+              type: connection.QueryTypes.SELECT,
+              replacements: {rid: rid}
+            })
+            .then(foods => {
+              const query3 = 'SELECT Unique food_type, COUNT(food_type) as best, FROM UserLikesFoodAtRestaurant where rid=:rid group by;' //TODO: fix this query
+              connection.query(query4,
+              {
+                type: connection.QueryTypes.SELECT,
+                replacements: {rid: rid}
+              })
+              .then(faves => {
+                if (faves.length != 1){
+                    FaveFoodItem = faves[0].food_type
+                } else {
+                    FaveFoodItem = ''
+                }
+                res.json({
+                    restaurantID = restaurant[0].rid,
+                    RestaurantName = restaurant[0].name,
+                    OpenHours = hoursOfOp,
+                    number = restaurant[0].number,
+                    street = restaurant[0].street,
+                    city = restaurant[0].city,
+                    postalCode = restaurant[0].postalCode,
+                    FaveFood = FaveFoodItem,
+                    Food_types = foods
+                })
+              })
+            })
+          })
         } else {
             res.status(404).json({})
         }
