@@ -49,21 +49,39 @@ rid in Restaurant table with name in Restaurant table:
 02846   Wild Bite Here
 82789   The Turban Grill
 35878   Rosé
+------real restaurants
+38781   The Point
+70186   Tim Hortons
+32243   Starbucks
+07910   McDonalds
+66520   Bean Brothers Cafe
 
 
 postalCode and addresses in Location table:
-3431 W Broadway, Vancouver, BC V6R2B4
-3144 W Broadway, Vancouver, BC V6K2H3
-3763 W 10th Ave, Vancouver, BC V6R2G7
-3446 Dunbar St, Vancouver, BC V6S2C2
-5828 Thunderbird Blvd, Vancouver, BC V6T0B8
-6393 NW Marine Dr, Vancouver, BC V6T1Z2
-950 W 41st Ave, Vancouver, BC V5Z2N7
-6270 Fraser St, Vancouver, BC V5W3A1
-6591 Fraser St, Vancouver, BC V5X3T4
-4148 Main St, Vancouver, BC V5V3P7
-4510 Still Creek Ave, Burnaby, BC V5C0B5
-636 Queensbury Ave, North Vancouver, BC V7L3V6
-725 Inglewood Ave, West Vancouver, BC V7T1X5
-6000 Cypress Bowl Rd, Vancouver, BC V0N1G0
-15269 104 Ave, Surrey, BC V3R1N5
+3431 W Broadway, Vancouver, BC V6R2B4   49.264596, -123.180782
+3144 W Broadway, Vancouver, BC V6K2H3   49.264144, -123.175277
+3763 W 10th Ave, Vancouver, BC V6R2G7   49.263871, -123.187157
+3446 Dunbar St, Vancouver, BC V6S2C2    49.256388, -123.185136
+5828 Thunderbird Blvd, Vancouver, BC V6T0B8 
+49.262053, -123.240394
+6393 NW Marine Dr, Vancouver, BC V6T1Z2 49.269626, -123.259463
+950 W 41st Ave, Vancouver, BC V5Z2N7    49.233681, -123.126712
+6270 Fraser St, Vancouver, BC V5W3A1    49.227818, -123.090310
+6591 Fraser St, Vancouver, BC V5X3T4    49.225159, -123.091135
+4148 Main St, Vancouver, BC V5V3P7      49.248631, -123.100819
+4510 Still Creek Ave, Burnaby, BC V5C0B5    49.259852, -123.001846
+636 Queensbury Ave, North Vancouver, BC V7L3V6  49.312403, -123.056879
+725 Inglewood Ave, West Vancouver, BC V7T1X5   49.335804, -123.135701 
+6000 Cypress Bowl Rd, Vancouver, BC V0N1G0  49.396182, -123.204610
+15269 104 Ave, Surrey, BC V3R1N5        49.192306, -122.798910   
+-----real restaurants
+(The Point)
+2205 Lower Mall, Vancouver, BC V6T1Z4   49.262036, -123.255103
+(Tim Hortons)
+2033 Main Mall, Vancouver, BC V6T1Z2    49.265759, -123.254271
+(Starbucks)
+5763 Dalhousie Rd, Vancouver, BC V6T2H9    49.265978, -123.242801
+(McDonalds)
+2095 W 41st Ave, Vancouver, BC V6M1Y7     49.235011, -123.154840
+(Bean Brothers Cafe)
+2179 W 41st Ave, Vancouver, BC V6M1Z6      49.234773, -123.157251
