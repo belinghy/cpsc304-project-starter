@@ -285,28 +285,41 @@ const REST_ENDPOINTS = {
             body: [ENTITIES.FoodTypeListItem ] // FE redirect to expanded view and retain all restaurant info
         }
     },
-    ownerUpdateRestaurantDetails :{
+    ownerUpdateRestaurantName :{
         type: 'Post',
-        requestUrl: `${baseURL}/${oid}/update-details/${rid}`,
-        body: { // any field left blank will have same values as before
-            restaurantName = 'Macs', 
-            number = "293",         
-            street = "skj st",      
-            city = "ewfk",
-            postalCode = "efqrf",
+        requestUrl: `${baseURL}/${oid}/update-name/${rid}`,
+        body: {
+            restaurantName = 'Macs' // if left blank will not update
         },
         response: {
             code: 200 || 404,
-            body: [ENTITIES.FoodTypeListItem ] // FE redirect to expanded view and retain all restaurant info
+            body: name  // FE redirect to expanded view and retain all other restaurant info (foods and open hours)
         }
-    }
-
-
+    },
+    ownerUpdateRestaurantLoc :{
+        type: 'Post',
+        requestUrl: `${baseURL}/${oid}/update-loc/${rid}`,
+        body: {  // reject update if any field left blank on FE
+            number = "293",          //required
+            street = "skj st",       //required
+            city = "ewfk",          //required
+            postalCode = "efqrf",   //required
+        },
+        response: {
+            // FE: returns 400 to FE if all fields in body do not have values (so no update)
+            code: 200 || 404 || 400, 
+            body: { // FE redirect to expanded view and retain all other restaurant info (foods and open hours)
+                number: 'newnum',
+                street = 'newstreet',       
+                city = "newcity",          
+                postalCode = "newcode"
+            } 
+        }
+    },
     // getting search result end point for near me
     // getting search result for manual search loc/time
     //getting search result for manual search by food
 }
-
 // corresponding code:
 const uuidv1 = require('uuid/v1');
 
@@ -1049,4 +1062,80 @@ router.post('/:oid/add-restaurant/', function (req, res, next) {
             res.status(404).json({})
         }
       })
+})
+
+
+router.post('/:oid/update-name/:rid', function (req, res, next) {
+    const oid = req.params.oid
+    const rid = req.params.rid
+    const name = req.body.restaurantName
+    const query1 = 'SELECT * from Restaurant rid=:rid and oid=:oid;'
+    connection.query(query1,
+      {
+        type: connection.QueryTypes.SELECT,
+        replacements: {rid: rid, oid: oid}
+      })
+      .then(restaurant => {
+        if (restaurant.length === 1){
+            if (name != ''){
+                const query2 = 'UPDATE Restaurant SET name = :name where rid=:rid and oid=:oid;'
+                connection.query(query2,
+                  {
+                    type: connection.QueryTypes.UPDATE,
+                    replacements: {rid: rid, oid: oid, name: name}
+                  })
+            } else {
+                name = restaurant[0].name
+            }
+            res.send(name)
+        } else {
+            res.status(404).json({}) 
+        }
+    })
+})
+
+
+router.post('/:oid/update-loc/:rid', function (req, res, next) {
+    const oid = req.params.oid
+    const rid = req.params.rid
+    const number = req.body.number
+    const street = req.body.street
+    const city = req.body.city
+    const postalCode = req.body.postalCode
+    const query1 = 'SELECT * from Restaurant R, Location L where R.rid=:rid and R.rid=L.rid and R.oid=:oid;'
+    connection.query(query1,
+      {
+        type: connection.QueryTypes.SELECT,
+        replacements: {rid: rid, oid: oid}
+      })
+      .then(restaurant => {
+        if (restaurant.length === 1){
+            if (postalCode != '' && city != '' && street != '' && number != ''){
+                const query3 = 'UPDATE Location SET postalCode = :postalCode, lat= :lat, lon = :lon' + 
+                                'city = :city, street = :street, number = :number where rid=:rid;'
+                connection.query(query3,
+                  {
+                    type: connection.QueryTypes.UPDATE,
+                    replacements: {
+                        rid: rid,
+                        lat: lat, // TODO: calc these based on address??
+                        lon: lon,
+                        city: city,
+                        street: street,
+                        number: number
+                    }
+                  })
+                  res.json({
+                    number = number,         
+                    street = street,      
+                    city = city,
+                    postalCode = postalCode
+                  })
+            } else {
+                res.status(400).json({})
+            }
+        } else {
+            res.status(404).json({}) 
+        }
+    })
 })
