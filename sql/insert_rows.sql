@@ -1,3 +1,4 @@
+/* Account(username, password)*/
 -- acct01-10: SignedUpUsers
 insert into Account values('Triforium', 'acct01');
 insert into Account values('Abderian', 'acct02');
@@ -21,7 +22,7 @@ insert into Account values('Schematism', 'acct18');
 insert into Account values('Binnacle', 'acct19');
 insert into Account values('Vamoose', 'acct20');
 
-
+/* Food(food_type)*/
 insert into Food values('cereal');
 insert into Food values('fruit');
 insert into Food values('coffee');
@@ -45,9 +46,7 @@ insert into Food values('panini');
 insert into Food values('oatmeal');
 insert into Food values('tea');
 
-
-
-
+/* Owner(oid, name, username)*/
 insert into Owner values('5699572', 'Adam', 'Abattoir');
 insert into Owner values('1856132', 'Beth', 'Ria4Deity');
 insert into Owner values('0249831', 'Carol', 'Trumeau');
@@ -59,8 +58,7 @@ insert into Owner values('1756280', 'Hellen', 'Schematism');
 insert into Owner values('4385958', 'Ian', 'Binnacle');
 insert into Owner values('5676173', 'Jason', 'Vamoose');
 
-
-
+/*Restaurant(rid, name, oid)*/
 insert into Restaurant values('21921', 'Mamalee', '5699572');
 insert into Restaurant values('42726', 'Retro Club', '5699572');
 insert into Restaurant values('82252', 'l-Aura', '1856132');
@@ -82,14 +80,14 @@ insert into Restaurant values('32243', 'Starbucks', '4747245');
 insert into Restaurant values('07910', 'McDonalds', '1756280');
 insert into Restaurant values('66520', 'Bean Brothers Cafe', '0249831');
 
-
+-- GuestUser(uid) --
 insert into GuestUser values('277156');
 insert into GuestUser values('294484');
 insert into GuestUser values('863588');
 insert into GuestUser values('578126');
 insert into GuestUser values('734378');
 
-
+-- SignedUpUser(uid, img, name, username)
 insert into SignedUpUser values('656129', '', 'Kelly', 'Triforium');
 insert into SignedUpUser values('369008', '', 'Lydia', 'Abderian');
 insert into SignedUpUser values('772157', '', 'MannyMUA', 'Panurgic');
@@ -143,6 +141,8 @@ insert into Location values('V7L3V6', 49.312403, -123.056879, 'North Vancouver',
 insert into Location values('V7T1X5', 49.335804, -123.135701, 'West Vancouver', 'Inglewood Ave', '725', '02846');
 insert into Location values('V0N1G0', 49.396182, -123.204610, 'Vancouver', 'Cypress Bowl Rd', '6000', '82789');
 insert into Location values('V3R1N5', 49.192306, -122.798910, 'Surrey', '104 Ave', '15269', '35878');
+
+
 -- The Point
 insert into Location values ('V6T1Z4', 49.262036, -123.255103, 'Vancouver', 'Lower Mall', '2205', '38781');
 -- Tim Hortons
@@ -247,7 +247,7 @@ insert into SignedUpUserRestaurantFavourites values ('772157', '38781');
 
 /*RestaurantHoursOfOperation(rid, day, openTime, closeTime)*/
 -- some restaurant (ie. 35878 & 82789 & 02846) do not have Hours Of Operation
-insert into RestaurantHoursOfOperation values 
+827insert into RestaurantHoursOfOperation values 
 ('21921', 'Monday', '00:00', '24:00');
 insert into RestaurantHoursOfOperation values 
 ('21921', 'Tuesday', '00:00', '24:00');
@@ -433,7 +433,42 @@ insert into RestaurantHoursOfOperation values
 ('66520', 'Saturday', '10:00', '20:00');
 insert into RestaurantHoursOfOperation values
 ('66520', 'Sunday', '10:00', '20:00');
-
+insert into RestaurantHoursOfOperation values
+('35878', 'Monday', '6:30', '11:30');
+insert into RestaurantHoursOfOperation values
+('35878', 'Tuesday', '6:30', '11:30');
+insert into RestaurantHoursOfOperation values
+('35878', 'Wednesday', '6:30', '11:30');
+insert into RestaurantHoursOfOperation values
+('35878', 'Thursday', '6:30', '11:30');
+insert into RestaurantHoursOfOperation values
+('35878', 'Saturday', '10:00', '20:00');
+insert into RestaurantHoursOfOperation values
+('35878', 'Sunday', '10:00', '20:00');
+insert into RestaurantHoursOfOperation values
+('82789', 'Monday', '6:30', '11:30');
+insert into RestaurantHoursOfOperation values
+('82789', 'Tuesday', '6:30', '11:30');
+insert into RestaurantHoursOfOperation values
+('82789', 'Wednesday', '6:30', '11:30');
+insert into RestaurantHoursOfOperation values
+('82789', 'Thursday', '6:30', '11:30');
+insert into RestaurantHoursOfOperation values
+('82789', 'Saturday', '10:00', '20:00');
+insert into RestaurantHoursOfOperation values
+('82789', 'Sunday', '10:00', '20:00');
+insert into RestaurantHoursOfOperation values
+('02846', 'Monday', '6:30', '11:30');
+insert into RestaurantHoursOfOperation values
+('02846', 'Tuesday', '6:30', '11:30');
+insert into RestaurantHoursOfOperation values
+('02846', 'Wednesday', '6:30', '11:30');
+insert into RestaurantHoursOfOperation values
+('02846', 'Thursday', '6:30', '11:30');
+insert into RestaurantHoursOfOperation values
+('02846', 'Saturday', '10:00', '20:00');
+insert into RestaurantHoursOfOperation values
+('02846', 'Sunday', '10:00', '20:00');
 
 /* FoodsServedAtRestaurants(rid, food_type) */
 insert into FoodsServedAtRestaurants values ('21921', 'cereal');
