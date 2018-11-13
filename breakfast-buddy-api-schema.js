@@ -45,8 +45,8 @@ const ENTITIES = {
         street = "skj st",
         city = "ewfk",
         postalCode = "efqrf",
-        FaveFood = '',
-        Food_types = [ENTITIES.FoodTypeListItem],
+        faveFood = '',
+        food_types = [ENTITIES.FoodTypeListItem],
     },
 
     // TODO: FOR BEN: had to split this this way because otherwise I have to iterate over list and separate out the values
@@ -243,9 +243,64 @@ const REST_ENDPOINTS = {
             body: ENTITIES.expandedRestaurant
         }
     },
-    // owner add owned restaurant
-    // owner update a retautant
-    // restaurant expanded view for owner
+    ownerAddRestaurant :{  // TODO: assuming these required fields can be checked on FE?
+        type: 'Post',
+        requestUrl: `${baseURL}/${oid}/add-restaurant/`,
+        body: {
+            restaurantName = 'Macs', //required
+            OpenHours = [ENTITIES.HoursOfOpListItem], //must contain at least one open time
+            number = "293",         //required
+            street = "skj st",      //required
+            city = "ewfk",          //required
+            postalCode = "efqrf",   //required
+            food_types = [ENTITIES.FoodTypeListItem], // must contain at least one food
+        },
+        response: {
+            code: 200 || 404 || 400, // get 400 when either of the required feilds are not provided
+            // FE should retain owner info and redirect to owner profile showing new list of restaurants
+            body: [ENTITIES.RestaurantItem ]
+        }
+    },
+    ownerUpdateRestaurantTimes :{ 
+        type: 'Post',
+        requestUrl: `${baseURL}/${oid}/update-times/${rid}`,
+        body: {
+            // TODO: for ben: FE must check there is at least one item left when updating, ie, can't remove all open times
+            OpenHours = [ENTITIES.HoursOfOpListItem], 
+        },
+        response: {
+            code: 200 || 404,
+            body: [ENTITIES.HoursOfOpListItem ] // FE redirect to expanded view and retain all restaurant info
+        }
+    },
+    ownerUpdateRestaurantFoods :{ 
+        type: 'Post',
+        requestUrl: `${baseURL}/${oid}/update-foods/${rid}`,
+        body: { 
+            // TODO: for ben: FE must check there is at least one item left when updating, ie, can't remove all food_type items
+            food_types = [ENTITIES.FoodTypeListItem], 
+        },
+        response: {
+            code: 200 || 404,
+            body: [ENTITIES.FoodTypeListItem ] // FE redirect to expanded view and retain all restaurant info
+        }
+    },
+    ownerUpdateRestaurantDetails :{
+        type: 'Post',
+        requestUrl: `${baseURL}/${oid}/update-details/${rid}`,
+        body: { // any field left blank will have same values as before
+            restaurantName = 'Macs', 
+            number = "293",         
+            street = "skj st",      
+            city = "ewfk",
+            postalCode = "efqrf",
+        },
+        response: {
+            code: 200 || 404,
+            body: [ENTITIES.FoodTypeListItem ] // FE redirect to expanded view and retain all restaurant info
+        }
+    }
+
     // getting search result end point for near me
     // getting search result for manual search loc/time
     //getting search result for manual search by food
@@ -860,13 +915,136 @@ router.get('/view-restaurant/:rid', function (req, res, next) {
                     street = restaurant[0].street,
                     city = restaurant[0].city,
                     postalCode = restaurant[0].postalCode,
-                    FaveFood = FaveFoodItem,
-                    Food_types = foods
+                    faveFood = FaveFoodItem,
+                    food_types = foods
                 })
               })
             })
           })
         } else {
+            res.status(404).json({})
+        }
+      })
+})
+
+
+router.post('/:oid/add-restaurant/', function (req, res, next) {
+    const oid = req.params.oid
+    const name = req.body.restaurantName
+    const OpenHours = req.body.OpenHours
+    const number = req.body.number
+    const street = req.body.street
+    const city = req.body.city
+    const postalCode = req.body.postalCode
+    const food_types = req.body.food_types
+    const rid = uuidv1()
+    const query1 = 'SELECT * from owner where oid=:oid;'
+    connection.query(query1,
+      {
+        type: connection.QueryTypes.SELECT,
+        replacements: {oid: oid}
+      })
+      .then(owner => {
+        if (owner.length === 1){
+          if (OpenHours.length === 0 || food_types.length === 0){
+            res.status(400).json({})
+          } else {
+          const query2 = 'INSERT INTO Restaurant (rid, name, oid) VALUES (:rid, :name, :oid)'
+          connection.query(query2,
+          {
+            type: connection.QueryTypes.INSERT,
+            replacements: {
+                rid: rid,
+                name: name,
+                oid: oid
+            }
+          })
+          const query3 = 'SELECT * FROM Location where postalCode = :postalCode;'
+          connection.query(query3,
+          {
+            type: connection.QueryTypes.SELECT,
+            replacements: {postalCode: postalCode}
+          })
+          .then(loc => {
+              if (loc.length === 1){
+                const query4 = 'UPDATE Location SET number = :number, rid = :rid WHERE postalCode = :postalCode;'
+                connection.query(query4,
+                {
+                  type: connection.QueryTypes.UPDATE,
+                  replacements: {
+                    postalCode: postalCode,
+                    number: number,
+                    rid: rid
+                  }
+                })
+              } else {
+                const query4 = 'INSERT INTO Location (postalCode, lat, lon, city, street, number, rid) Values '+
+                                '(:postalCode, :lat, :lon, :city, :street, :number, :rid);'
+                connection.query(query4,
+                {
+                  type: connection.QueryTypes.INSERT,
+                  replacements: {
+                    postalCode: postalCode,
+                    lat: '2332.23', // TODO: add real lat/lon
+                    lon: '323.23',
+                    city: city,
+                    street: street,
+                    number: number,
+                    rid: rid
+                  }
+                })
+              }
+          })
+          // indert hours of op
+          for (t in OpenHours) {
+            // insert into hours of operation (either exists and is not added or is added)
+            const query5 = 'INSERT INTO HoursOfOperation (day, openTime, closeTime) VALUES (:day, :openTime, :closeTime);'
+            connection.query(query5,
+            {
+                type: connection.QueryTypes.INSERT,
+                replacements: {
+                    day: t.day,
+                    openTime: t.openTime,
+                    closeTime: t.closeTime
+                }
+            })
+            const query6 = 'INSERT INTO RestaurantHoursOfOperation (day, openTime, closeTime, rid) VALUES (:day, :openTime, :closeTime, :rid);'
+            connection.query(query6,
+            {
+                type: connection.QueryTypes.INSERT,
+                replacements: {
+                    day: t.day,
+                    openTime: t.openTime,
+                    closeTime: t.closeTime,
+                    rid: rid
+                }
+            })
+          }
+          // insert food types served
+          for (f in food_types) {
+            const query7 = 'INSERT INTO Food (food_type) VALUES (:food_type);'
+            connection.query(query7,
+            {
+                type: connection.QueryTypes.INSERT,
+                replacements: {food_type: f.food_type}
+            })
+            const query8 = 'INSERT INTO FoodsServedAtRestaurants (rid, food_type) VALUES (:rid, :food_type);'
+            connection.query(query8,
+            {
+                type: connection.QueryTypes.INSERT,
+                replacements: {rid: rid, food_type: f.food_type}
+            })
+          }
+          const query9 = 'SELECT rid, name from Restaurant where oid=:oid;'
+          connection.query(query9,
+            {
+              type: connection.QueryTypes.SELECT,
+              replacements: {oid: oid}
+            })
+            .then(restaurants => {
+                res.json(restaurants)
+            })
+        }} else {
             res.status(404).json({})
         }
       })
