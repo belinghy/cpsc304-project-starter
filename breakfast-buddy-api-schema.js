@@ -190,6 +190,7 @@ const REST_ENDPOINTS = {
     },
 
     // TODO:
+
     //userprofilesearch clear
     // user profile show food fave
     // ~~~~ edit/ remove food item
@@ -270,7 +271,8 @@ router.post('/signup', function (req, res, next) {
           if (owner == true)
           { // create a owner user
             query1 = 'INSERT INTO Account (username, password) VALUES (:username, :password);'
-            query2 = 'INSERT INTO Owner (username, oid, name, img) VALUES (:username, :oid, :name, :img) ;'
+            //Owner user does not have img attribute, will not work removed it
+            query2 = 'INSERT INTO Owner (username, oid, name) VALUES (:username, :oid, :name);'
             const query = query1 + query2
             connection.query(query,
               {
@@ -280,14 +282,14 @@ router.post('/signup', function (req, res, next) {
                   password: password,
                   oid: uuidv1(),
                   name: name,
-                  img: img,
                 }
               })
               res.json({'id': oid, 'name': name, 'owner': true})
           }
           else { // create a regular user
             query1 = 'INSERT INTO Account (username, password) VALUES (:username, :password);'
-            query2 = 'INSERT INTO SignedUpUser (username, oid, name, img) VALUES (:username, :oid, :name, :img) ;'
+            // changed oid to uid in SignedUpuser (uesrname, uid, name, img)
+            query2 = 'INSERT INTO SignedUpUser (username, uid, name, img) VALUES (:username, :uid, :name, :img) ;'
             const query = query1 + query2
             connection.query(query,
               {
@@ -433,7 +435,7 @@ router.post('/user-profile/:id/edit', function (req, res, next) {
               })
             .then(anyuser => {
                 if (anyuser.length != 0){
-                    // username is not unique so can't be updated
+                    // username is not unique so cant be updated
                     valid = false
                 }
             })
