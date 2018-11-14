@@ -38,7 +38,7 @@ const ENTITIES = {
         food_type: 'pancakes'
     },
     expandedRestaurant: {
-        restaurantID = 234,
+        restaurantID = '234',
         restaurantName = 'Macs',
         OpenHours = [ENTITIES.HoursOfOpListItem],
         number = "293",
@@ -56,11 +56,7 @@ const ENTITIES = {
         street: 'blah st',
         city : 'sf',
         day: 'Mon',
-        Time: '12:00',
-    },
-    SearchHistoryList: {
-        LocTimeList : [ENTITIES.searchHistoryLocListItem],
-        FoodType: [ENTITIES.FoodTypeListItem], // This is a list of all foods searched (not specific to loc search!)
+        time: '12:00',
     },
     FoodTypeListItem: {
         food_type: 'eggs'
@@ -69,6 +65,12 @@ const ENTITIES = {
         day: 'Monday',
         openTime: '00:00',
         closeTime: '24:00'
+    },
+    SearchResultListItem : {
+        restaurantID: '32rf3-4r',
+        restaurantName: 'blahhh',
+        faveFood: "eggs",
+        closeTime: '23'
     }
 
 }
@@ -185,7 +187,7 @@ const REST_ENDPOINTS = {
         body: NULL,
         response: {
             code: 200 || 404,
-            body: [ ENTITIES.SearchHistoryList ]
+            body: [ ENTITIES.searchHistoryLocListItem ]
         }
     },
     userDelLikedRestaurant : {
@@ -263,16 +265,27 @@ const REST_ENDPOINTS = {
             body: [ENTITIES.RestaurantItem ]
         }
     },
+    SearchForRestaurant :{
+        type: 'POST',
+        requestUrl: `${baseURL}/${id}/search-restaurant/`,
+        body: {
+            lat: '3243.2343',
+            lon: '324.234',
+            time: '12:00',
+            day: 'Monday',
+            city: 'vancouver',
+            street: '4th ave'
+        },
+        response: {
+            code: 200 || 404,
+            body: [ENTITIES.SearchResultListItem]
+        }
+    },
 
-    //TODO:
-    // getting search result end point for near me
-    // getting search result for manual search loc/time
-    
-    // getting search result for manual search by food
+    //TODO:    
     // user likes food at restaurant
     // user likes restaurant
     // guest user likes food at restaurnt
-
 
     // leave the rest
     ownerDelRestaurantTime :{ 
@@ -717,7 +730,7 @@ router.get('/user-profile/:id/search-history', function (req, res, next) {
       .then(user => {
         if (user.length === 1){
             // do another query to get search history:
-            const query2 = 'SELECT S.sid, S.day, S.openTime, L.street, L.city FROM SignedUpUser U, SignedUpUserLocationTimeSearches S, Location L WHERE U.uid = :uid and U.uid == S.uid and L.lat == S.lat and L.lon==S.lon;'
+            const query2 = 'SELECT S.sid, S.day, S.openTime as time, L.street, L.city FROM SignedUpUser U, SignedUpUserLocationTimeSearches S, Location L WHERE U.uid = :uid and U.uid == S.uid and L.lat == S.lat and L.lon==S.lon;'
             connection.query(query2,
               {
                 type: connection.QueryTypes.SELECT,
@@ -726,20 +739,8 @@ router.get('/user-profile/:id/search-history', function (req, res, next) {
                 }
               })
               .then(searchLoc => {
-                // do another query to get food search history:
-                const query3 = 'SELECT S.food_type FROM SignedUpUser U, SignedUpUserFoodSearches S WHERE U.uid = :uid and U.uid == S.uid;'
-                connection.query(query3,
-                {
-                    type: connection.QueryTypes.SELECT,
-                    replacements: { uid: uid }
+                  res.json(searchLoc)
                 })
-                .then(searchFood => {
-                  res.json({
-                    TimeLocationSearch: searchLoc,
-                    FoodType: searchFood
-                    })
-                })
-            })
         } else {
             res.status(404).json({})
         }
