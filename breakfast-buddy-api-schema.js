@@ -258,11 +258,21 @@ const REST_ENDPOINTS = {
             food_types = [ENTITIES.FoodTypeListItem], // must contain at least one food
         },
         response: {
-            code: 200 || 404 || 400, // get 400 when either of the required feilds are not provided
+            code: 200 || 404 || 400, // get 400 when either of the required feilds are not provided OR if address belongs to another restaurant
             // FE should retain owner info and redirect to owner profile showing new list of restaurants
             body: [ENTITIES.RestaurantItem ]
         }
     },
+
+    //TODO:
+    // getting search result end point for near me
+    // getting search result for manual search loc/time
+    
+    // getting search result for manual search by food
+    // user likes food at restaurant
+    // user likes restaurant
+    // guest user likes food at restaurnt
+
 
     // leave the rest
     ownerDelRestaurantTime :{ 
@@ -335,17 +345,7 @@ const REST_ENDPOINTS = {
                 postalCode = "newcode"
             } 
         }
-    },
-
-
-    //TODO:
-    // getting search result end point for near me
-    // getting search result for manual search loc/time
-    
-    // getting search result for manual search by food
-    // user likes food at restaurant
-    // user likes restaurant
-    // guest user likes food at restaurnt
+    }
 }
 
 // corresponding code:
@@ -717,7 +717,7 @@ router.get('/user-profile/:id/search-history', function (req, res, next) {
       .then(user => {
         if (user.length === 1){
             // do another query to get search history:
-            const query2 = 'SELECT S.sid, S.day, S.openTime, L.street, L.city FROM SignedUpUser U, SignedUpUserLocationTimeSearches S, Location L WHERE U.uid = :uid and U.uid == S.uid and L.postalCode == S.postalCode;'
+            const query2 = 'SELECT S.sid, S.day, S.openTime, L.street, L.city FROM SignedUpUser U, SignedUpUserLocationTimeSearches S, Location L WHERE U.uid = :uid and U.uid == S.uid and L.lat == S.lat and L.lon==S.lon;'
             connection.query(query2,
               {
                 type: connection.QueryTypes.SELECT,
@@ -1003,24 +1003,15 @@ router.post('/:oid/add-restaurant/', function (req, res, next) {
                 oid: oid
             }
           })
-          const query3 = 'SELECT * FROM Location where postalCode = :postalCode;'
+          const query3 = 'SELECT * FROM Location where lat = :lat and lon = :lon and rid NOT NULL;'
           connection.query(query3,
           {
             type: connection.QueryTypes.SELECT,
-            replacements: {postalCode: postalCode}
+            replacements: {lat: lat, lon: lon}
           })
           .then(loc => {
-              if (loc.length === 1){
-                const query4 = 'UPDATE Location SET number = :number, rid = :rid WHERE postalCode = :postalCode;'
-                connection.query(query4,
-                {
-                  type: connection.QueryTypes.UPDATE,
-                  replacements: {
-                    postalCode: postalCode,
-                    number: number,
-                    rid: rid
-                  }
-                })
+              if (loc.length =! 0){
+                res.status(400) // location belongs to some other restaurant so cant accept this!
               } else {
                 const query4 = 'INSERT INTO Location (postalCode, lat, lon, city, street, number, rid) Values '+
                                 '(:postalCode, :lat, :lon, :city, :street, :number, :rid);'
