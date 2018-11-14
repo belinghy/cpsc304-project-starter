@@ -226,7 +226,7 @@ const REST_ENDPOINTS = {
     },
     ownerDelOwnedRestaurant : {
         type: 'Get',
-        requestUrl: `${baseURL}/owner/${id}/remove-restaurant/${rid}`,
+        requestUrl: `${baseURL}/owner/${oid}/remove-restaurant/${rid}`,
         body: NULL,
         response: {
             code: 200 || 404,
@@ -234,7 +234,7 @@ const REST_ENDPOINTS = {
             body: [ ENTITIES.RestaurantItem ] 
         }
     },
-    userViewRestaurant :{
+    viewRestaurant :{
         type: 'Get',
         requestUrl: `${baseURL}/view-restaurant/${rid}`,
         body: NULL,
@@ -261,24 +261,40 @@ const REST_ENDPOINTS = {
             body: [ENTITIES.RestaurantItem ]
         }
     },
-    ownerUpdateRestaurantTimes :{ 
-        type: 'Post',
-        requestUrl: `${baseURL}/${oid}/update-times/${rid}`,
-        body: {
-            // TODO: for ben: FE must check there is at least one item left when updating, ie, can't remove all open times
-            OpenHours = [ENTITIES.HoursOfOpListItem], 
-        },
+    ownerDelRestaurantTime :{ 
+        type: 'delete',
+        requestUrl: `${baseURL}/${oid}/del-time/${rid}`,
+        body: { time: ENTITIES.HoursOfOpListItem},
         response: {
             code: 200 || 404,
             body: [ENTITIES.HoursOfOpListItem ] // FE redirect to expanded view and retain all restaurant info
         }
     },
-    ownerUpdateRestaurantFoods :{ 
+    ownerAddRestaurantTime :{ 
         type: 'Post',
-        requestUrl: `${baseURL}/${oid}/update-foods/${rid}`,
+        requestUrl: `${baseURL}/${oid}/add-time/${rid}`,
+        body: { time: ENTITIES.HoursOfOpListItem },
+        response: {
+            code: 200 || 404,
+            body: [ENTITIES.HoursOfOpListItem ] // FE redirect to expanded view and retain all restaurant info
+        }
+    },
+    ownerAddRestaurantFood :{ 
+        type: 'Post',
+        requestUrl: `${baseURL}/${oid}/add-food/${rid}`,
         body: { 
-            // TODO: for ben: FE must check there is at least one item left when updating, ie, can't remove all food_type items
-            food_types = [ENTITIES.FoodTypeListItem], 
+            food_types = [ENTITIES.FoodTypeListItem],  // can add multiple at a time
+        },
+        response: {
+            code: 200 || 404,
+            body: [ENTITIES.FoodTypeListItem ] // FE redirect to expanded view and retain all restaurant info
+        }
+    },
+    ownerDelRestaurantFood :{ 
+        type: 'DELETE',
+        requestUrl: `${baseURL}/${oid}/del-food/${rid}`,
+        body: { 
+            food_type = 'eggs', 
         },
         response: {
             code: 200 || 404,
@@ -316,10 +332,15 @@ const REST_ENDPOINTS = {
             } 
         }
     },
+    //TODO:
     // getting search result end point for near me
     // getting search result for manual search loc/time
     //getting search result for manual search by food
+    // user likes food at restaurant
+    // user likes restaurant
+    // guest user likes food at restaurnt
 }
+
 // corresponding code:
 const uuidv1 = require('uuid/v1');
 
@@ -819,7 +840,7 @@ router.get('/user/:id/remove-fave-food/:rid', function (req, res, next) {
     connection.query(query,
       {
         type: connection.QueryTypes.SELECT,
-        replacements: {uid: ui}
+        replacements: {uid: uid}
       })
       .then(user => {
         if (user.length === 1){
@@ -848,8 +869,8 @@ router.get('/user/:id/remove-fave-food/:rid', function (req, res, next) {
       })
 })
 
-router.get('/owner/:id/remove-restaurant/:rid', function (req, res, next) {
-    const oid = req.params.id
+router.get('/owner/:oid/remove-restaurant/:rid', function (req, res, next) {
+    const oid = req.params.oid
     const rid = req.params.rid
     const query = 'SELECT * FROM Owner WHERE oid = :oid;'
     connection.query(query,
@@ -963,7 +984,7 @@ router.post('/:oid/add-restaurant/', function (req, res, next) {
           if (OpenHours.length === 0 || food_types.length === 0){
             res.status(400).json({})
           } else {
-          const query2 = 'INSERT INTO Restaurant (rid, name, oid) VALUES (:rid, :name, :oid)'
+          const query2 = 'INSERT INTO Restaurant (rid, name, oid) VALUES (:rid, :name, :oid);'
           connection.query(query2,
           {
             type: connection.QueryTypes.INSERT,
@@ -1138,4 +1159,145 @@ router.post('/:oid/update-loc/:rid', function (req, res, next) {
             res.status(404).json({}) 
         }
     })
+})
+
+router.post('/:oid/add-food/:rid', function (req, res, next) {
+    const oid = req.params.oid
+    const rid = req.params.rid
+    const foods = req.body.food_types
+    const query = 'SELECT * FROM Restaurant WHERE oid = :oid and rid = :rid;'
+    connection.query(query,
+      {
+        type: connection.QueryTypes.SELECT,
+        replacements: {rid: rid, oid: oid}
+      })
+      .then(restaurant => {
+        if (restaurant.length === 1){
+            for (food in foods) {
+                const query1 = 'INSERT INTO Food (food_type) VALUES (:food_type);'
+                connection.query(query1,
+                  {
+                    type: connection.QueryTypes.INSERT,
+                    replacements: {food_type: food.food_type}
+                  })
+                const query2 = 'INSERT INTO FoodsServedAtRestaurants (rid, food_type) VALUES (:rid, :food_type);'
+                connection.query(query2,
+                  {
+                    type: connection.QueryTypes.INSERT,
+                    replacements: {rid: rid, food_type: food.food_type}
+                  })
+            }
+            const query3 = 'SELECT food_type from FoodsServedAtRestaurants where rid= :rid;'
+            connection.query(query3,
+              {
+                type: connection.QueryTypes.SELECT,
+                replacements: {rid: rid}
+              })
+              .then (newFoods => {
+                  res.jason(newFoods)
+              })
+        } else {
+            res.status(404).json({})
+        }
+      })
+})
+
+
+router.delete('/:oid/del-food/:rid', function (req, res, next) {
+    const oid = req.params.oid
+    const rid = req.params.rid
+    const food = req.body.food_type
+    const query = 'SELECT * FROM Restaurant WHERE oid = :oid and rid = :rid;'
+    connection.query(query,
+      {
+        type: connection.QueryTypes.SELECT,
+        replacements: {rid: rid, oid: oid}
+      })
+      .then(restaurant => {
+        if (restaurant.length === 1){
+            const query1 = 'DELETE FROM FoodsServedAtRestaurants where food_type = :food_type and rid= :rid;'
+            connection.query(query1,
+                {
+                    type: connection.QueryTypes.DELETE,
+                    replacements: {food_type: food, rid: rid}
+                })
+            const query3 = 'SELECT food_type from FoodsServedAtRestaurants where rid= :rid;'
+            connection.query(query3,
+              {
+                type: connection.QueryTypes.SELECT,
+                replacements: {rid: rid}
+              })
+              .then (newFoods => {
+                  res.jason(newFoods)
+              })
+        } else {
+            res.status(404).json({})
+        }
+      })
+})
+
+router.delete('/:oid/del-time/:rid', function (req, res, next) {
+    const oid = req.params.oid
+    const rid = req.params.rid
+    const time = req.body.time
+    const query = 'SELECT * FROM Restaurant WHERE oid = :oid and rid = :rid;'
+    connection.query(query,
+      {
+        type: connection.QueryTypes.SELECT,
+        replacements: {rid: rid, oid: oid}
+      })
+      .then(restaurant => {
+        if (restaurant.length === 1){
+            const query1 = 'DELETE FROM RestaurantHoursOfOperation where day = :day and openTime = :openTime and closeTime = :closeTime and rid= :rid;'
+            connection.query(query1,
+                {
+                    type: connection.QueryTypes.DELETE,
+                    replacements: {day: day, openTime: openTime, closeTime: closeTime, rid: rid}
+                })
+            const query3 = 'SELECT day, openTime, closeTime from RestaurantHoursOfOperation where rid= :rid;'
+            connection.query(query3,
+              {
+                type: connection.QueryTypes.SELECT,
+                replacements: {rid: rid}
+              })
+              .then (newHours => {
+                  res.jason(newHours)
+              })
+        } else {
+            res.status(404).json({})
+        }
+      })
+})
+
+router.post('/:oid/add-time/:rid', function (req, res, next) {
+    const oid = req.params.oid
+    const rid = req.params.rid
+    const time = req.body.time
+    const query = 'SELECT * FROM Restaurant WHERE oid = :oid and rid = :rid;'
+    connection.query(query,
+      {
+        type: connection.QueryTypes.SELECT,
+        replacements: {rid: rid, oid: oid}
+      })
+      .then(restaurant => {
+        if (restaurant.length === 1){
+            const query1 = 'INSERT INTO RestaurantHoursOfOperation (day, openTime, closeTime, rid) VALUES (:day, :openTime, :closeTime, :rid);'
+            connection.query(query1,
+                {
+                    type: connection.QueryTypes.INSERT,
+                    replacements: {day: day, openTime: openTime, closeTime: closeTime, rid: rid}
+                })
+            const query3 = 'SELECT day, openTime, closeTime from RestaurantHoursOfOperation where rid= :rid;'
+            connection.query(query3,
+              {
+                type: connection.QueryTypes.SELECT,
+                replacements: {rid: rid}
+              })
+              .then (newHours => {
+                  res.jason(newHours)
+              })
+        } else {
+            res.status(404).json({})
+        }
+      })
 })
