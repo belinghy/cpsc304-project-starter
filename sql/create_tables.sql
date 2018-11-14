@@ -47,13 +47,14 @@ CREATE TABLE HoursOfOperation
 PRIMARY KEY(day, openTime, closeTime) );
 
 CREATE TABLE Location
-(postalCode CHAR(6) not null primary key,
+(postalCode CHAR(6),
  lat		FLOAT not null,
  lon 		FLOAT not null,
- city 		CHAR(20) not null,
- street 	CHAR(30) not null,
+ city 		CHAR(20),
+ street 	CHAR(30),
  number 	CHAR(45),
  rid		CHAR(45),
+primary Key (lat, lon)
 FOREIGN KEY(rid) REFERENCES Restaurant
 	ON DELETE CASCADE
 	ON UPDATE CASCADE );
@@ -90,16 +91,17 @@ uid			CHAR(45) not null,
 day			CHAR(10) not null,
 openTime  	TIME not null,
 closeTime 	TIME not null,
-postalCode 	CHAR(6) not null,
+lat 		FLOAT not null,
+lon			FLOAT not null,
 sid         CHAR(45) not null unique,
-PRIMARY KEY(uid, day, openTime, closeTime, postalCode),
+PRIMARY KEY(uid, day, openTime, closeTime, lat, lon),
 FOREIGN KEY(uid) REFERENCES SignedUpUser
 	ON DELETE CASCADE
 	ON UPDATE CASCADE,
 FOREIGN KEY(day, openTime, closeTime) REFERENCES HoursOfOperation
 	ON DELETE CASCADE
 	ON UPDATE CASCADE,
-FOREIGN KEY(postalCode) REFERENCES Location
+FOREIGN KEY(lat, lon) REFERENCES Location
 	ON DELETE CASCADE
 	ON UPDATE CASCADE);
 -- change the last two ON DELETE SET NULL to CASCADE

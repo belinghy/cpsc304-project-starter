@@ -45,14 +45,14 @@ const ENTITIES = {
         street = "skj st",
         city = "ewfk",
         postalCode = "efqrf",
+        lat = '3456345.34543',
+        lon = '3434.34545',
         faveFood = '',
         food_types = [ENTITIES.FoodTypeListItem],
     },
 
-    // TODO: FOR BEN: had to split this this way because otherwise I have to iterate over list and separate out the values
     searchHistoryLocListItem: {
         sid = 23,
-        number: '2394',
         street: 'blah st',
         city : 'sf',
         day: 'Mon',
@@ -189,7 +189,7 @@ const REST_ENDPOINTS = {
         }
     },
     userDelLikedRestaurant : {
-        type: 'Get',
+        type: 'Delete',
         requestUrl: `${baseURL}/user/${id}/remove-liked-restaurant/${rid}`,
         body: NULL,
         response: {
@@ -204,7 +204,7 @@ const REST_ENDPOINTS = {
         response: {
             code: 200 || 404,
             body: NULL  // should retain user profile info on FE and just redirect to user profile showing search history tab as empty
-        }
+        } // Rojin: send empty array
     },
     userprofileFaveFood: {
         type: 'GET',
@@ -216,7 +216,7 @@ const REST_ENDPOINTS = {
         }
     },
     userDelFaveFood : {
-        type: 'Get',
+        type: 'Delete',
         requestUrl: `${baseURL}/user/${id}/remove-fave-food/${rid}`,
         body: NULL,
         response: {
@@ -225,7 +225,7 @@ const REST_ENDPOINTS = {
         }
     },
     ownerDelOwnedRestaurant : {
-        type: 'Get',
+        type: 'DELETE',
         requestUrl: `${baseURL}/owner/${oid}/remove-restaurant/${rid}`,
         body: NULL,
         response: {
@@ -253,6 +253,8 @@ const REST_ENDPOINTS = {
             street = "skj st",      //required
             city = "ewfk",          //required
             postalCode = "efqrf",   //required
+            lat = '34534.34545',     // calculated based on address given
+            lon = '345.34545',
             food_types = [ENTITIES.FoodTypeListItem], // must contain at least one food
         },
         response: {
@@ -261,6 +263,8 @@ const REST_ENDPOINTS = {
             body: [ENTITIES.RestaurantItem ]
         }
     },
+
+    // leave the rest
     ownerDelRestaurantTime :{ 
         type: 'delete',
         requestUrl: `${baseURL}/${oid}/del-time/${rid}`,
@@ -332,10 +336,13 @@ const REST_ENDPOINTS = {
             } 
         }
     },
+
+
     //TODO:
     // getting search result end point for near me
     // getting search result for manual search loc/time
-    //getting search result for manual search by food
+    
+    // getting search result for manual search by food
     // user likes food at restaurant
     // user likes restaurant
     // guest user likes food at restaurnt
@@ -710,7 +717,7 @@ router.get('/user-profile/:id/search-history', function (req, res, next) {
       .then(user => {
         if (user.length === 1){
             // do another query to get search history:
-            const query2 = 'SELECT S.sid, S.day, S.openTime, L.number, L.street, L.city FROM SignedUpUser U, SignedUpUserLocationTimeSearches S, Location L WHERE U.uid = :uid and U.uid == S.uid and L.postalCode == S.postalCode;'
+            const query2 = 'SELECT S.sid, S.day, S.openTime, L.street, L.city FROM SignedUpUser U, SignedUpUserLocationTimeSearches S, Location L WHERE U.uid = :uid and U.uid == S.uid and L.postalCode == S.postalCode;'
             connection.query(query2,
               {
                 type: connection.QueryTypes.SELECT,
@@ -740,7 +747,7 @@ router.get('/user-profile/:id/search-history', function (req, res, next) {
 })
 
 // Done
-router.get('/user/:id/remove-liked-restaurant/:rid', function (req, res, next) {
+router.delete('/user/:id/remove-liked-restaurant/:rid', function (req, res, next) {
     const uid = req.params.id
     const rid = req.params.rid
     const query = 'SELECT * FROM SignedUpUser WHERE uid = :uid;'
@@ -833,7 +840,7 @@ router.get('/user-profile/:id/fave-food', function (req, res, next) {
       })
 })
 
-router.get('/user/:id/remove-fave-food/:rid', function (req, res, next) {
+router.delete('/user/:id/remove-fave-food/:rid', function (req, res, next) {
     const uid = req.params.id
     const rid = req.params.rid
     const query = 'SELECT * FROM SignedUpUser WHERE uid = :uid;'
@@ -869,7 +876,7 @@ router.get('/user/:id/remove-fave-food/:rid', function (req, res, next) {
       })
 })
 
-router.get('/owner/:oid/remove-restaurant/:rid', function (req, res, next) {
+router.delete('/owner/:oid/remove-restaurant/:rid', function (req, res, next) {
     const oid = req.params.oid
     const rid = req.params.rid
     const query = 'SELECT * FROM Owner WHERE oid = :oid;'
@@ -972,6 +979,8 @@ router.post('/:oid/add-restaurant/', function (req, res, next) {
     const city = req.body.city
     const postalCode = req.body.postalCode
     const food_types = req.body.food_types
+    const lat = req.body.lat
+    const lon = req.body.lon
     const rid = uuidv1()
     const query1 = 'SELECT * from owner where oid=:oid;'
     connection.query(query1,
@@ -1020,8 +1029,8 @@ router.post('/:oid/add-restaurant/', function (req, res, next) {
                   type: connection.QueryTypes.INSERT,
                   replacements: {
                     postalCode: postalCode,
-                    lat: '2332.23', // TODO: add real lat/lon
-                    lon: '323.23',
+                    lat: lat,
+                    lon: lon,
                     city: city,
                     street: street,
                     number: number,
@@ -1084,6 +1093,18 @@ router.post('/:oid/add-restaurant/', function (req, res, next) {
         }
       })
 })
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 router.post('/:oid/update-name/:rid', function (req, res, next) {
