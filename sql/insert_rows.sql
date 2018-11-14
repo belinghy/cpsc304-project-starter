@@ -193,30 +193,30 @@ insert into SignedUpUserFoodSearches values ('997284', 'oatmeal');
 insert into SignedUpUserFoodSearches values ('831222', 'tea');
 
 -- fixed postal code to be string
-/*SignedUpUserLocationTimeSearches(uid, day, openTime, closeTime, postalCode)*/
+/*SignedUpUserLocationTimeSearches(uid, day, openTime, closeTime, lat, lon, sid)*/
 -- why does the TIME has to match HoursOfOperation?
 insert into SignedUpUserLocationTimeSearches values 
-('656129', 'Monday', '00:00', '24:00', 'V6R2B4', '1');
+('656129', 'Monday', '00:00', '24:00', 49.264596, -123.180782, '1');
 insert into SignedUpUserLocationTimeSearches values 
-('656129', 'Tuesday', '8:00', '20:00', 'V6R2B4', '2');
+('656129', 'Tuesday', '8:00', '20:00', 49.264596, -123.180782, '2');
 insert into SignedUpUserLocationTimeSearches values 
-('298849', 'Wednesday', '00:00', '24:00', 'V6R2G7', '3');
+('298849', 'Wednesday', '00:00', '24:00', 49.263871, -123.187157, '3');
 insert into SignedUpUserLocationTimeSearches values 
-('568122', 'Friday', '6:30', '11:30', 'V5W3A1', '4');
+('568122', 'Friday', '6:30', '11:30', 49.227818, -123.090310, '4');
 insert into SignedUpUserLocationTimeSearches values 
-('568122', 'Friday', '8:00', '20:00', 'V5X3T4', '5');
+('568122', 'Friday', '8:00', '20:00', 49.225159, -123.091135, '5');
 insert into SignedUpUserLocationTimeSearches values 
-('568122', 'Saturday', '6:30', '11:30', 'V7L3V6', '6');
+('568122', 'Saturday', '6:30', '11:30', 49.312403, -123.056879, '6');
 insert into SignedUpUserLocationTimeSearches values 
-('772157', 'Saturday', '6:30', '11:30', 'V7T1X5', '7');
+('772157', 'Saturday', '6:30', '11:30', 49.335804, -123.135701, '7');
 insert into SignedUpUserLocationTimeSearches values 
-('943127', 'Sunday', '6:30', '11:30', 'V7T1X5', '8');
+('943127', 'Sunday', '6:30', '11:30', 49.335804, -123.135701, '8');
 insert into SignedUpUserLocationTimeSearches values 
-('294663', 'Thursday', '00:00', '24:00', 'V0N1G0', '9');
+('294663', 'Thursday', '00:00', '24:00', 49.396182, -123.204610, '9');
 insert into SignedUpUserLocationTimeSearches values 
-('831222', 'Tuesday', '00:00', '24:00', 'V0N1G0', '10');
+('831222', 'Tuesday', '00:00', '24:00', 49.396182, -123.204610, '10');
 insert into SignedUpUserLocationTimeSearches values 
-('831222', 'Thursday', '8:00', '20:00', 'V3R1N5', '11');
+('831222', 'Thursday', '8:00', '20:00', 49.192306, -122.798910, '11');
 
 
 /*SignedUpUserRestaurantFavourites*/
