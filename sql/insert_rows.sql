@@ -46,7 +46,7 @@ insert into Food values('panini');
 insert into Food values('oatmeal');
 insert into Food values('tea');
 
-/* Owner(oid, name, username)*/
+/* Owner(owid, name, username)*/
 insert into Owner values('5699572', 'Adam', 'Abattoir');
 insert into Owner values('1856132', 'Beth', 'Ria4Deity');
 insert into Owner values('0249831', 'Carol', 'Trumeau');
@@ -58,7 +58,7 @@ insert into Owner values('1756280', 'Hellen', 'Schematism');
 insert into Owner values('4385958', 'Ian', 'Binnacle');
 insert into Owner values('5676173', 'Jason', 'Vamoose');
 
-/*Restaurant(rid, name, oid)*/
+/*Restaurant(rid, name, owid)*/
 insert into Restaurant values('21921', 'Mamalee', '5699572');
 insert into Restaurant values('42726', 'Retro Club', '5699572');
 insert into Restaurant values('82252', 'l-Aura', '1856132');
