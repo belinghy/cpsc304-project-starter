@@ -80,12 +80,23 @@ insert into Restaurant values('32243', 'Starbucks', '4747245');
 insert into Restaurant values('07910', 'McDonalds', '1756280');
 insert into Restaurant values('66520', 'Bean Brothers Cafe', '0249831');
 
--- GuestUser(uid) --
-insert into GuestUser values('277156');
-insert into GuestUser values('294484');
-insert into GuestUser values('863588');
-insert into GuestUser values('578126');
-insert into GuestUser values('734378');
+-- AllUser(uid) --
+insert into AllUser values('277156');
+insert into AllUser values('294484');
+insert into AllUser values('863588');
+insert into AllUser values('578126');
+insert into AllUser values('734378');
+--
+insert into AllUser values('656129');
+insert into AllUser values('369008');
+insert into AllUser values('772157');
+insert into AllUser values('943127');
+insert into AllUser values('294663');
+insert into AllUser values('298849');
+insert into AllUser values('647216');
+insert into AllUser values('568122');
+insert into AllUser values('997284');
+insert into AllUser values('831222');
 
 -- SignedUpUser(uid, img, name, username)
 insert into SignedUpUser values('656129', '', 'Kelly', 'Triforium');
@@ -247,7 +258,7 @@ insert into SignedUpUserRestaurantFavourites values ('772157', '38781');
 
 /*RestaurantHoursOfOperation(rid, day, openTime, closeTime)*/
 -- some restaurant (ie. 35878 & 82789 & 02846) do not have Hours Of Operation
-827insert into RestaurantHoursOfOperation values 
+insert into RestaurantHoursOfOperation values 
 ('21921', 'Monday', '00:00', '24:00');
 insert into RestaurantHoursOfOperation values 
 ('21921', 'Tuesday', '00:00', '24:00');

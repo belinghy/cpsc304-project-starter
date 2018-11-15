@@ -1,3 +1,5 @@
+--Change: no longer have a table for guest user, isntead, have a table for all user types
+
 -- changed all id types to be of char 45 to be able to generate unique ids using uuid
 CREATE TABLE Account
 (username CHAR(20) not null PRIMARY KEY,
@@ -27,7 +29,7 @@ FOREIGN KEY(owid) REFERENCES Owner
 	ON UPDATE CASCADE );
 
 
-CREATE TABLE GuestUser
+CREATE TABLE AllUser
 (uid	CHAR(45) not null PRIMARY KEY );
 
 
@@ -37,6 +39,9 @@ CREATE TABLE SignedUpUser
  name 		CHAR(20) not null,
  username 	CHAR(20) not null,
 FOREIGN KEY(username) REFERENCES Account
+	ON DELETE CASCADE
+	ON UPDATE CASCADE,
+FOREIGN KEY(uid) REFERENCES AllUser
 	ON DELETE CASCADE
 	ON UPDATE CASCADE );
 
@@ -54,7 +59,7 @@ CREATE TABLE Location
  street 	CHAR(30),
  number 	CHAR(45),
  rid		CHAR(45),
-primary Key (lat, lon)
+primary Key (lat, lon),
 FOREIGN KEY(rid) REFERENCES Restaurant
 	ON DELETE CASCADE
 	ON UPDATE CASCADE );
@@ -65,7 +70,7 @@ uid			CHAR(45) not null,
 food_type 	CHAR(20) not null,
 rid			CHAR(45) not null,
 PRIMARY KEY(uid, food_type, rid),
-FOREIGN KEY(uid)REFERENCES GuestUser
+FOREIGN KEY(uid)REFERENCES AllUser
 	ON DELETE CASCADE
 	ON UPDATE CASCADE,
 FOREIGN KEY(food_type) REFERENCES Food

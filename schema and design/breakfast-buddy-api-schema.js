@@ -300,7 +300,7 @@ const REST_ENDPOINTS = {
     },
 
     // leave the rest
-    ownerDelRestaurantTime :{ owid
+    ownerDelRestaurantTime :{ 
         type: 'delete',
         requestUrl: `${baseURL}/${owid}/del-time/${rid}`,
         body: { time: ENTITIES.HoursOfOpListItem},
@@ -309,7 +309,7 @@ const REST_ENDPOINTS = {
             body: [ENTITIES.HoursOfOpListItem ] // FE redirect to expanded view and retain all restaurant info
         }
     },
-    ownerAddRestaurantTime :{ owid
+    ownerAddRestaurantTime :{ 
         type: 'Post',
         requestUrl: `${baseURL}/${owid}/add-time/${rid}`,
         body: { time: ENTITIES.HoursOfOpListItem },
@@ -318,7 +318,7 @@ const REST_ENDPOINTS = {
             body: [ENTITIES.HoursOfOpListItem ] // FE redirect to expanded view and retain all restaurant info
         }
     },
-    ownerAddRestaurantFood :{ owid
+    ownerAddRestaurantFood :{ 
         type: 'Post',
         requestUrl: `${baseURL}/${owid}/add-food/${rid}`,
         body: { 
@@ -329,7 +329,7 @@ const REST_ENDPOINTS = {
             body: [ENTITIES.FoodTypeListItem ] // FE redirect to expanded view and retain all restaurant info
         }
     },
-    ownerDelRestaurantFood :{ owid
+    ownerDelRestaurantFood :{ 
         type: 'DELETE',
         requestUrl: `${baseURL}/${owid}/del-food/${rid}`,
         body: { 
@@ -340,7 +340,7 @@ const REST_ENDPOINTS = {
             body: [ENTITIES.FoodTypeListItem ] // FE redirect to expanded view and retain all restaurant info
         }
     },
-    ownerUpdateRestaurantName :{owid
+    ownerUpdateRestaurantName :{
         type: 'Post',
         requestUrl: `${baseURL}/${owid}/update-name/${rid}`,
         body: {
@@ -351,7 +351,7 @@ const REST_ENDPOINTS = {
             body: name  // FE redirect to expanded view and retain all other restaurant info (foods and open hours)
         }
     },
-    ownerUpdateRestaurantLoc :{owid
+    ownerUpdateRestaurantLoc :{
         type: 'Post',
         requestUrl: `${baseURL}/${owid}/update-loc/${rid}`,
         body: {  // reject update if any field left blank on FE
@@ -455,10 +455,10 @@ router.post('/signup', function (req, res, next) {
               res.json({'id': owid, 'name': name, 'owner': true})
           }
           else { // create a regular user
-            query1 = 'INSERT INTO Account (username, password) VALUES (:username, :password);'
-            // changed owid to uid in SignedUpuser (uesrname, uid, name, img)
-            query2 = 'INSERT INTO SignedUpUser (username, uid, name, img) VALUES (:username, :uid, :name, :img) ;'
-            const query = query1 + query2
+            query1 = 'INSERT INTO Account (username, password) VALUES (:username, :password); '
+            query2 = 'INSERT INTO AllUser (uid) VALUES (:uid); '
+            query3 = 'INSERT INTO SignedUpUser (username, uid, name, img) VALUES (:username, :uid, :name, :img);'
+            const query = query1 + query2 + query3
             connection.query(query,
               {
                 type: connection.QueryTypes.INSERT,
@@ -481,7 +481,7 @@ router.post('/signup', function (req, res, next) {
 
 
 router.get('/guest-home', function (req, res, next) {
-    const query = 'INSERT INTO GuestUser (uid) VALUES (:uid) ;'
+    const query = 'INSERT INTO AllUser (uid) VALUES (:uid) ;'
     connection.query(query,
       {
         type: connection.QueryTypes.INSERT,
@@ -1225,7 +1225,7 @@ router.post('/user/:id/like-food/:rid', function (req, res, next) {
     const uid = req.params.id
     const rid = req.params.rid
     const food_type = req.body.food_type
-    const query = 'SELECT * FROM SignedUpUser WHERE uid = :uid UNION SELECT * FROM GuestUser WHERE uid = :uid;'
+    const query = 'SELECT * FROM AllUser WHERE uid = :uid;'
     connection.query(query,
       {
         type: connection.QueryTypes.SELECT,
