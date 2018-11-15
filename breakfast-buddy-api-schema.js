@@ -28,7 +28,7 @@ const ENTITIES = {
         name: 'dons bar and grill',
         isFavourited: true,
     },
-    RestaurantItem: { // TODO for ben: this is what I'll be returning in userprofile because I'm returning the resultof query which is a list itself with these 2 values (otherwise I have to iterate over the list again and add isfave field which is useless)
+    RestaurantItem: {
         rid: 123,
         name: 'dons bar and grill',
     },
@@ -70,7 +70,9 @@ const ENTITIES = {
         restaurantID: '32rf3-4r',
         restaurantName: 'blahhh',
         faveFood: "eggs",
-        closeTime: '23'
+        closeTime: '23:00',
+        lat: '344.2424',
+        lon: '234324.23432'
     }
 
 }
@@ -122,7 +124,7 @@ const REST_ENDPOINTS = {
             body: ENTITES.user
         }
     },
-    // TODO: hit this URL on page load (for Ben) and redicrt to ${baseURL}/guest-home/id on response
+    // hit this URL on page load (for Ben) and redicrt to ${baseURL}/guest-home/id on response
     guesthome: {
         type: 'GET',
         requestUrl: `${baseURL}/guest-home/`,
@@ -155,12 +157,11 @@ const REST_ENDPOINTS = {
     userprofileEdit: {
         type: 'POST',
         requestUrl: `${baseURL}/user-profile/${id}/edit`,
-        // TODO: return whole body even if items left blank (for Ben)
+        // return whole body even if items left blank (for Ben)
         body: {
             username: 'fe',
             password: 'erf',
             name: '',
-            // TODO: if img empty, leave it
             img: ''
         },
         response: {
@@ -205,8 +206,8 @@ const REST_ENDPOINTS = {
         body: NULL,
         response: {
             code: 200 || 404,
-            body: NULL  // should retain user profile info on FE and just redirect to user profile showing search history tab as empty
-        } // Rojin: send empty array
+            body: []  // should retain user profile info on FE and just redirect to user profile showing search history tab as empty
+        }
     },
     userprofileFaveFood: {
         type: 'GET',
@@ -245,7 +246,7 @@ const REST_ENDPOINTS = {
             body: ENTITIES.expandedRestaurant
         }
     },
-    ownerAddRestaurant :{  // TODO: assuming these required fields can be checked on FE?
+    ownerAddRestaurant :{  //for BEN: assuming these required fields can be checked on FE?
         type: 'Post',
         requestUrl: `${baseURL}/${oid}/add-restaurant/`,
         body: {
@@ -267,14 +268,12 @@ const REST_ENDPOINTS = {
     },
     SearchForRestaurant :{
         type: 'POST',
-        requestUrl: `${baseURL}/${id}/search-restaurant/`,
+        requestUrl: `${baseURL}/user/${id}/search-restaurant/`,
         body: {
             lat: '3243.2343',
             lon: '324.234',
             time: '12:00',
             day: 'Monday',
-            city: 'vancouver',
-            street: '4th ave'
         },
         response: {
             code: 200 || 404,
@@ -285,7 +284,6 @@ const REST_ENDPOINTS = {
     //TODO:    
     // user likes food at restaurant
     // user likes restaurant
-    // guest user likes food at restaurnt
 
     // leave the rest
     ownerDelRestaurantTime :{ 
@@ -807,7 +805,7 @@ router.delete('/user/:id/clear-search-history/', function (req, res, next) {
                 type: connection.QueryTypes.DELETE,
                 replacements: { uid: uid }
               })
-              res.status(200).json({})
+              res.json([])
         } else { // user not found
             res.status(400).json({})
         }
@@ -915,7 +913,7 @@ router.delete('/owner/:oid/remove-restaurant/:rid', function (req, res, next) {
 
 router.get('/view-restaurant/:rid', function (req, res, next) {
     const rid = req.params.rid
-    const query1 = 'SELECT R.rid, R.name, L.city, L.number, L.street, L.postalCode FROM Location L,' +
+    const query1 = 'SELECT R.rid, R.name, L.city, L.number, L.street, L.postalCode, L.lat, L.lon FROM Location L,' +
                     'Restaurant R WHERE R.rid = :rid and L.rid=R.rid;'
     connection.query(query1,
       {
@@ -938,7 +936,10 @@ router.get('/view-restaurant/:rid', function (req, res, next) {
               replacements: {rid: rid}
             })
             .then(foods => {
-              const query3 = 'SELECT Unique food_type, COUNT(food_type) as best, FROM UserLikesFoodAtRestaurant where rid=:rid group by;' //TODO: fix this query
+              const query4 = 'SELECT ULF.food_type FROM Restaurant R, UserLikesFoodAtRestaurant ULF '+
+                        'WHERE R.rid = :rid GROUP BY ULF.food_type HAVING COUNT(ULF.rid) >= ALL '+
+                        '(SELECT COUNT(ULF.food_type) FROM RESTAURANT R, UserLikesFoodAtRestaurant ULF WHERE R.rid = :rid '+
+                        'GROUP BY ULF.food_type);'
               connection.query(query4,
               {
                 type: connection.QueryTypes.SELECT,
@@ -948,7 +949,7 @@ router.get('/view-restaurant/:rid', function (req, res, next) {
                 if (faves.length != 1){
                     FaveFoodItem = faves[0].food_type
                 } else {
-                    FaveFoodItem = ''
+                    FaveFoodItem = "N/A"
                 }
                 res.json({
                     restaurantID = restaurant[0].rid,
@@ -958,6 +959,8 @@ router.get('/view-restaurant/:rid', function (req, res, next) {
                     street = restaurant[0].street,
                     city = restaurant[0].city,
                     postalCode = restaurant[0].postalCode,
+                    lat = restaurant[0].lat,
+                    lon = restaurant[0].lon,
                     faveFood = FaveFoodItem,
                     food_types = foods
                 })
@@ -1086,19 +1089,97 @@ router.post('/:oid/add-restaurant/', function (req, res, next) {
       })
 })
 
+router.post('/user/:id/search-restaurant', function (req, res, next) {
+    const uid = req.params.id
+    const lat = req.body.lat
+    const lon = req.body.lon
+    const time = req.body.time
+    const day = req.body.day
+    //TODO: calculate in BE using geo lib thing 
+    //const city = req.body.city
+    //const street = req.body.street
+    var endTime = (parseInt(time.slice(0,2)) + 1)
+    if (endTime < 10) {
+        endTime = "0" + endTime.toString() + ":00"
+    } else {
+        endTime = endTime.toString() + ":00"
+    }
+    const closeTime = endTime
+    const query = // TODO: use geo lib to finish this query
+    'SELECT R.rid as restaurantID, R.name as restaurantName, H.closeTime, L.lat, L.lon '+ 
+    'FROM Restaurant R, Location L, RestaurantHoursOfOperation H '+ 
+    'WHERE R.rid = L.rid and R.rid = H.rid and H.closeTime >= :closeTime and H.day = :day and L.lat... ;' 
+    connection.query(query,
+      {
+        type: connection.QueryTypes.SELECT,
+        replacements: {
+          closeTime : closeTime,
+          lat: lat,
+          lon: lon
+        }
+      })
+      .then(restaurants => {
+        if (restaurants.length > 1) {
+            // store search into search history DB!
+            const insert1 = 'INSERT INTO Location (lat, lon, city, street) VALUES (:lat, :lon, :city, :street);'
+            connection.query(insert1,
+              {
+                type: connection.QueryTypes.INSERT,
+                replacements: {lat: lat, lon: lon, city: city, street: street}
+              })
+            const insert2 = 'INSERT INTO SignedUpUserLocationTimeSearches (uid, day, openTime, closeTime, lat, lon, sid) VALUES ' +
+                            '(:uid, :day, :openTime, :closeTime, :lat, :lon, :sid);'
+              connection.query(insert2,
+                {
+                  type: connection.QueryTypes.INSERT,
+                  replacements: {
+                      uid: uid,
+                      day: day,
+                      openTime: time,
+                      closeTime: closeTime,
+                      lat: lat,
+                      lon: lon,
+                      sid: uuidv1()
+                  }
+                })
+            var resultList = []
+            for (r in restaurants) {
+              // do another query to find the faveFood at this restaurant
+              const query2 = 'SELECT ULF.food_type FROM Restaurant R, UserLikesFoodAtRestaurant ULF '+
+                             'WHERE R.rid = :rid GROUP BY ULF.food_type HAVING COUNT(ULF.rid) >= ALL '+
+                             '(SELECT COUNT(ULF.food_type) FROM RESTAURANT R, UserLikesFoodAtRestaurant ULF WHERE R.rid = :rid '+
+                             'GROUP BY ULF.food_type);'
+              connection.query(query2,
+              {
+                type: connection.QueryTypes.SELECT,
+                replacements: {rid: r.restaurantID}
+              })
+              .then(foods => {
+                var food = "*"
+                if (foods.length > 0) {
+                    food = foods[0].food_type
+                } 
+              })
+              var result = {
+                restaurantID: r.restaurantID,
+                restaurantName: r.restaurantName,
+                faveFood: food,
+                lat: r.lat,
+                lon: r.lon,
+                closeTime: r.closeTime
+              }
+              resultList.concat(result)
+            }
+            res.json(resultList)
+        } else {
+            res.status(400).json({}) // no results found!
+        }
+      })
+})
 
 
 
-
-
-
-
-
-
-
-
-
-
+/*
 router.post('/:oid/update-name/:rid', function (req, res, next) {
     const oid = req.params.oid
     const rid = req.params.rid
@@ -1314,3 +1395,4 @@ router.post('/:oid/add-time/:rid', function (req, res, next) {
         }
       })
 })
+*/
