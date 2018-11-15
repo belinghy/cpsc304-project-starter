@@ -17,7 +17,7 @@ const ENTITIES = {
         searches: [ ENTITIES.searchHistoryListItem ],
     },
     ownerProfile: {
-        oid: 123,
+        owid: 123,
         username: 'rojin',
         password: 'password',
         name: 'jrf',
@@ -229,7 +229,7 @@ const REST_ENDPOINTS = {
     },
     ownerDelOwnedRestaurant : {
         type: 'DELETE',
-        requestUrl: `${baseURL}/owner/${oid}/remove-restaurant/${rid}`,
+        requestUrl: `${baseURL}/owner/${owid}/remove-restaurant/${rid}`,
         body: NULL,
         response: {
             code: 200 || 404,
@@ -246,9 +246,9 @@ const REST_ENDPOINTS = {
             body: ENTITIES.expandedRestaurant
         }
     },
-    ownerAddRestaurant :{  //for BEN: assuming these required fields can be checked on FE?
+    ownerAddRestaurant :{  //for BEN: assuming these required fields can be checked on FE?owid
         type: 'Post',
-        requestUrl: `${baseURL}/${oid}/add-restaurant/`,
+        requestUrl: `${baseURL}/${owid}/add-restaurant/`,
         body: {
             restaurantName = 'Macs', //required
             OpenHours = [ENTITIES.HoursOfOpListItem], //must contain at least one open time
@@ -280,33 +280,47 @@ const REST_ENDPOINTS = {
             body: [ENTITIES.SearchResultListItem]
         }
     },
-
-    //TODO:    
-    // user likes food at restaurant
-    // user likes restaurant
+    userLikesRestaurant : {
+        type: 'post',
+        requestUrl: `${baseURL}/user/${id}/like-restaurant/${rid}`,
+        body: NULL,
+        response: {
+            code: 200 || 404,
+            body: NULL
+        }
+    },
+    userLikesFoodAtRestaurant : {
+        type: 'post',
+        requestUrl: `${baseURL}/user/${id}/like-food/${rid}`,
+        body: {food_type: "eggs"},
+        response: {
+            code: 200 || 404,
+            body: NULL
+        }
+    },
 
     // leave the rest
-    ownerDelRestaurantTime :{ 
+    ownerDelRestaurantTime :{ owid
         type: 'delete',
-        requestUrl: `${baseURL}/${oid}/del-time/${rid}`,
+        requestUrl: `${baseURL}/${owid}/del-time/${rid}`,
         body: { time: ENTITIES.HoursOfOpListItem},
         response: {
             code: 200 || 404,
             body: [ENTITIES.HoursOfOpListItem ] // FE redirect to expanded view and retain all restaurant info
         }
     },
-    ownerAddRestaurantTime :{ 
+    ownerAddRestaurantTime :{ owid
         type: 'Post',
-        requestUrl: `${baseURL}/${oid}/add-time/${rid}`,
+        requestUrl: `${baseURL}/${owid}/add-time/${rid}`,
         body: { time: ENTITIES.HoursOfOpListItem },
         response: {
             code: 200 || 404,
             body: [ENTITIES.HoursOfOpListItem ] // FE redirect to expanded view and retain all restaurant info
         }
     },
-    ownerAddRestaurantFood :{ 
+    ownerAddRestaurantFood :{ owid
         type: 'Post',
-        requestUrl: `${baseURL}/${oid}/add-food/${rid}`,
+        requestUrl: `${baseURL}/${owid}/add-food/${rid}`,
         body: { 
             food_types = [ENTITIES.FoodTypeListItem],  // can add multiple at a time
         },
@@ -315,9 +329,9 @@ const REST_ENDPOINTS = {
             body: [ENTITIES.FoodTypeListItem ] // FE redirect to expanded view and retain all restaurant info
         }
     },
-    ownerDelRestaurantFood :{ 
+    ownerDelRestaurantFood :{ owid
         type: 'DELETE',
-        requestUrl: `${baseURL}/${oid}/del-food/${rid}`,
+        requestUrl: `${baseURL}/${owid}/del-food/${rid}`,
         body: { 
             food_type = 'eggs', 
         },
@@ -326,9 +340,9 @@ const REST_ENDPOINTS = {
             body: [ENTITIES.FoodTypeListItem ] // FE redirect to expanded view and retain all restaurant info
         }
     },
-    ownerUpdateRestaurantName :{
+    ownerUpdateRestaurantName :{owid
         type: 'Post',
-        requestUrl: `${baseURL}/${oid}/update-name/${rid}`,
+        requestUrl: `${baseURL}/${owid}/update-name/${rid}`,
         body: {
             restaurantName = 'Macs' // if left blank will not update
         },
@@ -337,9 +351,9 @@ const REST_ENDPOINTS = {
             body: name  // FE redirect to expanded view and retain all other restaurant info (foods and open hours)
         }
     },
-    ownerUpdateRestaurantLoc :{
+    ownerUpdateRestaurantLoc :{owid
         type: 'Post',
-        requestUrl: `${baseURL}/${oid}/update-loc/${rid}`,
+        requestUrl: `${baseURL}/${owid}/update-loc/${rid}`,
         body: {  // reject update if any field left blank on FE
             number = "293",          //required
             street = "skj st",       //required
@@ -362,7 +376,7 @@ const REST_ENDPOINTS = {
 // corresponding code:
 const uuidv1 = require('uuid/v1');
 
-// done
+
 router.get('/home', function (req, res, next) {
     const username = req.query.username
     const password = req.query.password
@@ -392,7 +406,7 @@ router.get('/home', function (req, res, next) {
               .then(user => {
                 if (user.length === 1 ) {
                   // need to return the home page for signed in user
-                  res.json({'id': user[0].oid, 'name': user[0].name, 'owner': true})
+                  res.json({'id': user[0].owid, 'name': user[0].name, 'owner': true})
                 }
                 else
                 {
@@ -403,7 +417,7 @@ router.get('/home', function (req, res, next) {
     })
 })
 
-// done
+
 router.post('/signup', function (req, res, next) {
     const username = req.body.username
     const password = req.body.password
@@ -426,7 +440,7 @@ router.post('/signup', function (req, res, next) {
           { // create a owner user
             query1 = 'INSERT INTO Account (username, password) VALUES (:username, :password);'
             //Owner user does not have img attribute, will not work removed it
-            query2 = 'INSERT INTO Owner (username, oid, name) VALUES (:username, :oid, :name);'
+            query2 = 'INSERT INTO Owner (username, owid, name) VALUES (:username, :owid, :name);'
             const query = query1 + query2
             connection.query(query,
               {
@@ -434,15 +448,15 @@ router.post('/signup', function (req, res, next) {
                 replacements: {
                   username: username,
                   password: password,
-                  oid: uuidv1(),
+                  owid: uuidv1(),
                   name: name,
                 }
               })
-              res.json({'id': oid, 'name': name, 'owner': true})
+              res.json({'id': owid, 'name': name, 'owner': true})
           }
           else { // create a regular user
             query1 = 'INSERT INTO Account (username, password) VALUES (:username, :password);'
-            // changed oid to uid in SignedUpuser (uesrname, uid, name, img)
+            // changed owid to uid in SignedUpuser (uesrname, uid, name, img)
             query2 = 'INSERT INTO SignedUpUser (username, uid, name, img) VALUES (:username, :uid, :name, :img) ;'
             const query = query1 + query2
             connection.query(query,
@@ -465,7 +479,7 @@ router.post('/signup', function (req, res, next) {
     })
 })
 
-// done
+
 router.get('/guest-home', function (req, res, next) {
     const query = 'INSERT INTO GuestUser (uid) VALUES (:uid) ;'
     connection.query(query,
@@ -480,7 +494,7 @@ router.get('/guest-home', function (req, res, next) {
       })
 })
 
-// Done
+
 router.get('/user-profile/:id', function (req, res, next) {
     const uid = req.params.id
     const query = 'SELECT * FROM SignedUpUser WHERE uid = :uid;'
@@ -520,29 +534,29 @@ router.get('/user-profile/:id', function (req, res, next) {
       })
 })
 
-// Done
+
 router.get('/owner-profile/:id', function (req, res, next) {
-    const oid = req.params.id
-    const query = 'SELECT * FROM Owner WHERE oid = :oid;'
+    const owid = req.params.id
+    const query = 'SELECT * FROM Owner WHERE owid = :owid;'
     connection.query(query,
       {
         type: connection.QueryTypes.SELECT,
         replacements: {
-          oid: oid
+          owid: owid
         }
       })
       .then(owner => {
         if (owner.length === 1){
             // do another query to get restaurants:
-            const restQuery ='SELECT rid, name FROM Restaurant WHERE oid = :oid;'
+            const restQuery ='SELECT rid, name FROM Restaurant WHERE owid = :owid;'
             connection.query(restQuery,
               {
                 type: connection.QueryTypes.SELECT,
-                replacements: {oid: oid}
+                replacements: {owid: owid}
               })
               .then(restaurants => {
                   res.json(
-                      {'oid': oid,
+                      {'owid': owid,
                       'username': owner[0].username,
                       'password': owner[0].password,
                       'name': owner[0].name,
@@ -556,7 +570,7 @@ router.get('/owner-profile/:id', function (req, res, next) {
       })
 })
 
-// Done
+
 router.post('/user-profile/:id/edit', function (req, res, next) {
     const uid = req.params.id
     username = req.body.username
@@ -637,20 +651,20 @@ router.post('/user-profile/:id/edit', function (req, res, next) {
     })
 })
 
-// Done
+
 router.post('/owner-profile/:id/edit', function (req, res, next) {
-    const oid = req.params.id
+    const owid = req.params.id
     username = req.body.username
     password = req.body.password
     name = req.body.name
     valid = true
     // check if this user even exists
-    const queryOID = 'SELECT * FROM Owner WHERE oid = :oid;'
-    connection.query(queryOID,
+    const queryowid = 'SELECT * FROM Owner WHERE owid = :owid;'
+    connection.query(queryowid,
       {
         type: connection.QueryTypes.SELECT,
         replacements: {
-          oid: oid
+          owid: owid
         }
       })
       .then(user => {
@@ -682,7 +696,7 @@ router.post('/owner-profile/:id/edit', function (req, res, next) {
               name = user[0].name
           }
           if (valid) { // can update user profile with new username or null
-            const updateQuery = 'UPDATE Owner SET username = :username, name = :name WHERE oid = :oid ;' +
+            const updateQuery = 'UPDATE Owner SET username = :username, name = :name WHERE owid = :owid ;' +
                                 'UPDATE Account SET username = :username, password = :password;'
 
             connection.query(updateQuery,
@@ -691,12 +705,12 @@ router.post('/owner-profile/:id/edit', function (req, res, next) {
                 replacements: {
                   username: username,
                   password: password,
-                  oid: oid,
+                  owid: owid,
                   name: name,
                 }
               })
               res.json(
-                {'oid': oid,
+                {'owid': owid,
                 'username': username,
                 'password': password,
                 'name': name,
@@ -714,7 +728,7 @@ router.post('/owner-profile/:id/edit', function (req, res, next) {
     })
 })
 
-// Done
+
 router.get('/user-profile/:id/search-history', function (req, res, next) {
     const uid = req.params.id
     const query = 'SELECT * FROM SignedUpUser WHERE uid = :uid;'
@@ -745,7 +759,7 @@ router.get('/user-profile/:id/search-history', function (req, res, next) {
       })
 })
 
-// Done
+
 router.delete('/user/:id/remove-liked-restaurant/:rid', function (req, res, next) {
     const uid = req.params.id
     const rid = req.params.rid
@@ -787,7 +801,7 @@ router.delete('/user/:id/remove-liked-restaurant/:rid', function (req, res, next
       })
 })
 
-// Done
+
 router.delete('/user/:id/clear-search-history/', function (req, res, next) {
     const uid = req.params.id
     const userQuery = 'SELECT * FROM SignedUpUser WHERE uid = :uid;'
@@ -812,7 +826,7 @@ router.delete('/user/:id/clear-search-history/', function (req, res, next) {
     })
 })
 
-// Done
+
 router.get('/user-profile/:id/fave-food', function (req, res, next) {
     const uid = req.params.id
     const query = 'SELECT * FROM SignedUpUser WHERE uid = :uid;'
@@ -875,19 +889,19 @@ router.delete('/user/:id/remove-fave-food/:rid', function (req, res, next) {
       })
 })
 
-router.delete('/owner/:oid/remove-restaurant/:rid', function (req, res, next) {
-    const oid = req.params.oid
+router.delete('/owner/:owid/remove-restaurant/:rid', function (req, res, next) {
+    const owid = req.params.owid
     const rid = req.params.rid
-    const query = 'SELECT * FROM Owner WHERE oid = :oid;'
+    const query = 'SELECT * FROM Owner WHERE owid = :owid;'
     connection.query(query,
       {
         type: connection.QueryTypes.SELECT,
-        replacements: {oid: oid}
+        replacements: {owid: owid}
       })
       .then(owner => {
         if (owner.length === 1){
             // do another query to remove restaurant:
-            const delQuery = 'DELETE FROM Restaurant WHERE oid = :oid and rid = :rid;'
+            const delQuery = 'DELETE FROM Restaurant WHERE owid = :owid and rid = :rid;'
             connection.query(delQuery,
               {
                 type: connection.QueryTypes.DELETE,
@@ -896,7 +910,7 @@ router.delete('/owner/:oid/remove-restaurant/:rid', function (req, res, next) {
                   rid: rid
                 }
               })
-              const restQuery = 'SELECT rid, name FROM Restaurant WHERE oid = :oid;'
+              const restQuery = 'SELECT rid, name FROM Restaurant WHERE owid = :owid;'
               connection.query(restQuery,
                 {
                   type: connection.QueryTypes.SELECT,
@@ -946,7 +960,7 @@ router.get('/view-restaurant/:rid', function (req, res, next) {
                 replacements: {rid: rid}
               })
               .then(faves => {
-                if (faves.length != 1){
+                if (faves.length == 1){
                     FaveFoodItem = faves[0].food_type
                 } else {
                     FaveFoodItem = "N/A"
@@ -974,8 +988,8 @@ router.get('/view-restaurant/:rid', function (req, res, next) {
 })
 
 
-router.post('/:oid/add-restaurant/', function (req, res, next) {
-    const oid = req.params.oid
+router.post('/:owid/add-restaurant/', function (req, res, next) {
+    const owid = req.params.owid
     const name = req.body.restaurantName
     const OpenHours = req.body.OpenHours
     const number = req.body.number
@@ -986,25 +1000,25 @@ router.post('/:oid/add-restaurant/', function (req, res, next) {
     const lat = req.body.lat
     const lon = req.body.lon
     const rid = uuidv1()
-    const query1 = 'SELECT * from owner where oid=:oid;'
+    const query1 = 'SELECT * from owner where owid=:owid;'
     connection.query(query1,
       {
         type: connection.QueryTypes.SELECT,
-        replacements: {oid: oid}
+        replacements: {owid: owid}
       })
       .then(owner => {
         if (owner.length === 1){
           if (OpenHours.length === 0 || food_types.length === 0){
             res.status(400).json({})
           } else {
-          const query2 = 'INSERT INTO Restaurant (rid, name, oid) VALUES (:rid, :name, :oid);'
+          const query2 = 'INSERT INTO Restaurant (rid, name, owid) VALUES (:rid, :name, :owid);'
           connection.query(query2,
           {
             type: connection.QueryTypes.INSERT,
             replacements: {
                 rid: rid,
                 name: name,
-                oid: oid
+                owid: owid
             }
           })
           const query3 = 'SELECT * FROM Location where lat = :lat and lon = :lon and rid NOT NULL;'
@@ -1074,11 +1088,11 @@ router.post('/:oid/add-restaurant/', function (req, res, next) {
                 replacements: {rid: rid, food_type: f.food_type}
             })
           }
-          const query9 = 'SELECT rid, name from Restaurant where oid=:oid;'
+          const query9 = 'SELECT rid, name from Restaurant where owid=:owid;'
           connection.query(query9,
             {
               type: connection.QueryTypes.SELECT,
-              replacements: {oid: oid}
+              replacements: {owid: owid}
             })
             .then(restaurants => {
                 res.json(restaurants)
@@ -1177,27 +1191,87 @@ router.post('/user/:id/search-restaurant', function (req, res, next) {
       })
 })
 
+router.post('/user/:id/like-restaurant/:rid', function (req, res, next) {
+    const uid = req.params.id
+    const rid = req.params.rid
+    const query = 'SELECT * FROM SignedUpUser WHERE uid = :uid;'
+    connection.query(query,
+      {
+        type: connection.QueryTypes.SELECT,
+        replacements: {
+          uid: uid
+        }
+      })
+      .then(user => {
+        if (user.length === 1){
+            // do another query to add liked restaurant:
+            const insertQuery = 'INSERT INTO SignedUpUserRestaurantFavourites (rid, uid) VALUES (:rid, :uid);'
+            connection.query(insertQuery,
+              {
+                type: connection.QueryTypes.INSERT,
+                replacements: {
+                  uid: uid,
+                  rid: rid
+                }
+              })
+            res.status(200).json({})
+        } else {
+            res.status(404).json({})
+        }
+      })
+})
 
+router.post('/user/:id/like-food/:rid', function (req, res, next) {
+    const uid = req.params.id
+    const rid = req.params.rid
+    const food_type = req.body.food_type
+    const query = 'SELECT * FROM SignedUpUser WHERE uid = :uid UNION SELECT * FROM GuestUser WHERE uid = :uid;'
+    connection.query(query,
+      {
+        type: connection.QueryTypes.SELECT,
+        replacements: {
+          uid: uid
+        }
+      })
+      .then(user => {
+        if (user.length === 1){
+            // do another query to add liked restaurant:
+            const insertQuery = 'INSERT INTO UserLikesFoodAtRestaurant (uid, food_type, rid) VALUES (:uid, :food_type, :rid);'
+            connection.query(insertQuery,
+              {
+                type: connection.QueryTypes.INSERT,
+                replacements: {
+                  uid: uid,
+                  food_type: food_type,
+                  rid: rid
+                }
+              })
+            res.status(200).json({})
+        } else {
+            res.status(404).json({})
+        }
+      })
+})
 
 /*
-router.post('/:oid/update-name/:rid', function (req, res, next) {
-    const oid = req.params.oid
+router.post('/:owid/update-name/:rid', function (req, res, next) {
+    const owid = req.params.owid
     const rid = req.params.rid
     const name = req.body.restaurantName
-    const query1 = 'SELECT * from Restaurant rid=:rid and oid=:oid;'
+    const query1 = 'SELECT * from Restaurant rid=:rid and owid=:owid;'
     connection.query(query1,
       {
         type: connection.QueryTypes.SELECT,
-        replacements: {rid: rid, oid: oid}
+        replacements: {rid: rid, owid: owid}
       })
       .then(restaurant => {
         if (restaurant.length === 1){
             if (name != ''){
-                const query2 = 'UPDATE Restaurant SET name = :name where rid=:rid and oid=:oid;'
+                const query2 = 'UPDATE Restaurant SET name = :name where rid=:rid and owid=:owid;'
                 connection.query(query2,
                   {
                     type: connection.QueryTypes.UPDATE,
-                    replacements: {rid: rid, oid: oid, name: name}
+                    replacements: {rid: rid, owid: owid, name: name}
                   })
             } else {
                 name = restaurant[0].name
@@ -1210,18 +1284,18 @@ router.post('/:oid/update-name/:rid', function (req, res, next) {
 })
 
 
-router.post('/:oid/update-loc/:rid', function (req, res, next) {
-    const oid = req.params.oid
+router.post('/:owid/update-loc/:rid', function (req, res, next) {owid
+    const owid = req.params.owid
     const rid = req.params.rid
     const number = req.body.number
     const street = req.body.street
     const city = req.body.city
     const postalCode = req.body.postalCode
-    const query1 = 'SELECT * from Restaurant R, Location L where R.rid=:rid and R.rid=L.rid and R.oid=:oid;'
+    const query1 = 'SELECT * from Restaurant R, Location L where R.rid=:rid and R.rid=L.rid and R.owid=:owid;'
     connection.query(query1,
       {
         type: connection.QueryTypes.SELECT,
-        replacements: {rid: rid, oid: oid}
+        replacements: {rid: rid, owid: owid}
       })
       .then(restaurant => {
         if (restaurant.length === 1){
@@ -1255,15 +1329,15 @@ router.post('/:oid/update-loc/:rid', function (req, res, next) {
     })
 })
 
-router.post('/:oid/add-food/:rid', function (req, res, next) {
-    const oid = req.params.oid
+router.post('/:owid/add-food/:rid', function (req, res, next) {owid
+    const owid = req.params.owid
     const rid = req.params.rid
     const foods = req.body.food_types
-    const query = 'SELECT * FROM Restaurant WHERE oid = :oid and rid = :rid;'
+    const query = 'SELECT * FROM Restaurant WHERE owid = :owid and rid = :rid;'
     connection.query(query,
       {
         type: connection.QueryTypes.SELECT,
-        replacements: {rid: rid, oid: oid}
+        replacements: {rid: rid, owid: owid}
       })
       .then(restaurant => {
         if (restaurant.length === 1){
@@ -1297,15 +1371,15 @@ router.post('/:oid/add-food/:rid', function (req, res, next) {
 })
 
 
-router.delete('/:oid/del-food/:rid', function (req, res, next) {
-    const oid = req.params.oid
+router.delete('/:owid/del-food/:rid', function (req, res, next) {owid
+    const owid = req.params.owid
     const rid = req.params.rid
     const food = req.body.food_type
-    const query = 'SELECT * FROM Restaurant WHERE oid = :oid and rid = :rid;'
+    const query = 'SELECT * FROM Restaurant WHERE owid = :owid and rid = :rid;'
     connection.query(query,
       {
         type: connection.QueryTypes.SELECT,
-        replacements: {rid: rid, oid: oid}
+        replacements: {rid: rid, owid: owid}
       })
       .then(restaurant => {
         if (restaurant.length === 1){
@@ -1330,15 +1404,15 @@ router.delete('/:oid/del-food/:rid', function (req, res, next) {
       })
 })
 
-router.delete('/:oid/del-time/:rid', function (req, res, next) {
-    const oid = req.params.oid
+router.delete('/:owid/del-time/:rid', function (req, res, next) {owid
+    const owid = req.params.owid
     const rid = req.params.rid
     const time = req.body.time
-    const query = 'SELECT * FROM Restaurant WHERE oid = :oid and rid = :rid;'
+    const query = 'SELECT * FROM Restaurant WHERE owid = :owid and rid = :rid;'
     connection.query(query,
       {
         type: connection.QueryTypes.SELECT,
-        replacements: {rid: rid, oid: oid}
+        replacements: {rid: rid, owid: owid}
       })
       .then(restaurant => {
         if (restaurant.length === 1){
@@ -1363,15 +1437,15 @@ router.delete('/:oid/del-time/:rid', function (req, res, next) {
       })
 })
 
-router.post('/:oid/add-time/:rid', function (req, res, next) {
-    const oid = req.params.oid
+router.post('/:owid/add-time/:rid', function (req, res, next) {owid
+    const owid = req.params.owid
     const rid = req.params.rid
     const time = req.body.time
-    const query = 'SELECT * FROM Restaurant WHERE oid = :oid and rid = :rid;'
+    const query = 'SELECT * FROM Restaurant WHERE owid = :owid and rid = :rid;'
     connection.query(query,
       {
         type: connection.QueryTypes.SELECT,
-        replacements: {rid: rid, oid: oid}
+        replacements: {rid: rid, owid: owid}
       })
       .then(restaurant => {
         if (restaurant.length === 1){
