@@ -1394,5 +1394,12 @@ router.post('/:oid/add-time/:rid', function (req, res, next) {
             res.status(404).json({})
         }
       })
+ HEAD
 })
 */
+    
+ // SQL Query to select most favorited food given a restaurant id, REPLACE hardcoded '21921' with ':rid'
+ // SELECT ULF.food_type, COUNT(*) FROM Restaurant R, UserLikesFoodAtRestaurant ULF 
+ // WHERE R.rid = '21921' GROUP BY ULF.food_type HAVING COUNT(ULF.rid) >= ALL 
+ // (SELECT COUNT(ULF.food_type) FROM RESTAURANT R, UserLikesFoodAtRestaurant ULF WHERE R.rid = '21921' 
+ //GROUP BY ULF.food_type);
