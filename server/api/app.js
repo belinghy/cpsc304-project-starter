@@ -877,3 +877,5 @@ router.post('/user/:id/like-food/:rid', function (req, res, next) {
       })
 })
 */
+
+export default router
