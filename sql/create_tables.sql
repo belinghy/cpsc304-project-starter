@@ -8,7 +8,7 @@ CREATE TABLE Food
 (food_type varchar(40) not null PRIMARY KEY );
 
 CREATE TABLE Owner
-(oid 		CHAR(45) not null PRIMARY KEY,
+(owid 		CHAR(45) not null PRIMARY KEY,
  name		CHAR(20) not null,
  username 	CHAR(20) not null,
 FOREIGN KEY(username) REFERENCES Account
@@ -21,8 +21,8 @@ FOREIGN KEY(username) REFERENCES Account
 CREATE TABLE Restaurant
 (rid 	CHAR(45) not null PRIMARY KEY,
  name	CHAR(25) not null,
- oid	CHAR(45),
-FOREIGN KEY(oid) REFERENCES Owner
+ owid	CHAR(45),
+FOREIGN KEY(owid) REFERENCES Owner
 	ON DELETE SET NULL
 	ON UPDATE CASCADE );
 
