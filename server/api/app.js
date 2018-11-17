@@ -24,8 +24,26 @@ router.get('/home', function (req, res, next) {
     })
     .then(user => {
       if (user.length === 1) {
-        // need to return the home page for signed in user
-        res.json({'id': user[0].uid, 'name': user[0].name, 'owner': false})
+        console.log(user)
+        const foodQuery = 'SELECT R.rid as restaurantId, R.name as restaurantName, F.food_type FROM UserLikesFoodAtRestaurant F, Restaurant R WHERE F.uid = :uid and and R.rid = F.rid;'
+        connection.query(foodQuery,
+          {
+            type: connection.QueryTypes.SELECT,
+            replacements: {uid: user[0].uid}
+          })
+          .then(favFoodListItem => {
+            const restQuery = 'SELECT R.rid, R.name FROM SignedUpUserRestaurantFavourites F, Restaurant R WHERE U.uid = :uid and and R.rid = F.rid;'
+            connection.query(restQuery,
+              {
+                type: connection.QueryTypes.SELECT,
+                replacements: {uid: user[0].uid}
+              })
+              .then(restaurants => {
+                console.log(restaurants)
+                console.log(favFoodListItem)
+                res.json({'id': user[0].uid, 'name': user[0].name, 'owner': false, 'favouritedFoods': favFoodListItem, 'likedRestaurants': restaurants})
+              })
+          })
       } else { // check if owner:
         const ownerQuery = 'SELECT * FROM Owner O, Account A WHERE O.username = :username and A.username = O.username and  A.password = :password;'
         connection.query(ownerQuery,
@@ -38,8 +56,7 @@ router.get('/home', function (req, res, next) {
           })
           .then(user => {
             if (user.length === 1) {
-              // need to return the home page for signed in user
-              res.json({'id': user[0].owid, 'name': user[0].name, 'owner': true})
+              res.json({'id': user[0].uid, 'name': user[0].name, 'owner': true, 'favouritedFoods': [], 'likedRestaurants': []})
             } else {
               res.status(400).json({})
             }
@@ -82,7 +99,7 @@ router.post('/signup', bodyParser.json(), function (req, res, next) {
                 name: name
               }
             })
-          res.json({'id': id, 'name': name, 'owner': true})
+          res.json({'id': id, 'name': name, 'owner': true, 'favouritedFoods': [], 'likedRestaurants': []})
         } else { // create a regular user
           var query1 = 'INSERT INTO Account (username, password) VALUES (:username, :password); '
           var query2 = 'INSERT INTO AllUser (uid) VALUES (:uid); '
@@ -98,7 +115,7 @@ router.post('/signup', bodyParser.json(), function (req, res, next) {
                 name: name
               }
             })
-          res.json({'id': id, 'name': name, 'owner': false})
+          res.json({'id': id, 'name': name, 'owner': false, 'favouritedFoods': [], 'likedRestaurants': []})
         }
       } else { // username already exists so return a fail
         res.status(400).json({})
@@ -737,12 +754,12 @@ router.post('/user/:id/search-restaurant', bodyParser.json(), function (req, res
     endTime = endTime.toString() + ':00'
   }
   const closeTime = endTime
-  console.log(closeTime)
+  console.log(time + ' ' + closeTime)
   const query = 'SELECT R.rid as restaurantID, R.name as restaurantName, H.closeTime, L.lat, L.lon ' +
     'FROM Restaurant R, Location L, RestaurantHoursOfOperation H WHERE R.rid = L.rid ' +
     'and R.rid = H.rid and H.day = :day and  H.closeTime >= :closeTime and ' +
     '(3956 * 2 * ASIN(SQRT(POWER(SIN((abs(:lat) - abs(L.lat)) * pi()/180 / 2),2) ' +
-    'COS(abs(:lat) * pi()/180 ) * COS(abs(L.lat) *  pi()/180) * ' +
+    '+ COS(abs(:lat) * pi()/180 ) * COS(abs(L.lat) *  pi()/180) * ' +
     'POWER(SIN((abs(:lon) - (L.lon)) *  pi()/180 / 2), 2) ))) <= 5;'
   connection.query(query,
     {
@@ -756,7 +773,7 @@ router.post('/user/:id/search-restaurant', bodyParser.json(), function (req, res
     })
     .then(restaurants => {
       if (restaurants.length > 1) {
-        console.log('results found!')
+        console.log('results found!' + restaurants[0])
         // store search into search history DB!
         const sid = uuidv1()
         const insert1 = 'INSERT INTO Location (lat, lon, city, street) VALUES (:lat, :lon, :city, :street);'
@@ -838,7 +855,18 @@ router.post('/user/:id/like-restaurant/:rid', bodyParser.json(), function (req, 
               rid: rid
             }
           })
-        res.status(200).json({})
+        const restQuery = 'SELECT R.rid, R.name FROM SignedUpUserRestaurantFavourites F, Restaurant R WHERE U.uid = :uid and and R.rid = F.rid;'
+        connection.query(restQuery,
+          {
+            type: connection.QueryTypes.SELECT,
+            replacements: {
+              uid: uid
+            }
+          })
+          .then(restaurants => {
+            console.log(restaurants)
+            res.json(restaurants)
+          })
       } else {
         res.status(404).json({})
       }
@@ -870,7 +898,16 @@ router.post('/user/:id/like-food/:rid', bodyParser.json(), function (req, res, n
               rid: rid
             }
           })
-        res.status(200).json({})
+        const foodQuery = 'SELECT R.rid as restaurantId, R.name as restaurantName, F.food_type FROM UserLikesFoodAtRestaurant F, Restaurant R WHERE F.uid = :uid and and R.rid = F.rid;'
+        connection.query(foodQuery,
+          {
+            type: connection.QueryTypes.SELECT,
+            replacements: {uid: uid}
+          })
+          .then(favFoodListItem => {
+            res.json(favFoodListItem)
+            console.log(favFoodListItem)
+          })
       } else {
         res.status(404).json({})
       }
