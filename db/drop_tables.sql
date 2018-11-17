@@ -2,7 +2,7 @@ drop table Account cascade;
 drop table Food cascade;
 drop table Owner cascade;
 drop table Restaurant cascade;
-drop table GuestUser cascade;
+drop table AllUser cascade;
 drop table SignedUpUser cascade;
 drop table HoursOfOperation cascade;
 drop table Location cascade;

@@ -720,11 +720,13 @@ router.post('/:owid/add-restaurant/', bodyParser.json(), function (req, res, nex
 })
 
 router.post('/user/:id/search-restaurant', bodyParser.json(), function (req, res, next) {
+  console.log('in search: /user/:id/search-restaurant')
   const uid = req.params.id
   const lat = req.body.lat
-  const lon = req.body.lon
+  const lon = req.body.lng
   const time = req.body.time
   const day = req.body.day
+  console.log('body: ' + uid + ' ' + lat + ' ' + lon + ' ' + time + ' ' + day)
   // TODO: calculate in BE using geo lib thing 
   const city = ''
   const street = ''
@@ -735,21 +737,26 @@ router.post('/user/:id/search-restaurant', bodyParser.json(), function (req, res
     endTime = endTime.toString() + ':00'
   }
   const closeTime = endTime
-  const query = // TODO: use geo lib to finish this query
-    'SELECT R.rid as restaurantID, R.name as restaurantName, H.closeTime, L.lat, L.lon ' +
-    'FROM Restaurant R, Location L, RestaurantHoursOfOperation H ' +
-    'WHERE R.rid = L.rid and R.rid = H.rid and H.closeTime >= :closeTime and H.day = :day and L.lat... ;'
+  console.log(closeTime)
+  const query = 'SELECT R.rid as restaurantID, R.name as restaurantName, H.closeTime, L.lat, L.lon ' +
+    'FROM Restaurant R, Location L, RestaurantHoursOfOperation H WHERE R.rid = L.rid ' +
+    'and R.rid = H.rid and H.day = :day and  H.closeTime >= :closeTime and ' +
+    '(3956 * 2 * ASIN(SQRT(POWER(SIN((abs(:lat) - abs(L.lat)) * pi()/180 / 2),2) ' +
+    'COS(abs(:lat) * pi()/180 ) * COS(abs(L.lat) *  pi()/180) * ' +
+    'POWER(SIN((abs(:lon) - (L.lon)) *  pi()/180 / 2), 2) ))) <= 5;'
   connection.query(query,
     {
       type: connection.QueryTypes.SELECT,
       replacements: {
         closeTime: closeTime,
         lat: lat,
-        lon: lon
+        lon: lon,
+        day: day
       }
     })
     .then(restaurants => {
       if (restaurants.length > 1) {
+        console.log('results found!')
         // store search into search history DB!
         const sid = uuidv1()
         const insert1 = 'INSERT INTO Location (lat, lon, city, street) VALUES (:lat, :lon, :city, :street);'

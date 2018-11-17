@@ -130,6 +130,7 @@ insert into HoursOfOperation values ('Friday', '8:00', '20:00');
 insert into HoursOfOperation values ('Saturday', '6:30', '11:30');
 insert into HoursOfOperation values ('Saturday', '10:00', '20:00');
 insert into HoursOfOperation values ('Saturday', '00:00', '24:00');
+insert into HoursOfOperation values ('Saturday', '8:00', '20:00');
 insert into HoursOfOperation values ('Sunday', '00:00', '24:00');
 insert into HoursOfOperation values ('Sunday', '6:30', '11:30');
 insert into HoursOfOperation values ('Sunday', '10:00', '20:00');
@@ -137,33 +138,32 @@ insert into HoursOfOperation values ('Sunday', '8:00', '20:00');
 
 
 -- added real lat/lons for these addresses
-insert into Location values('V6R2B4', 49.264596, -123.180782, 'Vancouver', 'W Broadway', '3431', '21921');
-insert into Location values('V6K2H3', 49.264144, -123.175277, 'Vancouver', 'W Broadway', '3144', '42726');
-insert into Location values('V6R2G7', 49.263871, -123.187157, 'Vancouver', 'W 10th Ave', '3763', '82252');
-insert into Location values('V6S2C2', 49.256388, -123.185136, 'Vancouver', 'Dunbar St', '3446', '58136');
-insert into Location values('V6T0B8', 49.262053, -123.240394, 'Vancouver', 'Thunderbird Blvd', '5828', '12381');
-insert into Location values('V6T1Z2', 49.269626, -123.259463, 'Vancouver', 'NW Marine Dr', '6393', '03504');
-insert into Location values('V5Z2N7', 49.233681, -123.126712, 'Vancouver', 'W 41st Ave', '950', '71046');
-insert into Location values('V5W3A1', 49.227818, -123.090310, 'Vancouver', 'Fraser St', '6270', '16196');
-insert into Location values('V5X3T4', 49.225159, -123.091135, 'Vancouver', 'Fraser St', '6591', '38449');
-insert into Location values('V5V3P7', 49.248631, -123.100819, 'Vancouver', 'Main St', '4148', '93531');
-insert into Location values('V5C0B5', 49.259852, -123.001846, 'Burnaby', 'Still Creek Ave', '4510', '84921');
-insert into Location values('V7L3V6', 49.312403, -123.056879, 'North Vancouver', 'Queensbury Ave', '636', '06847');
-insert into Location values('V7T1X5', 49.335804, -123.135701, 'West Vancouver', 'Inglewood Ave', '725', '02846');
-insert into Location values('V0N1G0', 49.396182, -123.204610, 'Vancouver', 'Cypress Bowl Rd', '6000', '82789');
-insert into Location values('V3R1N5', 49.192306, -122.798910, 'Surrey', '104 Ave', '15269', '35878');
-
+insert into Location values('V6R2B4', -123.180782, 49.264596, 'Vancouver', 'W Broadway', '3431', '21921');
+insert into Location values('V6K2H3', -123.175277, 49.264144, 'Vancouver', 'W Broadway', '3144', '42726');
+insert into Location values('V6R2G7', -123.187157, 49.263871, 'Vancouver', 'W 10th Ave', '3763', '82252');
+insert into Location values('V6S2C2', -123.185136, 49.256388, 'Vancouver', 'Dunbar St', '3446', '58136');
+insert into Location values('V6T0B8', -123.240394, 49.262053, 'Vancouver', 'Thunderbird Blvd', '5828', '12381');
+insert into Location values('V6T1Z2', -123.259463, 49.269626, 'Vancouver', 'NW Marine Dr', '6393', '03504');
+insert into Location values('V5Z2N7', -123.126712, 49.233681, 'Vancouver', 'W 41st Ave', '950', '71046');
+insert into Location values('V5W3A1', -123.090310, 49.227818, 'Vancouver', 'Fraser St', '6270', '16196');
+insert into Location values('V5X3T4', -123.091135, 49.225159, 'Vancouver', 'Fraser St', '6591', '38449');
+insert into Location values('V5V3P7', -123.100819, 49.248631, 'Vancouver', 'Main St', '4148', '93531');
+insert into Location values('V5C0B5', -123.001846, 49.259852, 'Burnaby', 'Still Creek Ave', '4510', '84921');
+insert into Location values('V7L3V6', -123.056879, 49.312403, 'North Vancouver', 'Queensbury Ave', '636', '06847');
+insert into Location values('V7T1X5', -123.135701, 49.335804, 'West Vancouver', 'Inglewood Ave', '725', '02846');
+insert into Location values('V0N1G0', -123.204610, 49.396182, 'Vancouver', 'Cypress Bowl Rd', '6000', '82789');
+insert into Location values('V3R1N5', -122.798910, 49.192306, 'Surrey', '104 Ave', '15269', '35878');
 
 -- The Point
-insert into Location values ('V6T1Z4', 49.262036, -123.255103, 'Vancouver', 'Lower Mall', '2205', '38781');
+insert into Location values ('V6T1Z4', -123.255103, 49.262036, 'Vancouver', 'Lower Mall', '2205', '38781');
 -- Tim Hortons
-insert into Location values ('V6T1Z2', 49.265759, -123.254271, 'Vancouver', 'Main Mall', '2033', '70186');
+insert into Location values ('V6T1Z2', -123.254271, 49.265759, 'Vancouver', 'Main Mall', '2033', '70186');
 -- Starbucks
-insert into Location values ('V6T2H9', 49.265978, -123.242801, 'Vancouver', 'Dalhousie Rd', '5763', '32243');
+insert into Location values ('V6T2H9', -123.242801, 49.265978, 'Vancouver', 'Dalhousie Rd', '5763', '32243');
 -- McDonalds
-insert into Location values ('V6M1Y7', 49.235011, -123.154840, 'Vancouver', 'W 41st Ave', '2095', '07910');
+insert into Location values ('V6M1Y7', -123.154840, 49.235011, 'Vancouver', 'W 41st Ave', '2095', '07910');
 -- Bean Brother Cafe
-insert into Location values ('V6M1Z6', 49.234773, -123.157251, 'Vancouver', 'W 41st Ave', '2179', '66520');
+insert into Location values ('V6M1Z6', -123.157251, 49.234773, 'Vancouver', 'W 41st Ave', '2179', '66520');
 
 
 /* UserLikesFoodAtRestaurant(uid, food_type, rid)*/
@@ -204,7 +204,7 @@ insert into SignedUpUserFoodSearches values ('997284', 'oatmeal');
 insert into SignedUpUserFoodSearches values ('831222', 'tea');
 
 -- fixed postal code to be string
-/*SignedUpUserLocationTimeSearches(uid, day, openTime, closeTime, lat, lon, sid)*/
+/*SignedUpUserLocationTimeSearches(uid, day, openTime, closeTime, lon, lat, sid)*/
 -- why does the TIME has to match HoursOfOperation?
 insert into SignedUpUserLocationTimeSearches values 
 ('656129', 'Monday', '00:00', '24:00', 49.264596, -123.180782, '1');
@@ -249,7 +249,6 @@ insert into SignedUpUserRestaurantFavourites values ('997284', '21921');
 insert into SignedUpUserRestaurantFavourites values ('997284', '35878');
 insert into SignedUpUserRestaurantFavourites values ('997284', '71046');
 insert into SignedUpUserRestaurantFavourites values ('831222', '35878');
-insert into SignedUpUserRestaurantFavourites values ('943127', '32243');
 insert into SignedUpUserRestaurantFavourites values ('943127', '32243');
 insert into SignedUpUserRestaurantFavourites values ('997284', '70186');
 insert into SignedUpUserRestaurantFavourites values ('831222', '07910');
@@ -386,8 +385,6 @@ insert into RestaurantHoursOfOperation values
 ('38781', 'Thursday', '8:00', '20:00');
 insert into RestaurantHoursOfOperation values
 ('38781', 'Friday', '8:00', '20:00');
-insert into RestaurantHoursOfOperation values
-('38781', 'Saturday', '8:00', '20:00');
 insert into RestaurantHoursOfOperation values
 ('38781', 'Sunday', '8:00', '20:00');
 insert into RestaurantHoursOfOperation values
