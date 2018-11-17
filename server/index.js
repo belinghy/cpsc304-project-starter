@@ -10,8 +10,18 @@ const port = process.env.PORT || 3000
 app.set('port', port)
 
 // Import API Routes
-app.use('/api', api)
 
+const cors = require('cors')
+
+app.use(cors())
+
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*')
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
+  next()
+})
+
+app.use('/api', api)
 // Import and Set Nuxt.js options
 let config = require('../nuxt.config.js')
 config.dev = !(process.env.NODE_ENV === 'production')
