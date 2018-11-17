@@ -592,7 +592,7 @@ router.get('/view-restaurant/:rid', function (req, res, next) {
                       lat: restaurant[0].lat,
                       lon: restaurant[0].lon,
                       faveFood: FaveFoodItem,
-                      food_types: foods
+                      foodTypes: foods
                     })
                   })
               })
@@ -611,7 +611,7 @@ router.post('/:owid/add-restaurant/', bodyParser.json(), function (req, res, nex
   const street = req.body.street
   const city = req.body.city
   const postalCode = req.body.postalCode
-  const foodTypes = req.body.food_types
+  const foodTypes = req.body.foodTypes
   const lat = req.body.lat
   const lon = req.body.lon
   const rid = uuidv1()
