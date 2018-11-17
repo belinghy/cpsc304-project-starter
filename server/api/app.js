@@ -25,14 +25,14 @@ router.get('/home', function (req, res, next) {
     .then(user => {
       if (user.length === 1) {
         console.log(user)
-        const foodQuery = 'SELECT R.rid as restaurantId, R.name as restaurantName, F.food_type FROM UserLikesFoodAtRestaurant F, Restaurant R WHERE F.uid = :uid and and R.rid = F.rid;'
+        const foodQuery = 'SELECT R.rid as restaurantId, R.name as restaurantName, F.food_type FROM UserLikesFoodAtRestaurant F, Restaurant R WHERE F.uid = :uid and R.rid = F.rid;'
         connection.query(foodQuery,
           {
             type: connection.QueryTypes.SELECT,
             replacements: {uid: user[0].uid}
           })
           .then(favFoodListItem => {
-            const restQuery = 'SELECT R.rid, R.name FROM SignedUpUserRestaurantFavourites F, Restaurant R WHERE U.uid = :uid and and R.rid = F.rid;'
+            const restQuery = 'SELECT R.rid, R.name FROM SignedUpUserRestaurantFavourites F, Restaurant R WHERE F.uid = :uid and R.rid = F.rid;'
             connection.query(restQuery,
               {
                 type: connection.QueryTypes.SELECT,
@@ -152,7 +152,7 @@ router.get('/user-profile/:id', function (req, res, next) {
     .then(user => {
       if (user.length === 1) {
         // do another query to get fave restaurants:
-        const restQuery = 'SELECT R.rid, R.name FROM SignedUpUserRestaurantFavourites F, Restaurant R WHERE U.uid = :uid and and R.rid = F.rid;'
+        const restQuery = 'SELECT R.rid, R.name FROM SignedUpUserRestaurantFavourites F, Restaurant R WHERE F.uid = :uid and R.rid = F.rid;'
         connection.query(restQuery,
           {
             type: connection.QueryTypes.SELECT,
@@ -418,7 +418,7 @@ router.delete('/user/:id/remove-liked-restaurant/:rid', function (req, res, next
               rid: rid
             }
           })
-        const restQuery = 'SELECT R.rid, R.name FROM SignedUpUserRestaurantFavourites F, Restaurant R WHERE U.uid = :uid and and R.rid = F.rid;'
+        const restQuery = 'SELECT R.rid, R.name FROM SignedUpUserRestaurantFavourites F, Restaurant R WHERE F.uid = :uid and R.rid = F.rid;'
         connection.query(restQuery,
           {
             type: connection.QueryTypes.SELECT,
@@ -470,7 +470,7 @@ router.get('/user-profile/:id/fave-food', function (req, res, next) {
     .then(user => {
       if (user.length === 1) {
         // do another query to get fave restaurants:
-        const foodQuery = 'SELECT R.rid as restaurantId, R.name as restaurantName, F.food_type FROM UserLikesFoodAtRestaurant F, Restaurant R WHERE F.uid = :uid and and R.rid = F.rid;'
+        const foodQuery = 'SELECT R.rid as restaurantId, R.name as restaurantName, F.food_type FROM UserLikesFoodAtRestaurant F, Restaurant R WHERE F.uid = :uid and R.rid = F.rid;'
         connection.query(foodQuery,
           {
             type: connection.QueryTypes.SELECT,
@@ -506,7 +506,7 @@ router.delete('/user/:id/remove-fave-food/:rid', function (req, res, next) {
               rid: rid
             }
           })
-        const foodQuery = 'SELECT R.rid as restaurantId, R.name as restaurantName, F.food_type FROM UserLikesFoodAtRestaurant F, Restaurant R WHERE F.uid = :uid and and R.rid = F.rid;'
+        const foodQuery = 'SELECT R.rid as restaurantId, R.name as restaurantName, F.food_type FROM UserLikesFoodAtRestaurant F, Restaurant R WHERE F.uid = :uid and R.rid = F.rid;'
         connection.query(foodQuery,
           {
             type: connection.QueryTypes.SELECT,
@@ -755,12 +755,13 @@ router.post('/user/:id/search-restaurant', bodyParser.json(), function (req, res
   }
   const closeTime = endTime
   console.log(time + ' ' + closeTime)
-  const query = 'SELECT R.rid as restaurantID, R.name as restaurantName, H.closeTime, L.lat, L.lon ' +
-    'FROM Restaurant R, Location L, RestaurantHoursOfOperation H WHERE R.rid = L.rid ' +
-    'and R.rid = H.rid and H.day = :day and  H.closeTime >= :closeTime and ' +
-    '(3956 * 2 * ASIN(SQRT(POWER(SIN((abs(:lat) - abs(L.lat)) * pi()/180 / 2),2) ' +
-    '+ COS(abs(:lat) * pi()/180 ) * COS(abs(L.lat) *  pi()/180) * ' +
-    'POWER(SIN((abs(:lon) - (L.lon)) *  pi()/180 / 2), 2) ))) <= 5;'
+  const query = 'SELECT R.rid, R.name, H.CloseTime as OpenUntil FROM Restaurant R, Location L, RestaurantHoursOfOperation H ' +
+  'WHERE R.rid = L.rid and R.rid = H.rid and H.day = :day and  H.closeTime >= :closeTime AND ' +
+  '(3956 * 2 * ASIN(SQRT(' +
+      'POWER(SIN((abs(:lon) - abs(L.lat)) * pi()/180 / 2),2) + ' +
+      '(COS(abs(:lon) * pi()/180 ) * COS(abs(L.lat) *  pi()/180) * ' +
+      'POWER(SIN((abs(:lat) - (L.lon)) *  pi()/180 / 2), 2)) ' +
+      '))) <= 5;'
   connection.query(query,
     {
       type: connection.QueryTypes.SELECT,
@@ -855,7 +856,7 @@ router.post('/user/:id/like-restaurant/:rid', bodyParser.json(), function (req, 
               rid: rid
             }
           })
-        const restQuery = 'SELECT R.rid, R.name FROM SignedUpUserRestaurantFavourites F, Restaurant R WHERE U.uid = :uid and and R.rid = F.rid;'
+        const restQuery = 'SELECT R.rid, R.name FROM SignedUpUserRestaurantFavourites F, Restaurant R WHERE F.uid = :uid and R.rid = F.rid;'
         connection.query(restQuery,
           {
             type: connection.QueryTypes.SELECT,
@@ -877,7 +878,7 @@ router.post('/user/:id/like-food/:rid', bodyParser.json(), function (req, res, n
   const uid = req.params.id
   const rid = req.params.rid
   const foodType = req.body.food_type
-  const query = 'SELECT * FROM AllUser WHERE uid = :uid;'
+  const query = 'SELECT * FROM SignedUpUser WHERE uid = :uid;'
   connection.query(query,
     {
       type: connection.QueryTypes.SELECT,
