@@ -248,10 +248,9 @@ router.post('/user-profile/:id/edit', bodyParser.json(), function (req, res, nex
   var username = req.body.username
   var name = req.body.name
   var img = req.body.img
-  var valid = true
   console.log('in edit profile, body: uid=' + uid + ' username=' + username + ' name=' + name + ' img= ' + img)
   // check if this user even exists
-  const queryUID = 'SELECT U.name, U.username, A.password FROM SignedUpUser U, Account A WHERE uid = :uid and A.username = U.username;'
+  const queryUID = 'SELECT U.name, U.username, A.password FROM SignedUpUser U, Account A WHERE U.uid = :uid and A.username = U.username;'
   connection.query(queryUID,
     {
       type: connection.QueryTypes.SELECT,
@@ -261,33 +260,15 @@ router.post('/user-profile/:id/edit', bodyParser.json(), function (req, res, nex
     })
     .then(user => {
       if (user.length === 1) {
-        if (username !== '') {
-          // check if new username is unique
-          const queryUsername = 'SELECT uid from SignedUpUser WHERE username = :username UNION SELECT owid from Owner WHERE username = :username;'
-          connection.query(queryUsername,
-            {
-              type: connection.QueryTypes.SELECT,
-              replacements: {
-                username: username
-              }
-            })
-            .then(anyuser => {
-              if (anyuser.length !== 0) {
-                // username is not unique so cant be updated
-                valid = false
-                console.log('INVALID USERNAME; send 400!')
-              }
-            })
-        } else {
+        console.log(user.length)
+        if (username === '') {
           username = user[0].username
-        }
-        if (name === '') {
-          name = user[0].name
-        }
-        if (valid) { // can update user profile with new username or null
+          if (name === '') {
+            name = user[0].name
+          }
           console.log('update is valid; do update')
           const updateQuery = 'UPDATE Account SET username = :newusername where username = :username; ' +
-                                'UPDATE SignedUpUser SET username = :newusername, name = :name, img = :img WHERE uid = :uid;'
+                                  'UPDATE SignedUpUser SET username = :newusername, name = :name, img = :img WHERE uid = :uid;'
           connection.query(updateQuery,
             {
               type: connection.QueryTypes.UPDATE,
@@ -311,33 +292,6 @@ router.post('/user-profile/:id/edit', bodyParser.json(), function (req, res, nex
               'searches': null
             })
         } else {
-          // username already exists so return a fail
-          res.status(400).json({})
-        }
-      } else {
-        // user does not exist!!
-        res.status(404).json({})
-      }
-    })
-})
-
-router.post('/owner-profile/:id/edit', bodyParser.json(), function (req, res, next) {
-  const owid = req.params.id
-  var newusername = req.body.username
-  var name = req.body.name
-  var valid = true
-  // check if this user even exists
-  const queryowid = 'SELECT O.name, O.username, A.password FROM Owner O, Account A WHERE O.owid = :owid and O.username = A.username;'
-  connection.query(queryowid,
-    {
-      type: connection.QueryTypes.SELECT,
-      replacements: {
-        owid: owid
-      }
-    })
-    .then(user => {
-      if (user.length === 1) {
-        if (newusername !== '') {
           // check if new username is unique
           const queryUsername = 'SELECT uid from SignedUpUser WHERE username = :username UNION SELECT owid from Owner WHERE username = :username;'
           connection.query(queryUsername,
@@ -348,42 +302,129 @@ router.post('/owner-profile/:id/edit', bodyParser.json(), function (req, res, ne
               }
             })
             .then(anyuser => {
-              if (anyuser.length !== 0) {
-                // username is not unique so can't be updated
-                valid = false
+              if (anyuser.length === 0) {
+                if (name === '') {
+                  name = user[0].name
+                }
+                console.log('update is valid; do update')
+                const updateQuery = 'UPDATE Account SET username = :newusername where username = :username; ' +
+                                      'UPDATE SignedUpUser SET username = :newusername, name = :name, img = :img WHERE uid = :uid;'
+                connection.query(updateQuery,
+                  {
+                    type: connection.QueryTypes.UPDATE,
+                    replacements: {
+                      newusername: username,
+                      password: user[0].password,
+                      uid: uid,
+                      name: name,
+                      username: user[0].username,
+                      img: img
+                    }
+                  })
+                res.json(
+                  {'uid': uid,
+                    'username': username,
+                    'password': user[0].password,
+                    'name': name,
+                    'img': img,
+                    'restaurants': null,
+                    'favFoods': null,
+                    'searches': null
+                  })
+              } else {
+                  res.status(400).json({})
               }
             })
-        } else {
-          newusername = user[0].username
         }
-        if (name === '') {
-          name = user[0].name
-        }
-        if (valid) { // can update user profile with new username or null
-          const updateQuery = 'UPDATE Account SET username = :newusername, password = :password; ' +
-                                'UPDATE Owner SET username = :newusername, name = :name WHERE owid = :owid;'
+      } else {
+        // user does not exist!!
+        res.status(404).json({})
+      }
+    })
+})
 
+router.post('/owner-profile/:id/edit', bodyParser.json(), function (req, res, next) {
+  const owid = req.params.id
+  var username = req.body.username
+  var name = req.body.name
+  console.log('in edit profile, body: owid=' + owid + ' username=' + username + ' name=' + name)
+  // check if this user even exists
+  const queryUID = 'SELECT U.name, U.username, A.password FROM owner U, Account A WHERE U.owid = :owid and A.username = U.username;'
+  connection.query(queryUID,
+    {
+      type: connection.QueryTypes.SELECT,
+      replacements: {
+        owid: owid
+      }
+    })
+    .then(user => {
+      if (user.length === 1) {
+        if (username === '') {
+          username = user[0].username
+          if (name === '') {
+            name = user[0].name
+          }
+          console.log('update is valid; do update')
+          const updateQuery = 'UPDATE Account SET username = :newusername where username = :username; ' +
+                                  'UPDATE owner SET username = :newusername, name = :name WHERE owid = :owid;'
           connection.query(updateQuery,
             {
               type: connection.QueryTypes.UPDATE,
               replacements: {
-                newusername: newusername,
+                newusername: username,
                 password: user[0].password,
-                username: user[0].username,
                 owid: owid,
-                name: name
+                name: name,
+                username: user[0].username
               }
             })
           res.json(
             {'owid': owid,
-              'username': newusername,
+              'username': username,
               'password': user[0].password,
               'name': name,
               'restaurants': null
             })
         } else {
-          // username already exists so return a fail
-          res.status(400).json({})
+          // check if new username is unique
+          const queryUsername = 'SELECT uid from SignedUpUser WHERE username = :username UNION SELECT owid from Owner WHERE username = :username;'
+          connection.query(queryUsername,
+            {
+              type: connection.QueryTypes.SELECT,
+              replacements: {
+                username: username
+              }
+            })
+            .then(anyuser => {
+              if (anyuser.length === 0) {
+                if (name === '') {
+                  name = user[0].name
+                }
+                console.log('update is valid; do update')
+                const updateQuery = 'UPDATE Account SET username = :newusername where username = :username; ' +
+                                      'UPDATE owner SET username = :newusername, name = :name WHERE owid = :owid;'
+                connection.query(updateQuery,
+                  {
+                    type: connection.QueryTypes.UPDATE,
+                    replacements: {
+                      newusername: username,
+                      password: user[0].password,
+                      owid: owid,
+                      name: name,
+                      username: user[0].username
+                    }
+                  })
+                res.json(
+                  {'owid': owid,
+                    'username': username,
+                    'password': user[0].password,
+                    'name': name,
+                    'restaurants': null
+                  })
+              } else {
+                res.status(400).json({})
+              }
+            })
         }
       } else {
         // user does not exist!!
