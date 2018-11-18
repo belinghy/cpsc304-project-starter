@@ -5,6 +5,7 @@ const bodyParser = require('body-parser')
 const router = Router()
 
 const uuidv1 = require('uuid/v1')
+let reverse = require('reverse-geocode')
 
 // tested; works
 router.get('/home', function (req, res, next) {
@@ -233,7 +234,7 @@ router.post('/user-profile/:id/edit', bodyParser.json(), function (req, res, nex
       if (user.length === 1) {
         if (username !== '') {
           // check if new username is unique
-          const queryUsername = 'SELECT from SignedUpUser WHERE username = :username UNION SELECT from Owner WHERE username = :username;'
+          const queryUsername = 'SELECT uid from SignedUpUser WHERE username = :username UNION SELECT owid from Owner WHERE username = :username;'
           connection.query(queryUsername,
             {
               type: connection.QueryTypes.SELECT,
@@ -257,7 +258,7 @@ router.post('/user-profile/:id/edit', bodyParser.json(), function (req, res, nex
           name = user[0].name
         }
         if (valid) { // can update user profile with new username or null
-          const updateQuery = 'UPDATE SignedUpUser SET username = :username, name = :name, img = :img WHERE uid = :uid;' +
+          const updateQuery = 'UPDATE SignedUpUser SET username = :username, name = :name, img = :img WHERE uid = :uid; ' +
                                 'UPDATE Account SET username = :username, password = :password;'
           connection.query(updateQuery,
             {
@@ -310,7 +311,7 @@ router.post('/owner-profile/:id/edit', bodyParser.json(), function (req, res, ne
       if (user.length === 1) {
         if (username !== '' && username !== user[0].username) {
           // check if new username is unique
-          const queryUsername = 'SELECT from SignedUpUser WHERE username = :username UNION SELECT from Owner WHERE username = :username;'
+          const queryUsername = 'SELECT uid from SignedUpUser WHERE username = :username UNION SELECT owid from Owner WHERE username = :username;'
           connection.query(queryUsername,
             {
               type: connection.QueryTypes.SELECT,
@@ -334,7 +335,7 @@ router.post('/owner-profile/:id/edit', bodyParser.json(), function (req, res, ne
           name = user[0].name
         }
         if (valid) { // can update user profile with new username or null
-          const updateQuery = 'UPDATE Owner SET username = :username, name = :name WHERE owid = :owid ;' +
+          const updateQuery = 'UPDATE Owner SET username = :username, name = :name WHERE owid = :owid; ' +
                                 'UPDATE Account SET username = :username, password = :password;'
 
           connection.query(updateQuery,
@@ -378,7 +379,7 @@ router.get('/user-profile/:id/search-history', function (req, res, next) {
     .then(user => {
       if (user.length === 1) {
         // do another query to get search history:
-        const query2 = 'SELECT S.sid, S.day, S.openTime as time, L.street, L.city FROM SignedUpUser U, SignedUpUserLocationTimeSearches S, Location L WHERE U.uid = :uid and U.uid = S.uid and L.lat = S.lat and L.lon = S.lon;'
+        const query2 = 'SELECT S.sid, S.day, S.openTime as time, L.street, L.city FROM SignedUpUserLocationTimeSearches S, Location L WHERE U.uid = :uid and S.uid = :uid and L.lat = S.lat and L.lon = S.lon;'
         connection.query(query2,
           {
             type: connection.QueryTypes.SELECT,
@@ -419,8 +420,8 @@ router.delete('/user/:id/remove-liked-restaurant/:rid', function (req, res, next
               rid: rid
             }
           }).catch(function (err) {
-            console.log('ALREADY unLIKED THIS!')
-          })
+          console.log('ALREADY unLIKED THIS!')
+        })
         const restQuery = 'SELECT R.rid, R.name FROM SignedUpUserRestaurantFavourites F, Restaurant R WHERE F.uid = :uid and R.rid = F.rid;'
         connection.query(restQuery,
           {
@@ -448,13 +449,15 @@ router.delete('/user/:id/clear-search-history/', function (req, res, next) {
     })
     .then(user => {
       if (user.length === 1) {
-        const delQuery = 'DELETE FROM SignedUpUserLocationTimeSearches where uid = :uid;' +
-                              'DELETE FROM SignedUpUserFoodSearches where uid = :uid'
+        const delQuery = 'DELETE FROM SignedUpUserLocationTimeSearches where uid = :uid ;' +
+                              'DELETE FROM SignedUpUserFoodSearches where uid = :uid;'
         connection.query(delQuery,
           {
             type: connection.QueryTypes.DELETE,
             replacements: { uid: uid }
-          })
+          }).catch(function (err) {
+          console.log('ALREADY DELETED SEARCH HISTORY')
+        })
         res.json([])
       } else { // user not found
         res.status(400).json({})
@@ -462,6 +465,7 @@ router.delete('/user/:id/clear-search-history/', function (req, res, next) {
     })
 })
 
+// tested; (as part of login will be sent so not needed)
 router.get('/user-profile/:id/fave-food', function (req, res, next) {
   const uid = req.params.id
   const query = 'SELECT * FROM SignedUpUser WHERE uid = :uid;'
@@ -513,8 +517,8 @@ router.delete('/user/:id/restaurant/:rid/remove-fave-food/:foodType', function (
               food_type: foodType
             }
           }).catch(function (err) {
-            console.log('ALREADY unliked THIS!')
-          })
+          console.log('ALREADY unliked THIS!')
+        })
         const foodQuery = 'SELECT R.rid as restaurantId, R.name as restaurantName, F.food_type FROM UserLikesFoodAtRestaurant F, Restaurant R WHERE F.uid = :uid and R.rid = F.rid;'
         connection.query(foodQuery,
           {
@@ -550,7 +554,9 @@ router.delete('/owner/:owid/remove-restaurant/:rid', function (req, res, next) {
               owid: owid,
               rid: rid
             }
-          })
+          }).catch(function () {
+          console.log('ALREADY DELETED THIS RESTAURANT')
+        })
         const restQuery = 'SELECT rid, name FROM Restaurant WHERE owid = :owid;'
         connection.query(restQuery,
           {
@@ -592,10 +598,7 @@ router.get('/view-restaurant/:rid', function (req, res, next) {
                 replacements: {rid: rid}
               })
               .then(foods => {
-                const query4 = 'SELECT ULF.food_type FROM Restaurant R, UserLikesFoodAtRestaurant ULF ' +
-                        'WHERE R.rid = :rid GROUP BY ULF.food_type HAVING COUNT(ULF.rid) >= ALL ' +
-                        '(SELECT COUNT(ULF.food_type) FROM RESTAURANT R, UserLikesFoodAtRestaurant ULF WHERE R.rid = :rid ' +
-                        'GROUP BY ULF.food_type);'
+                const query4 = 'SELECT food_type from UserLikesFoodAtRestaurant WHERE rid = :rid GROUP BY food_type order by count(*) desc limit 1;'
                 connection.query(query4,
                   {
                     type: connection.QueryTypes.SELECT,
@@ -756,10 +759,10 @@ router.post('/user/:id/search-restaurant', bodyParser.json(), function (req, res
   const lon = req.body.lng
   const time = req.body.time
   const day = req.body.day
-  console.log('body: ' + uid + ' ' + lat + ' ' + lon + ' ' + time + ' ' + day)
-  // TODO: calculate in BE using geo lib thing 
-  const city = ''
-  const street = ''
+  var loc = reverse.lookup(lat, lon, 'ca')
+  const city = loc.city
+  const street = loc.region
+  console.log('body: uid=' + uid + ' lat=' + lat + ' lon=' + lon + ' time=' + time + ' day=' + day + ' city=' + city + ' region=' + street)
   var endTime = (parseInt(time.slice(0, 2)) + 1)
   if (endTime < 10) {
     endTime = '0' + endTime.toString() + ':00'
@@ -795,7 +798,7 @@ router.post('/user/:id/search-restaurant', bodyParser.json(), function (req, res
           {
             type: connection.QueryTypes.INSERT,
             replacements: {lat: lat, lon: lon, city: city, street: street}
-          }).catch(function (err) {
+          }).catch(function () {
           console.log('err')
         })
         const insertTime = 'INSERT INTO HoursOfOperation (day, openTime, closeTime) VALUES ' +
@@ -808,7 +811,7 @@ router.post('/user/:id/search-restaurant', bodyParser.json(), function (req, res
               openTime: time,
               closeTime: closeTime
             }
-          }).catch(function (err) {
+          }).catch(function () {
           console.log('err')
         })
         const insert2 = 'INSERT INTO SignedUpUserLocationTimeSearches (uid, day, openTime, closeTime, lat, lon, sid) VALUES ' +
@@ -825,7 +828,7 @@ router.post('/user/:id/search-restaurant', bodyParser.json(), function (req, res
               lon: lon,
               sid: sid
             }
-          }).catch(function (err) {
+          }).catch(function () {
           console.log('err')
         })
         var resultList = []
@@ -833,10 +836,7 @@ router.post('/user/:id/search-restaurant', bodyParser.json(), function (req, res
           var restaurant = restaurants[r]
           var food = '*'
           // do another query to find the faveFood at this restaurant
-          //   const query2 = 'SELECT ULF.food_type FROM Restaurant R, UserLikesFoodAtRestaurant ULF ' +
-          //                        'WHERE R.rid = :rid GROUP BY ULF.food_type HAVING COUNT(ULF.rid) >= ALL ' +
-          //                        '(SELECT COUNT(ULF.food_type) FROM RESTAURANT R, UserLikesFoodAtRestaurant ULF WHERE R.rid = :rid ' +
-          //                        'GROUP BY ULF.food_type);'
+          //   const query2 = 'SELECT food_type from UserLikesFoodAtRestaurant WHERE rid = :rid GROUP BY food_type order by count(*) desc limit 1;'
           //   connection.query(query2,
           //     {
           //       type: connection.QueryTypes.SELECT,
@@ -890,8 +890,8 @@ router.post('/user/:id/like-restaurant/:rid', bodyParser.json(), function (req, 
               rid: rid
             }
           }).catch(function (err) {
-            console.log('ALREADY LIKED THIS!')
-          })
+          console.log('ALREADY LIKED THIS!')
+        })
         const restQuery = 'SELECT R.rid, R.name FROM SignedUpUserRestaurantFavourites F, Restaurant R WHERE F.uid = :uid and R.rid = F.rid;'
         connection.query(restQuery,
           {
@@ -953,5 +953,20 @@ router.post('/user/:id/like-food/:rid', bodyParser.json(), function (req, res, n
       }
     })
 })
+
+// we will not have fave food in seach showing!
+// on search, the map is not populated with restaurant places and map actually goes blank gray (whatever!)
+// should probably display restaurant name in restaurant expanded view maybe?
+
+// respond with oops or something when I return 400 (places that we need it: login because incorrect, sognup because username is used, search because no results)
+// send a random or actual itme and day for search
+// add owner checkbox in signup
+// user profile
+// owner profile
+// user profile get search history
+// user profile delete search his
+// owner add restaurant
+// owner del rest
+// user edit profile
 
 export default router
