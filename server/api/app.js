@@ -142,7 +142,7 @@ router.get('/guest-home', function (req, res, next) {
 
 router.get('/user-profile/:id', function (req, res, next) {
   const uid = req.params.id
-  const query = 'SELECT * FROM SignedUpUser WHERE uid = :uid;'
+  const query = 'SELECT * FROM SignedUpUser U, account A WHERE uid = :uid and U.username = A.username;'
   connection.query(query,
     {
       type: connection.QueryTypes.SELECT,
@@ -217,12 +217,12 @@ router.get('/owner-profile/:id', function (req, res, next) {
 router.post('/user-profile/:id/edit', bodyParser.json(), function (req, res, next) {
   const uid = req.params.id
   var username = req.body.username
-  var password = req.body.password
   var name = req.body.name
   var img = req.body.img
   var valid = true
+  console.log('in edit profile, body: uid=' + uid + ' username=' + username + ' name=' + name + ' img= ' + img)
   // check if this user even exists
-  const queryUID = 'SELECT * FROM SignedUpUser WHERE uid = :uid;'
+  const queryUID = 'SELECT U.name, U.username, A.password FROM SignedUpUser U, Account A WHERE uid = :uid and A.username = U.username;'
   connection.query(queryUID,
     {
       type: connection.QueryTypes.SELECT,
@@ -246,35 +246,35 @@ router.post('/user-profile/:id/edit', bodyParser.json(), function (req, res, nex
               if (anyuser.length !== 0) {
                 // username is not unique so cant be updated
                 valid = false
+                console.log('INVALID USERNAME; send 400!')
               }
             })
         } else {
           username = user[0].username
         }
-        if (password === '') {
-          password = user[0].password
-        }
         if (name === '') {
           name = user[0].name
         }
         if (valid) { // can update user profile with new username or null
-          const updateQuery = 'UPDATE SignedUpUser SET username = :username, name = :name, img = :img WHERE uid = :uid; ' +
-                                'UPDATE Account SET username = :username, password = :password;'
+          console.log('update is valid; do update')
+          const updateQuery = 'UPDATE Account SET username = :newusername where username = :username; ' +
+                                'UPDATE SignedUpUser SET username = :newusername, name = :name, img = :img WHERE uid = :uid;'
           connection.query(updateQuery,
             {
               type: connection.QueryTypes.UPDATE,
               replacements: {
-                username: username,
-                password: password,
+                newusername: username,
+                password: user[0].password,
                 uid: uid,
                 name: name,
+                username: user[0].username,
                 img: img
               }
             })
           res.json(
             {'uid': uid,
               'username': username,
-              'password': password,
+              'password': user[0].password,
               'name': name,
               'img': img,
               'favRestaurants': null,
