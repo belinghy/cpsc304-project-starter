@@ -168,7 +168,7 @@ router.get('/user-profile/:id', function (req, res, next) {
                 'password': user[0].password,
                 'name': user[0].name,
                 'img': user[0].image,
-                'favRestaurants': restaurants,
+                'restaurants': restaurants,
                 'favFoods': null,
                 'searches': null
               })
@@ -205,7 +205,7 @@ router.get('/owner-profile/:id', function (req, res, next) {
                 'password': owner[0].password,
                 'name': owner[0].name,
                 'img': owner[0].image,
-                'ownedRestaurants': restaurants
+                'restaurants': restaurants
               })
           })
       } else {
