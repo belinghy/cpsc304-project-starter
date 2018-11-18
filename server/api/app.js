@@ -485,9 +485,10 @@ router.get('/user-profile/:id/fave-food', function (req, res, next) {
     })
 })
 
-router.delete('/user/:id/remove-fave-food/:rid', function (req, res, next) {
+router.delete('/user/:id/restaurant/:rid/remove-fave-food/:foodType', function (req, res, next) {
   const uid = req.params.id
   const rid = req.params.rid
+  const foodType = req.params.foodType
   const query = 'SELECT * FROM SignedUpUser WHERE uid = :uid;'
   connection.query(query,
     {
@@ -497,13 +498,14 @@ router.delete('/user/:id/remove-fave-food/:rid', function (req, res, next) {
     .then(user => {
       if (user.length === 1) {
         // do another query to remove liked restaurants:
-        const delQuery = 'DELETE FROM UserLikesFoodAtRestaurant WHERE uid = :uid and rid = :rid;'
+        const delQuery = 'DELETE FROM UserLikesFoodAtRestaurant WHERE uid = :uid and rid = :rid and food_type = :foodType;'
         connection.query(delQuery,
           {
             type: connection.QueryTypes.DELETE,
             replacements: {
               uid: uid,
-              rid: rid
+              rid: rid,
+              food_type: foodType
             }
           })
         const foodQuery = 'SELECT R.rid as restaurantId, R.name as restaurantName, F.food_type FROM UserLikesFoodAtRestaurant F, Restaurant R WHERE F.uid = :uid and R.rid = F.rid;'
@@ -755,7 +757,7 @@ router.post('/user/:id/search-restaurant', bodyParser.json(), function (req, res
   }
   const closeTime = endTime
   console.log(time + ' ' + closeTime)
-  const query = 'SELECT R.rid, R.name, H.CloseTime as OpenUntil FROM Restaurant R, Location L, RestaurantHoursOfOperation H ' +
+  const query = 'SELECT R.rid, R.name, H.closeTime, H.openTime, L.lat, L.lon FROM Restaurant R, Location L, RestaurantHoursOfOperation H ' +
   'WHERE R.rid = L.rid and R.rid = H.rid and H.day = :day and  H.closeTime >= :closeTime AND ' +
   '(3956 * 2 * ASIN(SQRT(' +
       'POWER(SIN((abs(:lon) - abs(L.lat)) * pi()/180 / 2),2) + ' +
@@ -774,7 +776,7 @@ router.post('/user/:id/search-restaurant', bodyParser.json(), function (req, res
     })
     .then(restaurants => {
       if (restaurants.length > 1) {
-        console.log('results found!' + restaurants[0])
+        console.log('results found!!')
         // store search into search history DB!
         const sid = uuidv1()
         const insert1 = 'INSERT INTO Location (lat, lon, city, street) VALUES (:lat, :lon, :city, :street);'
@@ -782,7 +784,22 @@ router.post('/user/:id/search-restaurant', bodyParser.json(), function (req, res
           {
             type: connection.QueryTypes.INSERT,
             replacements: {lat: lat, lon: lon, city: city, street: street}
-          })
+          }).catch(function (err) {
+          console.log('err')
+        })
+        const insertTime = 'INSERT INTO HoursOfOperation (day, openTime, closeTime) VALUES ' +
+                            '(:day, :openTime, :closeTime);'
+        connection.query(insertTime,
+          {
+            type: connection.QueryTypes.INSERT,
+            replacements: {
+              day: day,
+              openTime: time,
+              closeTime: closeTime
+            }
+          }).catch(function (err) {
+          console.log('err')
+        })
         const insert2 = 'INSERT INTO SignedUpUserLocationTimeSearches (uid, day, openTime, closeTime, lat, lon, sid) VALUES ' +
                             '(:uid, :day, :openTime, :closeTime, :lat, :lon, :sid);'
         connection.query(insert2,
@@ -797,35 +814,40 @@ router.post('/user/:id/search-restaurant', bodyParser.json(), function (req, res
               lon: lon,
               sid: sid
             }
-          })
+          }).catch(function (err) {
+          console.log('err')
+        })
         var resultList = []
         for (var r in restaurants) {
+          var restaurant = restaurants[r]
           var food = '*'
           // do another query to find the faveFood at this restaurant
-          const query2 = 'SELECT ULF.food_type FROM Restaurant R, UserLikesFoodAtRestaurant ULF ' +
-                             'WHERE R.rid = :rid GROUP BY ULF.food_type HAVING COUNT(ULF.rid) >= ALL ' +
-                             '(SELECT COUNT(ULF.food_type) FROM RESTAURANT R, UserLikesFoodAtRestaurant ULF WHERE R.rid = :rid ' +
-                             'GROUP BY ULF.food_type);'
-          connection.query(query2,
-            {
-              type: connection.QueryTypes.SELECT,
-              replacements: {rid: r.restaurantID}
-            })
-            .then(foods => {
-              if (foods.length > 0) {
-                food = foods[0].food_type
-              }
-            })
+        //   const query2 = 'SELECT ULF.food_type FROM Restaurant R, UserLikesFoodAtRestaurant ULF ' +
+        //                        'WHERE R.rid = :rid GROUP BY ULF.food_type HAVING COUNT(ULF.rid) >= ALL ' +
+        //                        '(SELECT COUNT(ULF.food_type) FROM RESTAURANT R, UserLikesFoodAtRestaurant ULF WHERE R.rid = :rid ' +
+        //                        'GROUP BY ULF.food_type);'
+        //   connection.query(query2,
+        //     {
+        //       type: connection.QueryTypes.SELECT,
+        //       replacements: {rid: restaurant.rid}
+        //     })
+        //     .then(foods => {
+        //       if (foods.length > 0) {
+        //         food = foods[0].food_type
+        //       }
+        //     })
           var result = {
-            restaurantID: r.restaurantID,
-            restaurantName: r.restaurantName,
+            restaurantID: restaurant.rid,
+            restaurantName: restaurant.name,
             faveFood: food,
-            lat: r.lat,
-            lon: r.lon,
-            closeTime: r.closeTime
+            lat: restaurant.lat,
+            lon: restaurant.lon,
+            closeTime: restaurant.closetime
           }
-          resultList.concat(result)
+          resultList.push(result)
         }
+        console.log('RESUTLS: ---------')
+        console.log(resultList)
         res.json(resultList)
       } else {
         res.status(400).json({}) // no results found!
