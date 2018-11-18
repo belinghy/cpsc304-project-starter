@@ -147,10 +147,10 @@ router.get('/guest-home', function (req, res, next) {
     })
 })
 
-// 
+// tested; done
 router.get('/user-profile/:id', function (req, res, next) {
   const uid = req.params.id
-  const query = 'SELECT U.uid, U.username, A.password, U.img FROM SignedUpUser U, account A WHERE U.uid = :uid and U.username = A.username;'
+  const query = 'SELECT U.uid, U.name, U.username, A.password, U.img FROM SignedUpUser U, account A WHERE U.uid = :uid and U.username = A.username;'
   connection.query(query,
     {
       type: connection.QueryTypes.SELECT,
@@ -186,6 +186,9 @@ router.get('/user-profile/:id', function (req, res, next) {
                     }
                   })
                   .then(searchLoc => {
+                    console.log(searchLoc)
+                    console.log(favFoodListItem)
+                    console.log(restaurants)
                     res.json(
                       {'uid': uid,
                         'username': user[0].username,
@@ -205,6 +208,7 @@ router.get('/user-profile/:id', function (req, res, next) {
     })
 })
 
+// tested; done
 router.get('/owner-profile/:id', function (req, res, next) {
   const owid = req.params.id
   const query = 'SELECT * FROM Owner WHERE owid = :owid;'
@@ -228,7 +232,6 @@ router.get('/owner-profile/:id', function (req, res, next) {
             res.json(
               {'owid': owid,
                 'username': owner[0].username,
-                'password': owner[0].password,
                 'name': owner[0].name,
                 'img': owner[0].image,
                 'restaurants': restaurants
@@ -949,12 +952,12 @@ router.post('/user/:id/like-food/:rid', bodyParser.json(), function (req, res, n
 })
 
 // respond with oops or something when I return 400 (places that we need it: login because incorrect, sognup because username is used, search because no results)
-// user profile
-// owner profile
-// user profile get search history
-// user profile delete search his
 // owner add restaurant
 // owner del rest
-// user edit profile
 
+// SELECT pg_cancel_backend(pid)     -- (SIGINT)
+// -- pg_terminate_backend(pid)  -- the less patient alternative (SIGTERM)
+// FROM   pg_stat_activity
+// WHERE  usename = 'user_name'
+// AND    pid <> pg_backend_pid();
 export default router
