@@ -26,7 +26,7 @@ router.get('/home', function (req, res, next) {
     .then(user => {
       if (user.length === 1) {
         console.log(user)
-        const foodQuery = 'SELECT R.rid as restaurantId, R.name as restaurantName, F.food_type FROM UserLikesFoodAtRestaurant F, Restaurant R WHERE F.uid = :uid and R.rid = F.rid;'
+        const foodQuery = 'SELECT R.rid as "restaurantId", R.name as "restaurantName", F.food_type FROM UserLikesFoodAtRestaurant F, Restaurant R WHERE F.uid = :uid and R.rid = F.rid;'
         connection.query(foodQuery,
           {
             type: connection.QueryTypes.SELECT,
@@ -519,7 +519,7 @@ router.delete('/user/:id/restaurant/:rid/remove-fave-food/:foodType', function (
           }).catch(function (err) {
           console.log('ALREADY unliked THIS!')
         })
-        const foodQuery = 'SELECT R.rid as restaurantId, R.name as restaurantName, F.food_type FROM UserLikesFoodAtRestaurant F, Restaurant R WHERE F.uid = :uid and R.rid = F.rid;'
+        const foodQuery = 'SELECT R.rid as "restaurantId", R.name as "restaurantName", F.food_type FROM UserLikesFoodAtRestaurant F, Restaurant R WHERE F.uid = :uid and R.rid = F.rid;'
         connection.query(foodQuery,
           {
             type: connection.QueryTypes.SELECT,
@@ -757,11 +757,12 @@ router.post('/user/:id/search-restaurant', bodyParser.json(), function (req, res
   const uid = req.params.id
   const lat = req.body.lat
   const lon = req.body.lng
-  const time = req.body.time
+  var time = req.body.time
   const day = req.body.day
   var loc = reverse.lookup(lat, lon, 'ca')
   const city = loc.city
   const street = loc.region
+  time = time.slice(0, 5)
   console.log('body: uid=' + uid + ' lat=' + lat + ' lon=' + lon + ' time=' + time + ' day=' + day + ' city=' + city + ' region=' + street)
   var endTime = (parseInt(time.slice(0, 2)) + 1)
   if (endTime < 10) {
@@ -954,13 +955,7 @@ router.post('/user/:id/like-food/:rid', bodyParser.json(), function (req, res, n
     })
 })
 
-// we will not have fave food in seach showing!
-// on search, the map is not populated with restaurant places and map actually goes blank gray (whatever!)
-// should probably display restaurant name in restaurant expanded view maybe?
-
 // respond with oops or something when I return 400 (places that we need it: login because incorrect, sognup because username is used, search because no results)
-// send a random or actual itme and day for search
-// add owner checkbox in signup
 // user profile
 // owner profile
 // user profile get search history
