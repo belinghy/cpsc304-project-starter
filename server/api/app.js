@@ -57,7 +57,14 @@ router.get('/home', function (req, res, next) {
           })
           .then(user => {
             if (user.length === 1) {
-              res.json({'id': user[0].uid, 'name': user[0].name, 'owner': true, 'favouritedFoods': [], 'likedRestaurants': []})
+              const restQuery = 'SELECT rid, name FROM Restaurant WHERE owid = :owid;'
+              connection.query(restQuery,
+                {
+                  type: connection.QueryTypes.SELECT,
+                  replacements: {owid: user[0].owid}
+                }).then(restaurants => {
+                res.json({'id': user[0].owid, 'name': user[0].name, 'owner': true, 'favouritedFoods': [], 'likedRestaurants': [], 'ownedRestaurants': restaurants})
+              })
             } else {
               res.status(400).json({})
             }
@@ -140,9 +147,10 @@ router.get('/guest-home', function (req, res, next) {
     })
 })
 
+// 
 router.get('/user-profile/:id', function (req, res, next) {
   const uid = req.params.id
-  const query = 'SELECT * FROM SignedUpUser U, account A WHERE uid = :uid and U.username = A.username;'
+  const query = 'SELECT U.uid, U.username, A.password, U.img FROM SignedUpUser U, account A WHERE U.uid = :uid and U.username = A.username;'
   connection.query(query,
     {
       type: connection.QueryTypes.SELECT,
@@ -162,15 +170,33 @@ router.get('/user-profile/:id', function (req, res, next) {
             }
           })
           .then(restaurants => {
-            res.json(
-              {'uid': uid,
-                'username': user[0].username,
-                'password': user[0].password,
-                'name': user[0].name,
-                'img': user[0].image,
-                'restaurants': restaurants,
-                'favFoods': null,
-                'searches': null
+            const foodQuery = 'SELECT R.rid as "restaurantId", R.name as "restaurantName", F.food_type FROM UserLikesFoodAtRestaurant F, Restaurant R WHERE F.uid = :uid and R.rid = F.rid;'
+            connection.query(foodQuery,
+              {
+                type: connection.QueryTypes.SELECT,
+                replacements: {uid: user[0].uid}
+              })
+              .then(favFoodListItem => {
+                const queryLoc = 'SELECT S.sid, S.day, S.openTime as time, L.street, L.city FROM SignedUpUserLocationTimeSearches S, Location L WHERE S.uid = :uid and S.uid = :uid and L.lat = S.lat and L.lon = S.lon;'
+                connection.query(queryLoc,
+                  {
+                    type: connection.QueryTypes.SELECT,
+                    replacements: {
+                      uid: uid
+                    }
+                  })
+                  .then(searchLoc => {
+                    res.json(
+                      {'uid': uid,
+                        'username': user[0].username,
+                        'password': user[0].password,
+                        'name': user[0].name,
+                        'img': user[0].image,
+                        'restaurants': restaurants,
+                        'favFoods': favFoodListItem,
+                        'searches': searchLoc
+                      })
+                  })
               })
           })
       } else {
@@ -277,7 +303,7 @@ router.post('/user-profile/:id/edit', bodyParser.json(), function (req, res, nex
               'password': user[0].password,
               'name': name,
               'img': img,
-              'favRestaurants': null,
+              'restaurants': null,
               'favFoods': null,
               'searches': null
             })
@@ -294,12 +320,11 @@ router.post('/user-profile/:id/edit', bodyParser.json(), function (req, res, nex
 
 router.post('/owner-profile/:id/edit', bodyParser.json(), function (req, res, next) {
   const owid = req.params.id
-  var username = req.body.username
-  var password = req.body.password
+  var newusername = req.body.username
   var name = req.body.name
   var valid = true
   // check if this user even exists
-  const queryowid = 'SELECT * FROM Owner WHERE owid = :owid;'
+  const queryowid = 'SELECT O.name, O.username, A.password FROM Owner O, Account A WHERE O.owid = :owid and O.username = A.username;'
   connection.query(queryowid,
     {
       type: connection.QueryTypes.SELECT,
@@ -309,7 +334,7 @@ router.post('/owner-profile/:id/edit', bodyParser.json(), function (req, res, ne
     })
     .then(user => {
       if (user.length === 1) {
-        if (username !== '' && username !== user[0].username) {
+        if (newusername !== '') {
           // check if new username is unique
           const queryUsername = 'SELECT uid from SignedUpUser WHERE username = :username UNION SELECT owid from Owner WHERE username = :username;'
           connection.query(queryUsername,
@@ -326,34 +351,32 @@ router.post('/owner-profile/:id/edit', bodyParser.json(), function (req, res, ne
               }
             })
         } else {
-          username = user[0].username
-        }
-        if (password === '') {
-          password = user[0].password
+          newusername = user[0].username
         }
         if (name === '') {
           name = user[0].name
         }
         if (valid) { // can update user profile with new username or null
-          const updateQuery = 'UPDATE Owner SET username = :username, name = :name WHERE owid = :owid; ' +
-                                'UPDATE Account SET username = :username, password = :password;'
+          const updateQuery = 'UPDATE Account SET username = :newusername, password = :password; ' +
+                                'UPDATE Owner SET username = :newusername, name = :name WHERE owid = :owid;'
 
           connection.query(updateQuery,
             {
               type: connection.QueryTypes.UPDATE,
               replacements: {
-                username: username,
-                password: password,
+                newusername: newusername,
+                password: user[0].password,
+                username: user[0].username,
                 owid: owid,
                 name: name
               }
             })
           res.json(
             {'owid': owid,
-              'username': username,
-              'password': password,
+              'username': newusername,
+              'password': user[0].password,
               'name': name,
-              'ownedRestaurants': null
+              'restaurants': null
             })
         } else {
           // username already exists so return a fail
@@ -361,36 +384,6 @@ router.post('/owner-profile/:id/edit', bodyParser.json(), function (req, res, ne
         }
       } else {
         // user does not exist!!
-        res.status(404).json({})
-      }
-    })
-})
-
-router.get('/user-profile/:id/search-history', function (req, res, next) {
-  const uid = req.params.id
-  const query = 'SELECT * FROM SignedUpUser WHERE uid = :uid;'
-  connection.query(query,
-    {
-      type: connection.QueryTypes.SELECT,
-      replacements: {
-        uid: uid
-      }
-    })
-    .then(user => {
-      if (user.length === 1) {
-        // do another query to get search history:
-        const query2 = 'SELECT S.sid, S.day, S.openTime as time, L.street, L.city FROM SignedUpUserLocationTimeSearches S, Location L WHERE U.uid = :uid and S.uid = :uid and L.lat = S.lat and L.lon = S.lon;'
-        connection.query(query2,
-          {
-            type: connection.QueryTypes.SELECT,
-            replacements: {
-              uid: uid
-            }
-          })
-          .then(searchLoc => {
-            res.json(searchLoc)
-          })
-      } else {
         res.status(404).json({})
       }
     })
