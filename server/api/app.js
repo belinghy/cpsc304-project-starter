@@ -851,8 +851,8 @@ router.post('/user/:id/search-restaurant', bodyParser.json(), function (req, res
             restaurantID: restaurant.rid,
             restaurantName: restaurant.name,
             faveFood: food,
-            lat: restaurant.lat,
-            lon: restaurant.lon,
+            lon: restaurant.lat,
+            lat: restaurant.lon,
             closeTime: restaurant.closetime
           }
           resultList.push(result)
