@@ -395,6 +395,7 @@ router.get('/user-profile/:id/search-history', function (req, res, next) {
     })
 })
 
+// tested; works
 router.delete('/user/:id/remove-liked-restaurant/:rid', function (req, res, next) {
   const uid = req.params.id
   const rid = req.params.rid
@@ -417,6 +418,8 @@ router.delete('/user/:id/remove-liked-restaurant/:rid', function (req, res, next
               uid: uid,
               rid: rid
             }
+          }).catch(function (err) {
+            console.log('ALREADY unLIKED THIS!')
           })
         const restQuery = 'SELECT R.rid, R.name FROM SignedUpUserRestaurantFavourites F, Restaurant R WHERE F.uid = :uid and R.rid = F.rid;'
         connection.query(restQuery,
@@ -470,7 +473,7 @@ router.get('/user-profile/:id/fave-food', function (req, res, next) {
     .then(user => {
       if (user.length === 1) {
         // do another query to get fave restaurants:
-        const foodQuery = 'SELECT R.rid as restaurantId, R.name as restaurantName, F.food_type FROM UserLikesFoodAtRestaurant F, Restaurant R WHERE F.uid = :uid and R.rid = F.rid;'
+        const foodQuery = 'SELECT R.rid as "restaurantId", R.name as "restaurantName", F.food_type FROM UserLikesFoodAtRestaurant F, Restaurant R WHERE F.uid = :uid and R.rid = F.rid;'
         connection.query(foodQuery,
           {
             type: connection.QueryTypes.SELECT,
@@ -485,10 +488,12 @@ router.get('/user-profile/:id/fave-food', function (req, res, next) {
     })
 })
 
+// tested; works
 router.delete('/user/:id/restaurant/:rid/remove-fave-food/:foodType', function (req, res, next) {
   const uid = req.params.id
   const rid = req.params.rid
   const foodType = req.params.foodType
+  console.log(foodType)
   const query = 'SELECT * FROM SignedUpUser WHERE uid = :uid;'
   connection.query(query,
     {
@@ -498,7 +503,7 @@ router.delete('/user/:id/restaurant/:rid/remove-fave-food/:foodType', function (
     .then(user => {
       if (user.length === 1) {
         // do another query to remove liked restaurants:
-        const delQuery = 'DELETE FROM UserLikesFoodAtRestaurant WHERE uid = :uid and rid = :rid and food_type = :foodType;'
+        const delQuery = 'DELETE FROM UserLikesFoodAtRestaurant WHERE uid = :uid and rid = :rid and food_type = :food_type;'
         connection.query(delQuery,
           {
             type: connection.QueryTypes.DELETE,
@@ -507,6 +512,8 @@ router.delete('/user/:id/restaurant/:rid/remove-fave-food/:foodType', function (
               rid: rid,
               food_type: foodType
             }
+          }).catch(function (err) {
+            console.log('ALREADY unliked THIS!')
           })
         const foodQuery = 'SELECT R.rid as restaurantId, R.name as restaurantName, F.food_type FROM UserLikesFoodAtRestaurant F, Restaurant R WHERE F.uid = :uid and R.rid = F.rid;'
         connection.query(foodQuery,
@@ -559,9 +566,10 @@ router.delete('/owner/:owid/remove-restaurant/:rid', function (req, res, next) {
     })
 })
 
+// tested; works, except for displaying the map!
 router.get('/view-restaurant/:rid', function (req, res, next) {
   const rid = req.params.rid
-  const query1 = 'SELECT R.rid, R.name, L.city, L.number, L.street, L.postalCode, L.lat, L.lon FROM Location L,' +
+  const query1 = 'SELECT R.rid, R.name, L.city, L.number, L.street, L.postalCode as "postalCode", L.lat, L.lon FROM Location L,' +
                     'Restaurant R WHERE R.rid = :rid and L.rid=R.rid;'
   connection.query(query1,
     {
@@ -570,7 +578,7 @@ router.get('/view-restaurant/:rid', function (req, res, next) {
     })
     .then(restaurant => {
       if (restaurant.length === 1) {
-        const query2 = 'SELECT day, openTime, closeTime FROM RestaurantHoursOfOperation where rid=:rid;'
+        const query2 = 'SELECT day, openTime as "openTime", closeTime as "closeTime" FROM RestaurantHoursOfOperation where rid=:rid;'
         connection.query(query2,
           {
             type: connection.QueryTypes.SELECT,
@@ -600,7 +608,7 @@ router.get('/view-restaurant/:rid', function (req, res, next) {
                     } else {
                       FaveFoodItem = 'N/A'
                     }
-                    res.json({
+                    var result = {
                       restaurantID: restaurant[0].rid,
                       RestaurantName: restaurant[0].name,
                       OpenHours: hoursOfOp,
@@ -612,7 +620,9 @@ router.get('/view-restaurant/:rid', function (req, res, next) {
                       lon: restaurant[0].lon,
                       faveFood: FaveFoodItem,
                       foodTypes: foods
-                    })
+                    }
+                    console.log(result)
+                    res.json(result)
                   })
               })
           })
@@ -738,6 +748,7 @@ router.post('/:owid/add-restaurant/', bodyParser.json(), function (req, res, nex
     })
 })
 
+// tested and done except for favourites
 router.post('/user/:id/search-restaurant', bodyParser.json(), function (req, res, next) {
   console.log('in search: /user/:id/search-restaurant')
   const uid = req.params.id
@@ -822,20 +833,20 @@ router.post('/user/:id/search-restaurant', bodyParser.json(), function (req, res
           var restaurant = restaurants[r]
           var food = '*'
           // do another query to find the faveFood at this restaurant
-        //   const query2 = 'SELECT ULF.food_type FROM Restaurant R, UserLikesFoodAtRestaurant ULF ' +
-        //                        'WHERE R.rid = :rid GROUP BY ULF.food_type HAVING COUNT(ULF.rid) >= ALL ' +
-        //                        '(SELECT COUNT(ULF.food_type) FROM RESTAURANT R, UserLikesFoodAtRestaurant ULF WHERE R.rid = :rid ' +
-        //                        'GROUP BY ULF.food_type);'
-        //   connection.query(query2,
-        //     {
-        //       type: connection.QueryTypes.SELECT,
-        //       replacements: {rid: restaurant.rid}
-        //     })
-        //     .then(foods => {
-        //       if (foods.length > 0) {
-        //         food = foods[0].food_type
-        //       }
-        //     })
+          //   const query2 = 'SELECT ULF.food_type FROM Restaurant R, UserLikesFoodAtRestaurant ULF ' +
+          //                        'WHERE R.rid = :rid GROUP BY ULF.food_type HAVING COUNT(ULF.rid) >= ALL ' +
+          //                        '(SELECT COUNT(ULF.food_type) FROM RESTAURANT R, UserLikesFoodAtRestaurant ULF WHERE R.rid = :rid ' +
+          //                        'GROUP BY ULF.food_type);'
+          //   connection.query(query2,
+          //     {
+          //       type: connection.QueryTypes.SELECT,
+          //       replacements: {rid: restaurant.rid}
+          //     })
+          //     .then(foods => {
+          //       if (foods.length > 0) {
+          //         food = foods[0].food_type
+          //       }
+          //     })
           var result = {
             restaurantID: restaurant.rid,
             restaurantName: restaurant.name,
@@ -855,6 +866,7 @@ router.post('/user/:id/search-restaurant', bodyParser.json(), function (req, res
     })
 })
 
+// tested; works
 router.post('/user/:id/like-restaurant/:rid', bodyParser.json(), function (req, res, next) {
   const uid = req.params.id
   const rid = req.params.rid
@@ -877,6 +889,8 @@ router.post('/user/:id/like-restaurant/:rid', bodyParser.json(), function (req, 
               uid: uid,
               rid: rid
             }
+          }).catch(function (err) {
+            console.log('ALREADY LIKED THIS!')
           })
         const restQuery = 'SELECT R.rid, R.name FROM SignedUpUserRestaurantFavourites F, Restaurant R WHERE F.uid = :uid and R.rid = F.rid;'
         connection.query(restQuery,
@@ -896,6 +910,7 @@ router.post('/user/:id/like-restaurant/:rid', bodyParser.json(), function (req, 
     })
 })
 
+// tested; works
 router.post('/user/:id/like-food/:rid', bodyParser.json(), function (req, res, next) {
   const uid = req.params.id
   const rid = req.params.rid
@@ -920,16 +935,18 @@ router.post('/user/:id/like-food/:rid', bodyParser.json(), function (req, res, n
               food_type: foodType,
               rid: rid
             }
-          })
-        const foodQuery = 'SELECT R.rid as restaurantId, R.name as restaurantName, F.food_type FROM UserLikesFoodAtRestaurant F, Restaurant R WHERE F.uid = :uid and and R.rid = F.rid;'
+          }).catch(function (err) {
+          console.log('ALREADY LIKED THIS!')
+        })
+        const foodQuery = 'SELECT R.rid as "restaurantId", R.name as "restaurantName", F.food_type FROM UserLikesFoodAtRestaurant F, Restaurant R WHERE F.uid = :uid and R.rid = F.rid;'
         connection.query(foodQuery,
           {
             type: connection.QueryTypes.SELECT,
             replacements: {uid: uid}
           })
           .then(favFoodListItem => {
-            res.json(favFoodListItem)
             console.log(favFoodListItem)
+            res.json(favFoodListItem)
           })
       } else {
         res.status(404).json({})
