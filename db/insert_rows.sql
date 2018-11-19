@@ -476,6 +476,26 @@ insert into FoodsServedAtRestaurants values ('07910', 'coffee');
 insert into FoodsServedAtRestaurants values ('07910', 'milk and dairy');
 insert into FoodsServedAtRestaurants values ('07910', 'all-in combo');
 insert into FoodsServedAtRestaurants values ('66520', 'waffle');
+insert into FoodsServedAtRestaurants values ('21921', 'sunny side up');
+insert into FoodsServedAtRestaurants values ('42726', 'sunny side up');
+insert into FoodsServedAtRestaurants values ('82252', 'sunny side up');
+insert into FoodsServedAtRestaurants values ('58136', 'sunny side up');
+insert into FoodsServedAtRestaurants values ('12381', 'sunny side up');
+insert into FoodsServedAtRestaurants values ('03504', 'sunny side up');
+insert into FoodsServedAtRestaurants values ('71046', 'sunny side up');
+insert into FoodsServedAtRestaurants values ('16196', 'sunny side up');
+insert into FoodsServedAtRestaurants values ('38449', 'sunny side up');
+insert into FoodsServedAtRestaurants values ('93531', 'sunny side up');
+insert into FoodsServedAtRestaurants values ('84921', 'sunny side up');
+insert into FoodsServedAtRestaurants values ('06847', 'sunny side up');
+insert into FoodsServedAtRestaurants values ('02846', 'sunny side up');
+insert into FoodsServedAtRestaurants values ('82789', 'sunny side up');
+insert into FoodsServedAtRestaurants values ('35878', 'sunny side up');
+insert into FoodsServedAtRestaurants values ('38781', 'sunny side up');
+insert into FoodsServedAtRestaurants values ('70186', 'sunny side up');
+insert into FoodsServedAtRestaurants values ('32243', 'sunny side up');
+insert into FoodsServedAtRestaurants values ('07910', 'sunny side up');
+insert into FoodsServedAtRestaurants values ('66520', 'sunny side up');
 
 
 
