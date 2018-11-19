@@ -1,6 +1,18 @@
 import { Router } from 'express'
 var connection = require('../configs/sequelize')
 const bodyParser = require('body-parser')
+var NodeGeocoder = require('node-geocoder')
+
+var options = {
+  provider: 'google',
+
+  // Optional depending on the providers
+  httpAdapter: 'https', // Default
+  apiKey: 'APIKEY', // for Mapquest, OpenCage, Google Premier
+  formatter: null // 'gpx', 'string', ...
+}
+
+var geocoder = NodeGeocoder(options)
 
 const router = Router()
 
@@ -332,7 +344,7 @@ router.post('/user-profile/:id/edit', bodyParser.json(), function (req, res, nex
                     'searches': null
                   })
               } else {
-                  res.status(400).json({})
+                res.status(400).json({})
               }
             })
         }
@@ -676,115 +688,132 @@ router.post('/:owid/add-restaurant/', bodyParser.json(), function (req, res, nex
   const owid = req.params.owid
   const name = req.body.restaurantName
   const OpenHours = req.body.OpenHours
-  const number = req.body.number
-  const street = req.body.street
+  const number = req.body.streetNumber
+  const street = req.body.streetName
   const city = req.body.city
   const postalCode = req.body.postalCode
-  const foodTypes = req.body.foodTypes
-  const lat = req.body.lat
-  const lon = req.body.lon
-  const rid = uuidv1()
-  const query1 = 'SELECT * from owner where owid=:owid;'
-  connection.query(query1,
-    {
-      type: connection.QueryTypes.SELECT,
-      replacements: {owid: owid}
-    })
-    .then(owner => {
-      if (owner.length === 1) {
-        if (OpenHours.length === 0 || foodTypes.length === 0) {
-          res.status(400).json({})
-        } else {
-          const query2 = 'INSERT INTO Restaurant (rid, name, owid) VALUES (:rid, :name, :owid);'
-          connection.query(query2,
-            {
-              type: connection.QueryTypes.INSERT,
-              replacements: {
-                rid: rid,
-                name: name,
-                owid: owid
-              }
-            })
-          const query3 = 'SELECT * FROM Location where lat = :lat and lon = :lon and rid NOT null;'
-          connection.query(query3,
-            {
-              type: connection.QueryTypes.SELECT,
-              replacements: {lat: lat, lon: lon}
-            })
-            .then(loc => {
-              if (loc.length !== 0) {
-                res.status(400) // location belongs to some other restaurant so cant accept this!
-              } else {
-                const query4 = 'INSERT INTO Location (postalCode, lat, lon, city, street, number, rid) Values ' +
+  const foodTypes = req.body.food_types
+  var lat = null
+  var lon = null
+  geocoder.geocode(number + ' ' + street + ' ' + city)
+    .then(function (result) {
+      lat = result[0].latitude
+      lon = result[0].latitude
+      const rid = uuidv1()
+      console.log('BODY: ' + owid + name + OpenHours + number + street + city + postalCode + foodTypes + lat + lon)
+      const query1 = 'SELECT * from owner where owid=:owid;'
+      connection.query(query1,
+        {
+          type: connection.QueryTypes.SELECT,
+          replacements: {owid: owid}
+        })
+        .then(owner => {
+          if (owner.length === 1) {
+            if (OpenHours.length === 0 || foodTypes.length === 0) {
+              res.status(400).json({})
+            } else {
+              const query2 = 'INSERT INTO Restaurant (rid, name, owid) VALUES (:rid, :name, :owid);'
+              connection.query(query2,
+                {
+                  type: connection.QueryTypes.INSERT,
+                  replacements: {
+                    rid: rid,
+                    name: name,
+                    owid: owid
+                  }
+                }).catch(function () {
+                console.log('err')
+              })
+              const query3 = 'SELECT * FROM Location where lat = :lat and lon = :lon and rid is NOT null;'
+              connection.query(query3,
+                {
+                  type: connection.QueryTypes.SELECT,
+                  replacements: {lat: lat, lon: lon}
+                })
+                .then(loc => {
+                  if (loc.length !== 0) {
+                    res.status(400).json({}) // location belongs to some other restaurant so cant accept this!
+                  } else {
+                    const query4 = 'INSERT INTO Location (postalCode, lat, lon, city, street, number, rid) Values ' +
                                 '(:postalCode, :lat, :lon, :city, :street, :number, :rid);'
-                connection.query(query4,
-                  {
-                    type: connection.QueryTypes.INSERT,
-                    replacements: {
-                      postalCode: postalCode,
-                      lat: lat,
-                      lon: lon,
-                      city: city,
-                      street: street,
-                      number: number,
-                      rid: rid
-                    }
-                  })
-                // indert hours of op
-                for (var t in OpenHours) {
-                  // insert into hours of operation (either exists and is not added or is added)
-                  const query5 = 'INSERT INTO HoursOfOperation (day, openTime, closeTime) VALUES (:day, :openTime, :closeTime);'
-                  connection.query(query5,
-                    {
-                      type: connection.QueryTypes.INSERT,
-                      replacements: {
-                        day: t.day,
-                        openTime: t.openTime,
-                        closeTime: t.closeTime
-                      }
+                    connection.query(query4,
+                      {
+                        type: connection.QueryTypes.INSERT,
+                        replacements: {
+                          postalCode: postalCode,
+                          lat: lat,
+                          lon: lon,
+                          city: city,
+                          street: street,
+                          number: number,
+                          rid: rid
+                        }
+                      }).catch(function () {
+                      console.log('err')
                     })
-                  const query6 = 'INSERT INTO RestaurantHoursOfOperation (day, openTime, closeTime, rid) VALUES (:day, :openTime, :closeTime, :rid);'
-                  connection.query(query6,
-                    {
-                      type: connection.QueryTypes.INSERT,
-                      replacements: {
-                        day: t.day,
-                        openTime: t.openTime,
-                        closeTime: t.closeTime,
-                        rid: rid
-                      }
+                    var t = OpenHours[0]
+                    // insert into hours of operation (either exists and is not added or is added)
+                    const query5 = 'INSERT INTO HoursOfOperation (day, openTime, closeTime) VALUES (:day, :openTime, :closeTime);'
+                    connection.query(query5,
+                      {
+                        type: connection.QueryTypes.INSERT,
+                        replacements: {
+                          day: t.day,
+                          openTime: t.openTime,
+                          closeTime: t.closeTime
+                        }
+                      }).catch(function () {
+                      console.log('err')
                     })
-                }
-                // insert food types served
-                for (var f in foodTypes) {
-                  const query7 = 'INSERT INTO Food (food_type) VALUES (:food_type);'
-                  connection.query(query7,
-                    {
-                      type: connection.QueryTypes.INSERT,
-                      replacements: {food_type: f.food_type}
+                    const query6 = 'INSERT INTO RestaurantHoursOfOperation (day, openTime, closeTime, rid) VALUES (:day, :openTime, :closeTime, :rid);'
+                    connection.query(query6,
+                      {
+                        type: connection.QueryTypes.INSERT,
+                        replacements: {
+                          day: t.day,
+                          openTime: t.openTime,
+                          closeTime: t.closeTime,
+                          rid: rid
+                        }
+                      }).catch(function () {
+                      console.log('err')
                     })
-                  const query8 = 'INSERT INTO FoodsServedAtRestaurants (rid, food_type) VALUES (:rid, :food_type);'
-                  connection.query(query8,
-                    {
-                      type: connection.QueryTypes.INSERT,
-                      replacements: {rid: rid, food_type: f.food_type}
+                    // insert food types served
+                    const query7 = 'INSERT INTO Food (food_type) VALUES (:food_type);'
+                    connection.query(query7,
+                      {
+                        type: connection.QueryTypes.INSERT,
+                        replacements: {food_type: foodTypes[0].food_type}
+                      }).catch(function () {
+                      console.log('err')
                     })
-                }
-                const query9 = 'SELECT rid, name from Restaurant where owid=:owid;'
-                connection.query(query9,
-                  {
-                    type: connection.QueryTypes.SELECT,
-                    replacements: {owid: owid}
-                  })
-                  .then(restaurants => {
-                    res.json(restaurants)
-                  })
-              }
-            })
-        }
-      } else {
-        res.status(404).json({})
-      }
+                    const query8 = 'INSERT INTO FoodsServedAtRestaurants (rid, food_type) VALUES (:rid, :food_type);'
+                    connection.query(query8,
+                      {
+                        type: connection.QueryTypes.INSERT,
+                        replacements: {rid: rid, food_type: foodTypes[0].food_type}
+                      }).catch(function () {
+                      console.log('err')
+                    })
+                    const query9 = 'SELECT rid, name from Restaurant where owid=:owid;'
+                    connection.query(query9,
+                      {
+                        type: connection.QueryTypes.SELECT,
+                        replacements: {owid: owid}
+                      })
+                      .then(restaurants => {
+                        res.status(200).json(restaurants)
+                      })
+                  }
+                })
+            }
+          } else {
+            res.status(404).json({})
+          }
+        })
+    })
+    .catch(function (err) {
+      console.log(err)
     })
 })
 
@@ -991,10 +1020,6 @@ router.post('/user/:id/like-food/:rid', bodyParser.json(), function (req, res, n
       }
     })
 })
-
-// respond with oops or something when I return 400 (places that we need it: login because incorrect, sognup because username is used, search because no results)
-// owner add restaurant
-// owner del rest
 
 // SELECT pg_cancel_backend(pid)     -- (SIGINT)
 // -- pg_terminate_backend(pid)  -- the less patient alternative (SIGTERM)
