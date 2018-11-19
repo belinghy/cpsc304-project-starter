@@ -496,6 +496,26 @@ insert into FoodsServedAtRestaurants values ('70186', 'sunny side up');
 insert into FoodsServedAtRestaurants values ('32243', 'sunny side up');
 insert into FoodsServedAtRestaurants values ('07910', 'sunny side up');
 insert into FoodsServedAtRestaurants values ('66520', 'sunny side up');
+insert into FoodsServedAtRestaurants values ('21921', 'boiled eggs');
+insert into FoodsServedAtRestaurants values ('42726', 'boiled eggs');
+insert into FoodsServedAtRestaurants values ('82252', 'boiled eggs');
+insert into FoodsServedAtRestaurants values ('58136', 'boiled eggs');
+insert into FoodsServedAtRestaurants values ('12381', 'boiled eggs');
+insert into FoodsServedAtRestaurants values ('03504', 'boiled eggs');
+insert into FoodsServedAtRestaurants values ('71046', 'boiled eggs');
+insert into FoodsServedAtRestaurants values ('16196', 'boiled eggs');
+insert into FoodsServedAtRestaurants values ('38449', 'boiled eggs');
+insert into FoodsServedAtRestaurants values ('93531', 'boiled eggs');
+insert into FoodsServedAtRestaurants values ('84921', 'boiled eggs');
+insert into FoodsServedAtRestaurants values ('06847', 'boiled eggs');
+insert into FoodsServedAtRestaurants values ('02846', 'boiled eggs');
+insert into FoodsServedAtRestaurants values ('82789', 'boiled eggs');
+insert into FoodsServedAtRestaurants values ('35878', 'boiled eggs');
+insert into FoodsServedAtRestaurants values ('38781', 'boiled eggs');
+insert into FoodsServedAtRestaurants values ('70186', 'boiled eggs');
+insert into FoodsServedAtRestaurants values ('32243', 'boiled eggs');
+insert into FoodsServedAtRestaurants values ('07910', 'boiled eggs');
+insert into FoodsServedAtRestaurants values ('66520', 'boiled eggs');
 
 
 
