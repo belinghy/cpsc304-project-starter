@@ -6,7 +6,7 @@
 
 ## Be Warned!
 
-This starter kit uses `Sequelize` to perform ORM between JavaScript and Postgres. `Sequelize` provides convenient shortcuts for simple insert, update, and lookup (i.e. without you having to write INSERT, UPDATE, and SELECT SQL queries). For the purpose of the course project, you are responsible for meeting the minimal requirements of the project. This means that you should explicitly write out the raw SQL queries, at the minimum, as specified in your project formal specification.
+The project requirement for CPSC 304 may have changed, check with your TA before using this starter kit. Also this repo is outdated, particularly the deploy instructions for Zeit Now (now called Vercel). If you wish to help future students and update this repo, please let me know.
 
 ## Setting Up Dev Environment (Postgres + Node.js) on Local Machine
 
@@ -84,21 +84,15 @@ $ npm start
 
 For detailed explanation on how things work, checkout the [Nuxt.js docs](https://github.com/nuxt/nuxt.js).
 
-### Backpack
-
-We use [backpack](https://github.com/palmerhq/backpack) to watch and build the application, so you can use the latest ES6 features (module syntax, async/await, etc.).
-
 ## Deploying to Remote Servers
 
-If you are not already familiar with Heroku, it is recommended that you use ElephantSQL + Now over Heroku (In my opinion it's the easier route). If you are familiar with Heroku, you are encouraged to try out new things. Nevertheless, it is possible to deploy to either.
-
-### Running Postgres Server with ElephantSQL (Recommended)
+### Running Postgres Server with ElephantSQL
 
 ElephantSQL (https://www.elephantsql.com/plans.html) provides Postgres as a service. The free tier allows 20 MB of data and 5 concurrent connections, which is more than enough for the purpose of the course project. Signing up is extremely easy and it even provides a web console from running SQL commands -- All you need to do is to copy your database script (i.e. `db/CreateUsersTable.sql`) into the console and execute.
 
 Again, you need to modify `env_setup` file to get the UI to connect to your remote Postgres server. Every time after you modify this file or if you restart your shell, you should run `source env_setup` in your terminal to set environment variables. If you are using PowerShell on Windows, you can set environment variables like `$env:DB_NAME = "Demo"`, instead of `export DB_NAME=Demo` etc.
 
-### Deploying Node.js UI to Zeit Now (Recommended)
+### Deploying Node.js UI to Zeit Now
 
 `Now` is a deployment tool developed by Zeit (https://zeit.co/). It supports all things Node.js and Docker (for those familiar with containers). For our purposes, all you need to know is that as long as your package has a `package.json` file at the root folder, and the file has appropriate commands defined in it (i.e. `npm run build` and `npm start`), `Now` simply uploads your source code and executes those two commands (which is what you'd do manually if you have access to an AWS virtual machine, say.)
 
